@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Weather Dashboard</h1>
+            <p>Real-time weather information powered by OpenWeatherMap</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="cityInput" 
+                    placeholder="Enter city name..."
+                    autocomplete="off"
+                >
+                <button id="searchBtn">Search</button>
+                <button id="locationBtn" title="Use current location">📍</button>
+            </div>
+            <div id="searchSuggestions" class="suggestions"></div>
+        </div>
+
+        <div class="units-toggle">
+            <button id="celsiusBtn" class="active">°C</button>
+            <button id="fahrenheitBtn">°F</button>
+        </div>
+
+        <div id="loadingSpinner" class="spinner hidden"></div>
+
+        <main>
+            <section id="currentWeather" class="weather-section hidden">
+                <div class="weather-card">
+                    <div class="weather-header">
+                        <h2 id="cityName"></h2>
+                        <p id="weatherTime" class="timestamp"></p>
+                    </div>
+
+                    <div class="weather-main">
+                        <div class="temperature-section">
+                            <div id="temperature" class="temperature"></div>
+                            <div id="weatherIcon" class="weather-icon"></div>
+                        </div>
+                        <div class="weather-description">
+                            <p id="description"></p>
+                            <p id="feelsLike" class="feels-like"></p>
+                        </div>
+                    </div>
+
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Humidity</span>
+                            <span id="humidity" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Pressure</span>
+                            <span id="pressure" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Wind Speed</span>
+                            <span id="windSpeed" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Visibility</span>
+                            <span id="visibility" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Min Temp</span>
+                            <span id="minTemp" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Max Temp</span>
+                            <span id="maxTemp" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Sunrise</span>
+                            <span id="sunrise" class="detail-value">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Sunset</span>
+                            <span id="sunset" class="detail-value">-</span>
+                        </div>
+                    </div>
+
+                    <button id="favoriteBtn" class="favorite-btn">★ Add to Favorites</button>
+                </div>
+            </section>
+
+            <section id="forecastSection" class="weather-section hidden">
+                <h3>5-Day Forecast</h3>
+                <div id="forecastContainer" class="forecast-grid"></div>
+            </section>
+
+            <section id="favoritesSection" class="weather-section">
+                <h3>Recent Searches</h3>
+                <div id="weatherList" class="weather-list"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Weather Dashboard | Data from OpenWeatherMap</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
