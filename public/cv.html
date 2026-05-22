@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ahmed A. Al-Ghamdi — CV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Inverted: green surfaces, white type */
+      --brand: #FFFFFF;
+      --brand-dark: #F1F6F5;
+      --brand-deep: #FFFFFF;
+      --brand-light: #6FE3CF;
+      --accent: #6FE3CF;
+      --surface: #134341;
+      --surface-soft: #0A2625;
+      --sidebar-bg: #082020;
+      --text: #FFFFFF;
+      --text-muted: rgba(255, 255, 255, 0.78);
+      --text-soft: rgba(255, 255, 255, 0.55);
+      --border: rgba(255, 255, 255, 0.20);
+      --rule: rgba(255, 255, 255, 0.10);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 10pt; }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--text);
+      background: #04110F;
+      -webkit-font-smoothing: antialiased;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 24px 0;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--surface);
+      margin: 0 auto 16px;
+      box-shadow: 0 18px 48px -16px rgba(10, 38, 37, 0.25), 0 2px 8px -2px rgba(10, 38, 37, 0.10);
+      display: grid;
+      grid-template-columns: 72mm 1fr;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .page + .page { page-break-before: always; }
+
+    /* ===== Sidebar ===== */
+    .sidebar {
+      background: var(--sidebar-bg);
+      color: var(--text);
+      padding: 0;
+      position: relative;
+    }
+
+    .sidebar-banner {
+      height: 86mm;
+      background:
+        radial-gradient(700px 360px at 20% 10%, rgba(46, 140, 134, 0.18), transparent 55%),
+        radial-gradient(500px 360px at 90% 90%, rgba(111, 227, 207, 0.06), transparent 60%),
+        linear-gradient(160deg, #04110F 0%, #0A2422 55%, #133A37 100%);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 14mm;
+    }
+
+    .sidebar-banner svg.tech {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .photo {
+      position: relative;
+      width: 42mm;
+      height: 42mm;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #FFFFFF;
+      outline: 2px solid var(--border);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.45);
+      z-index: 2;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 25%;
+      display: block;
+    }
+
+    .sidebar-body {
+      padding: 9mm 8mm 9mm 8mm;
+    }
+
+    .sidebar-section + .sidebar-section { margin-top: 8mm; }
+
+    .sidebar h2 {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 3.5mm;
+      padding-bottom: 1.5mm;
+      border-bottom: 1.5px solid var(--brand-light);
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 8.5pt;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 2mm;
+      word-break: break-word;
+    }
+
+    .contact-row svg {
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin-top: 2px;
+      stroke: var(--brand);
+      fill: none;
+      stroke-width: 1.8;
+    }
+
+    .contact-row a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .skill-group {
+      margin-bottom: 4mm;
+    }
+
+    .skill-group h3 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 2mm;
+    }
+
+    .skill-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5mm;
+    }
+
+    .skill-list li {
+      font-size: 8.5pt;
+      line-height: 1.4;
+      color: var(--text);
+      padding-left: 9px;
+      position: relative;
+    }
+
+    .skill-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 5px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--brand-light);
+    }
+
+    .tech-cloud {
+      font-size: 8pt;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .tech-cloud .chip {
+      display: inline-block;
+      padding: 1.2mm 2.4mm;
+      margin: 0 1.2mm 1.2mm 0;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: #FFFFFF;
+    }
+
+    .edu-item, .cert-item {
+      margin-bottom: 3mm;
+      font-size: 8.5pt;
+      line-height: 1.45;
+    }
+
+    .edu-item strong, .cert-item strong {
+      display: block;
+      color: var(--text);
+      font-weight: 700;
+      margin-bottom: 0.5mm;
+    }
+
+    .edu-item span, .cert-item span {
+      color: var(--text-muted);
+    }
+
+    .lang-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5pt;
+      margin-bottom: 1.8mm;
+    }
+    .lang-row .lvl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--text-muted);
+    }
+
+    /* ===== Main column ===== */
+    .main {
+      padding: 14mm 12mm 14mm 12mm;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-name h1 {
+      font-size: 22pt;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      line-height: 1.05;
+      color: var(--text);
+      margin-bottom: 1.5mm;
+    }
+
+    .header-name .title {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: var(--brand);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-name .title .sep {
+      color: var(--brand-light);
+      margin: 0 4px;
+      opacity: 0.7;
+    }
+
+    .header-rule {
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand-light) 0%, var(--brand) 35%, transparent 100%);
+      margin: 4mm 0 6mm;
+      border-radius: 2px;
+    }
+
+    .section {
+      margin-bottom: 6mm;
+    }
+
+    .section:last-child { margin-bottom: 0; }
+
+    .section h2 {
+      font-size: 10pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 3mm;
+      padding-bottom: 1.5mm;
+      border-bottom: 1.5px solid var(--brand-light);
+      position: relative;
+    }
+
+    .section h2::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--brand-light);
+      margin-right: 7px;
+      vertical-align: middle;
+    }
+
+    .summary {
+      font-size: 9.5pt;
+      line-height: 1.6;
+      color: var(--text);
+      text-align: justify;
+    }
+
+    .achievements {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5mm;
+    }
+
+    .achievements li {
+      font-size: 9pt;
+      line-height: 1.55;
+      padding-left: 14px;
+      position: relative;
+      color: var(--text);
+    }
+
+    .achievements li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6.5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand-light);
+      box-shadow: 0 0 0 2px rgba(111, 227, 207, 0.22);
+    }
+
+    .role {
+      margin-bottom: 5mm;
+    }
+
+    .role-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 0.8mm;
+    }
+
+    .role-title {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .role-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8.5pt;
+      color: var(--brand);
+      white-space: nowrap;
+    }
+
+    .role-org {
+      font-size: 9.5pt;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 2.5mm;
+    }
+
+    .role ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8mm;
+    }
+
+    .role ul li {
+      font-size: 9pt;
+      line-height: 1.5;
+      padding-left: 13px;
+      position: relative;
+      color: var(--text);
+    }
+
+    .role ul li::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      top: 7px;
+      width: 5px;
+      height: 5px;
+      transform: rotate(45deg);
+      background: var(--brand-light);
+      opacity: 0.85;
+    }
+
+    .project {
+      padding: 4mm 4mm 4mm 5mm;
+      background: var(--surface-soft);
+      border-left: 3px solid var(--brand-light);
+      border-radius: 0 6px 6px 0;
+    }
+
+    .project h3 {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--brand);
+      margin-bottom: 1.2mm;
+    }
+
+    .project p {
+      font-size: 9pt;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    /* Print: revert to ink-friendly light theme */
+    @media print {
+      :root {
+        --brand: #1F5D5A;
+        --brand-dark: #134341;
+        --brand-deep: #0A2625;
+        --brand-light: #2E8C86;
+        --accent: #2E8C86;
+        --surface: #FFFFFF;
+        --surface-soft: #F6FAF9;
+        --sidebar-bg: #F1F6F5;
+        --text: #0A2625;
+        --text-muted: #5C7B79;
+        --text-soft: #7A9492;
+        --border: rgba(31, 93, 90, 0.16);
+        --rule: rgba(31, 93, 90, 0.10);
+      }
+      body { background: #FFFFFF; padding: 0; }
+      .page {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+      }
+      .page:last-child { page-break-after: auto; }
+      .tech-cloud .chip {
+        background: #FFFFFF;
+        color: var(--brand-dark);
+      }
+      .achievements li::before {
+        box-shadow: 0 0 0 2px rgba(46, 140, 134, 0.18);
+      }
+    }
+
+    /* Small-screen preview */
+    @media (max-width: 900px) {
+      .page {
+        width: 100%;
+        min-height: auto;
+        grid-template-columns: 1fr;
+      }
+      .sidebar-banner {
+        height: 130px;
+        padding-bottom: 24px;
+      }
+      .main {
+        padding: 18px 18px 24px;
+      }
+      .role-head {
+        flex-direction: column;
+        gap: 2px;
+      }
+      .role-date { font-size: 9.5pt; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== PAGE 1 ====== -->
+  <article class="page" aria-label="Ahmed A. Al-Ghamdi CV page 1">
+    <aside class="sidebar">
+      <div class="sidebar-banner" aria-hidden="true">
+        <svg class="tech" viewBox="0 0 280 320" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <pattern id="dotGridCV" width="9" height="9" patternUnits="userSpaceOnUse">
+              <circle cx="4.5" cy="4.5" r="0.9" fill="rgba(195, 235, 225, 0.45)"/>
+            </pattern>
+            <radialGradient id="gloCV" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(111, 227, 207, 0.18)"/>
+              <stop offset="60%" stop-color="rgba(111, 227, 207, 0.04)"/>
+              <stop offset="100%" stop-color="rgba(111, 227, 207, 0)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Circuit traces -->
+          <g fill="none" stroke="#5BC3BC" stroke-width="1" opacity="0.5">
+            <path d="M-10,40 L80,40 L80,70 L170,70 L170,95 L260,95"/>
+            <path d="M-10,90 L60,90 L60,120 L140,120 L140,140 L240,140"/>
+            <path d="M-10,150 L50,150 L50,180 L120,180 L120,210 L220,210"/>
+            <path d="M-10,210 L70,210 L70,240 L150,240 L150,270 L230,270"/>
+            <path d="M-10,280 L40,280 L40,300 L110,300 L110,320"/>
+          </g>
+
+          <!-- Junctions -->
+          <g fill="#5BC3BC" opacity="0.6">
+            <circle cx="80" cy="40" r="2"/>
+            <circle cx="170" cy="70" r="2"/>
+            <circle cx="60" cy="90" r="2"/>
+            <circle cx="140" cy="120" r="2"/>
+            <circle cx="50" cy="150" r="2"/>
+            <circle cx="120" cy="180" r="2"/>
+            <circle cx="70" cy="210" r="2"/>
+            <circle cx="150" cy="240" r="2"/>
+            <circle cx="40" cy="280" r="2"/>
+          </g>
+
+          <!-- Diamond nodes -->
+          <g fill="#6FE3CF" opacity="0.75">
+            <rect x="257" y="92" width="6" height="6" transform="rotate(45 260 95)"/>
+            <rect x="237" y="137" width="6" height="6" transform="rotate(45 240 140)"/>
+            <rect x="217" y="207" width="6" height="6" transform="rotate(45 220 210)"/>
+            <rect x="227" y="267" width="6" height="6" transform="rotate(45 230 270)"/>
+          </g>
+
+          <!-- Globe -->
+          <circle cx="210" cy="55" r="50" fill="url(#gloCV)"/>
+          <g transform="translate(210 55)" fill="none" stroke="#2E8C86" stroke-width="0.7" opacity="0.4">
+            <circle r="42"/>
+            <ellipse rx="42" ry="14"/>
+            <ellipse rx="42" ry="28"/>
+            <ellipse rx="14" ry="42"/>
+            <ellipse rx="28" ry="42"/>
+          </g>
+          <rect x="168" y="13" width="84" height="84" fill="url(#dotGridCV)" style="clip-path: circle(42px at 42px 42px);"/>
+          <g fill="#6FE3CF">
+            <circle cx="195" cy="32" r="1.5"/>
+            <circle cx="220" cy="28" r="1.2"/>
+            <circle cx="235" cy="50" r="1.5"/>
+            <circle cx="225" cy="75" r="1.5"/>
+            <circle cx="195" cy="82" r="1.5"/>
+            <circle cx="178" cy="60" r="1.2"/>
+          </g>
+        </svg>
+
+        <div class="photo">
+          <img src="profile.jpg" alt="Ahmed A. Al-Ghamdi">
+        </div>
+      </div>
+
+      <div class="sidebar-body">
+
+        <section class="sidebar-section">
+          <h2>Contact</h2>
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z M4 6l8 7 8-7" stroke-linejoin="round"/></svg>
+            <a href="mailto:Ahmed.fidi@gmail.com">Ahmed.fidi@gmail.com</a>
+          </div>
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <span>+966 54 476 4668</span>
+          </div>
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-7.58 8-13a8 8 0 1 0-16 0c0 5.42 8 13 8 13z"/><circle cx="12" cy="9" r="3"/></svg>
+            <span>Riyadh, Saudi Arabia</span>
+          </div>
+          <div class="contact-row">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 10v7 M7 7v.01 M11 17v-4a3 3 0 0 1 6 0v4"/></svg>
+            <a href="https://linkedin.com/in/ahmedfidi" target="_blank" rel="noopener">linkedin.com/in/ahmedfidi</a>
+          </div>
+        </section>
+
+        <section class="sidebar-section">
+          <h2>Core Competencies</h2>
+
+          <div class="skill-group">
+            <h3>IT Service Management</h3>
+            <ul class="skill-list">
+              <li>ITIL v4 Framework</li>
+              <li>Problem Management &amp; CAPA</li>
+              <li>Root Cause Analysis (5 Whys, Fishbone)</li>
+              <li>Incident &amp; Change Management</li>
+              <li>Continual Improvement</li>
+            </ul>
+          </div>
+
+          <div class="skill-group">
+            <h3>Technical Infrastructure</h3>
+            <ul class="skill-list">
+              <li>Hybrid Cloud (Azure &middot; AWS)</li>
+              <li>Virtualization (VMware vSphere)</li>
+              <li>Infrastructure as Code (Terraform, Ansible)</li>
+              <li>Monitoring &amp; Observability</li>
+              <li>Zero Trust &amp; Compliance</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="sidebar-section">
+          <h2>Languages</h2>
+          <div class="lang-row"><span>Arabic</span><span class="lvl">Native</span></div>
+          <div class="lang-row"><span>English</span><span class="lvl">Professional</span></div>
+        </section>
+
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="header-name">
+        <h1>Ahmed A. Al-Ghamdi</h1>
+        <p class="title">
+          IT Infrastructure Specialist
+          <span class="sep">|</span> ITIL v4
+          <span class="sep">|</span> Problem Management &amp; RCA
+        </p>
+      </header>
+      <div class="header-rule"></div>
+
+      <section class="section">
+        <h2>Professional Summary</h2>
+        <p class="summary">
+          Results-driven IT Infrastructure Specialist with over 12 years of experience architecting and optimizing
+          mission-critical systems. Expert in leveraging ITIL v4 to drive operational transformation through
+          Problem Management, structured Root Cause Analysis, and disciplined CAPA execution. Currently leading
+          the architecture of a national multi-modal Transport Incident Management System (TIMS) at NTSC Saudi Arabia.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Key Achievements</h2>
+        <ul class="achievements">
+          <li>Architected and deployed ITIL v4-aligned Problem Management and CAPA workflows for a national multi-modal incident platform, significantly raising investigation quality and corrective-action effectiveness across four transport modes.</li>
+          <li>Introduced structured Root Cause Analysis techniques (5 Whys and Fishbone) into TIMS, shifting teams from reactive firefighting to systematic root-cause elimination.</li>
+          <li>Executed 12+ high-stakes executive and CEO demonstrations, consistently securing stakeholder alignment and advancing critical project milestones.</li>
+          <li>Built real-time analytics and trend-analysis capabilities that gave leadership direct visibility into incident patterns and system performance.</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Professional Experience</h2>
+
+        <div class="role">
+          <div class="role-head">
+            <span class="role-title">IT Infrastructure &amp; Systems Lead</span>
+            <span class="role-date">2023 — Present</span>
+          </div>
+          <p class="role-org">NTSC Saudi Arabia &mdash; Transport Incident Management System (TIMS)</p>
+          <ul>
+            <li>Led the architecture and end-to-end prototyping of a national multi-modal Transport Incident Management System, embedding ITIL v4 Problem Management, formal CAPA tracking, and advanced RCA workflows across four transport domains.</li>
+            <li>Designed intelligent incident lifecycle and investigation processes with integrated RCA capabilities, dramatically improving the speed and quality of root-cause identification and corrective-action planning.</li>
+            <li>Delivered real-time operational and executive dashboards with trend analysis, enabling leadership to proactively identify high-risk patterns and drive faster, data-informed decisions.</li>
+            <li>Executed 12+ high-stakes executive and leadership demonstrations, delivering compelling technical narratives that secured continued sponsorship and accelerated project momentum.</li>
+            <li>Enforced strict compliance with NCA ECC-2:2024 and Zero Trust principles while maintaining high system reliability and full audit readiness.</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </article>
+
+  <!-- ====== PAGE 2 ====== -->
+  <article class="page" aria-label="Ahmed A. Al-Ghamdi CV page 2">
+    <aside class="sidebar">
+      <div class="sidebar-body" style="padding-top: 14mm;">
+
+        <section class="sidebar-section">
+          <h2>Education</h2>
+          <div class="edu-item">
+            <strong>Bachelor&rsquo;s Degree</strong>
+            <span>Computer Science / Information Technology</span>
+          </div>
+        </section>
+
+        <section class="sidebar-section">
+          <h2>Certifications</h2>
+          <div class="cert-item">
+            <strong>ITIL 4 Foundation</strong>
+            <span>Certified</span>
+          </div>
+        </section>
+
+        <section class="sidebar-section">
+          <h2>Technical Stack</h2>
+          <div class="tech-cloud">
+            <span class="chip">Azure</span>
+            <span class="chip">AWS</span>
+            <span class="chip">VMware vSphere</span>
+            <span class="chip">Terraform</span>
+            <span class="chip">Ansible</span>
+            <span class="chip">PowerShell</span>
+            <span class="chip">Python</span>
+            <span class="chip">Active Directory</span>
+            <span class="chip">Cisco</span>
+            <span class="chip">Zero Trust</span>
+            <span class="chip">NCA ECC-2</span>
+            <span class="chip">ITIL v4</span>
+            <span class="chip">RCA</span>
+            <span class="chip">CAPA</span>
+          </div>
+        </section>
+
+        <section class="sidebar-section">
+          <h2>Domain</h2>
+          <ul class="skill-list">
+            <li>National Transport Safety</li>
+            <li>Civil Aviation Authority</li>
+            <li>Public Sector IT</li>
+            <li>Multi-modal Incident Systems</li>
+          </ul>
+        </section>
+
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <section class="section">
+        <h2>Professional Experience (cont.)</h2>
+
+        <div class="role">
+          <div class="role-head">
+            <span class="role-title">IT Specialist</span>
+            <span class="role-date">2015 — 2023</span>
+          </div>
+          <p class="role-org">General Authority of Civil Aviation (GACA)</p>
+          <ul>
+            <li>Progressed from Admin Coordinator to IT Specialist &amp; Digital Transformation Planner, taking full ownership of IT operations, infrastructure, governance, and the bureau&rsquo;s digital transformation agenda.</li>
+            <li>Led the design, management, and continuous improvement of the organization&rsquo;s data center and network infrastructure using Cisco technologies, Active Directory, and enterprise security solutions.</li>
+            <li>Owned end-to-end critical incident management, driving cross-functional resolution and post-incident reviews that strengthened operational resilience.</li>
+            <li>Delivered high-quality end-user support to over 100 users while maintaining structured incident and request management processes.</li>
+            <li>Restructured the IT department, introduced clear support tracks, created leadership roles, and embedded ITIL best practices, significantly improving service quality and team performance.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Key Projects</h2>
+        <div class="project">
+          <h3>TIMS National Platform</h3>
+          <p>
+            Multi-modal incident reporting, investigation, RCA and CAPA system covering aviation, maritime, road
+            and railway transport. Delivers real-time analytics and executive dashboards used to identify high-risk
+            patterns and drive data-informed safety decisions at national scale.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Highlights</h2>
+        <ul class="achievements">
+          <li><strong>Scale:</strong> Architected ITSM workflows spanning 4 national transport modes (aviation, maritime, road, railway).</li>
+          <li><strong>Stakeholder reach:</strong> 12+ executive and CEO-level demos delivered with consistent buy-in.</li>
+          <li><strong>Compliance:</strong> Designed to NCA ECC-2:2024 and Zero Trust standards from day one.</li>
+          <li><strong>Bilingual delivery:</strong> Documentation and dashboards produced in Arabic and English.</li>
+        </ul>
+      </section>
+
+    </main>
+  </article>
+
+</body>
+</html>
