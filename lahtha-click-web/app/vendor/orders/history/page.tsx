@@ -28,7 +28,7 @@ export default function OrdersHistoryPage() {
   })
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       {/* Header */}
       <header className="bg-ink-900 text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
@@ -46,19 +46,19 @@ export default function OrdersHistoryPage() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b border-ink-900/10">
+      <nav className="bg-ink-900/80 backdrop-blur border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex gap-4">
-            <Link href="/vendor/dashboard" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/dashboard" className="text-white/60 hover:text-white">
               لوحة التحكم
             </Link>
-            <Link href="/vendor/orders/history" className="text-coral-500 font-bold border-b-2 border-coral-500">
+            <Link href="/vendor/orders/history" className="text-gold-500 font-bold border-b-2 border-gold-500">
               الطلبات
             </Link>
-            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/earnings/dashboard" className="text-white/60 hover:text-white">
               الأرباح
             </Link>
-            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/profile/settings" className="text-white/60 hover:text-white">
               الملف الشخصي
             </Link>
           </div>

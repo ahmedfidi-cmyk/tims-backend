@@ -67,7 +67,7 @@ export default function KycWizardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <header className="bg-ink-900 text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
           <div>

@@ -17,7 +17,7 @@ export default function AnalyticsPage() {
   if (!data) return <><AdminNav /><p className="text-center py-12">جاري التحميل...</p></>
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <AdminNav />
 
       <main className="max-w-7xl mx-auto px-4 py-8">

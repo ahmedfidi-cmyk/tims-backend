@@ -48,7 +48,7 @@ export default function KycApprovalsPage() {
   const processed = requests.filter(r => r.status !== 'pending')
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <AdminNav />
 
       <main className="max-w-6xl mx-auto px-4 py-8">

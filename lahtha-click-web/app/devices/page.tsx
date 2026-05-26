@@ -37,7 +37,7 @@ export default function CustomerDevicesPage() {
   )
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <header className="bg-ink-900 text-white py-6 px-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link href="/">
