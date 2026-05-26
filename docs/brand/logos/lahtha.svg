@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100" role="img" aria-label="LAHTHA logo">
+  <title>LAHTHA</title>
+  <desc>Wordmark with a gold dot mark representing "the moment". Tagline: لحظة · موثوق</desc>
+  <rect width="360" height="100" fill="transparent"/>
+  <!-- The moment: a single gold dot -->
+  <circle cx="28" cy="50" r="9" fill="#C8A95E"/>
+  <!-- Wordmark -->
+  <text x="58" y="62"
+        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+        font-size="42"
+        font-weight="700"
+        fill="#0B1437"
+        letter-spacing="4"
+        textLength="220" lengthAdjust="spacingAndGlyphs">LAHTHA</text>
+  <!-- Arabic tagline -->
+  <text x="58" y="86"
+        font-family="'IBM Plex Sans Arabic', 'Tajawal', Arial, sans-serif"
+        font-size="13"
+        font-weight="400"
+        fill="#6B7280"
+        direction="rtl">لحظة · موثوق</text>
+</svg>
