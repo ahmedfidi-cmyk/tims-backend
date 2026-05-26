@@ -1,6 +1,7 @@
 'use client'
 
 import { useVendorAuth } from '@/lib/hooks/use-vendor-auth'
+import Link from 'next/link'
 import { mockOrders, mockEarnings, mockInventory } from '@/lib/mock/vendor-data'
 
 function formatSar(halalat: number) {
@@ -34,6 +35,26 @@ export default function VendorDashboard() {
           </button>
         </div>
       </header>
+
+      {/* Navigation */}
+      <nav className="bg-white border-b border-ink-900/10">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex gap-4">
+            <Link href="/vendor/dashboard" className="text-coral-500 font-bold border-b-2 border-coral-500">
+              لوحة التحكم
+            </Link>
+            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900">
+              الطلبات
+            </Link>
+            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900">
+              الأرباح
+            </Link>
+            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900">
+              الملف الشخصي
+            </Link>
+          </div>
+        </div>
+      </nav>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
@@ -119,31 +140,39 @@ export default function VendorDashboard() {
         </div>
 
         {/* Action Links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Link
             href="/vendor/inventory/upload"
             className="card text-center hover:bg-ink-900/5 transition"
           >
             <p className="text-lg font-bold text-coral-500">📦</p>
             <p className="font-medium text-ink-900">رفع المخزون</p>
             <p className="text-xs text-ink-900/60 mt-1">أضف منتجات جديدة</p>
-          </a>
-          <a
+          </Link>
+          <Link
             href="/vendor/orders/history"
             className="card text-center hover:bg-ink-900/5 transition"
           >
             <p className="text-lg font-bold text-gold-500">📋</p>
             <p className="font-medium text-ink-900">الطلبات</p>
             <p className="text-xs text-ink-900/60 mt-1">عرض جميع الطلبات</p>
-          </a>
-          <a
+          </Link>
+          <Link
+            href="/vendor/earnings/dashboard"
+            className="card text-center hover:bg-ink-900/5 transition"
+          >
+            <p className="text-lg font-bold text-gold-500">💰</p>
+            <p className="font-medium text-ink-900">الأرباح</p>
+            <p className="text-xs text-ink-900/60 mt-1">عرض الأرباح والتسويات</p>
+          </Link>
+          <Link
             href="/vendor/profile/settings"
             className="card text-center hover:bg-ink-900/5 transition"
           >
             <p className="text-lg font-bold text-ink-900">⚙️</p>
             <p className="font-medium text-ink-900">الإعدادات</p>
             <p className="text-xs text-ink-900/60 mt-1">إدارة الحساب</p>
-          </a>
+          </Link>
         </div>
       </main>
     </div>
