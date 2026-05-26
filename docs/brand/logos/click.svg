@@ -1,24 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" width="320" height="100" role="img" aria-label="CLICK logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200" role="img" aria-label="CLICK">
   <title>CLICK</title>
-  <desc>Bold wordmark inside coral brackets, suggesting marketplace energy. Tagline: سوق التجار</desc>
-  <rect width="320" height="100" fill="transparent"/>
-  <!-- Left bracket -->
-  <path d="M 28 30 L 18 30 L 18 70 L 28 70" stroke="#FF6B35" stroke-width="5" fill="none" stroke-linecap="square"/>
-  <!-- Wordmark -->
-  <text x="50" y="62"
-        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
-        font-size="38"
-        font-weight="800"
-        fill="#0B1437"
-        letter-spacing="5"
-        textLength="200" lengthAdjust="spacingAndGlyphs">CLICK</text>
-  <!-- Right bracket -->
-  <path d="M 270 30 L 280 30 L 280 70 L 270 70" stroke="#FF6B35" stroke-width="5" fill="none" stroke-linecap="square"/>
-  <!-- Arabic tagline -->
-  <text x="50" y="86"
-        font-family="'IBM Plex Sans Arabic', 'Tajawal', Arial, sans-serif"
-        font-size="13"
-        font-weight="400"
-        fill="#6B7280"
-        direction="rtl">سوق التجار</text>
+  <desc>Bold minimalist wordmark. Black wordmark, full-width orange accent block beneath.</desc>
+  <text x="40" y="130"
+        font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+        font-size="120"
+        font-weight="900"
+        fill="#0A0A0A"
+        letter-spacing="-4">CLICK</text>
+  <rect x="40" y="148" width="290" height="10" fill="#FF4D00"/>
 </svg>
