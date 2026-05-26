@@ -61,7 +61,7 @@ export default function DevicesListPage() {
   const filtered = statusFilter === 'all' ? devices : devices.filter(d => d.status === statusFilter)
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <header className="bg-ink-900 text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
           <div>
@@ -74,15 +74,15 @@ export default function DevicesListPage() {
         </div>
       </header>
 
-      <nav className="bg-white border-b border-ink-900/10">
+      <nav className="bg-ink-900/80 backdrop-blur border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex gap-4 overflow-x-auto">
-            <Link href="/vendor/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">لوحة التحكم</Link>
-            <Link href="/vendor/inventory/manage" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">المخزون</Link>
-            <Link href="/vendor/devices/list" className="text-coral-500 font-bold border-b-2 border-coral-500 whitespace-nowrap">الإعلانات</Link>
-            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">الطلبات</Link>
-            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">الأرباح</Link>
-            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">الملف الشخصي</Link>
+            <Link href="/vendor/dashboard" className="text-white/60 hover:text-white whitespace-nowrap">لوحة التحكم</Link>
+            <Link href="/vendor/inventory/manage" className="text-white/60 hover:text-white whitespace-nowrap">المخزون</Link>
+            <Link href="/vendor/devices/list" className="text-gold-500 font-bold border-b-2 border-gold-500 whitespace-nowrap">الإعلانات</Link>
+            <Link href="/vendor/orders/history" className="text-white/60 hover:text-white whitespace-nowrap">الطلبات</Link>
+            <Link href="/vendor/earnings/dashboard" className="text-white/60 hover:text-white whitespace-nowrap">الأرباح</Link>
+            <Link href="/vendor/profile/settings" className="text-white/60 hover:text-white whitespace-nowrap">الملف الشخصي</Link>
           </div>
         </div>
       </nav>
@@ -143,8 +143,12 @@ export default function DevicesListPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(device => (
               <div key={device.id} className="card hover:shadow-lg transition">
-                <div className="bg-ink-900/5 h-32 rounded-lg mb-3 flex items-center justify-center text-5xl">
-                  📱
+                <div className="bg-ink-900/5 h-32 rounded-lg mb-3 flex items-center justify-center text-5xl overflow-hidden">
+                  {device.images && device.images.length > 0 ? (
+                    <img src={device.images[0]} alt={device.model} className="w-full h-full object-cover" />
+                  ) : (
+                    '📱'
+                  )}
                 </div>
                 <div className="flex justify-between items-start mb-2">
                   <div>

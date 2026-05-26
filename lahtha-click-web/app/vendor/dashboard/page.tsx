@@ -19,7 +19,7 @@ export default function VendorDashboard() {
   const activeOrders = mockOrders.filter((o) => o.status === 'pending' || o.status === 'shipped').length
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       {/* Header */}
       <header className="bg-ink-900 text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
@@ -37,25 +37,25 @@ export default function VendorDashboard() {
       </header>
 
       {/* Navigation */}
-      <nav className="bg-white border-b border-ink-900/10">
+      <nav className="bg-ink-900/80 backdrop-blur border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex gap-4 overflow-x-auto">
-            <Link href="/vendor/dashboard" className="text-coral-500 font-bold border-b-2 border-coral-500 whitespace-nowrap">
+            <Link href="/vendor/dashboard" className="text-gold-500 font-bold border-b-2 border-gold-500 whitespace-nowrap">
               لوحة التحكم
             </Link>
-            <Link href="/vendor/inventory/manage" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+            <Link href="/vendor/inventory/manage" className="text-white/60 hover:text-white whitespace-nowrap">
               المخزون
             </Link>
-            <Link href="/vendor/devices/list" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+            <Link href="/vendor/devices/list" className="text-white/60 hover:text-white whitespace-nowrap">
               الإعلانات
             </Link>
-            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+            <Link href="/vendor/orders/history" className="text-white/60 hover:text-white whitespace-nowrap">
               الطلبات
             </Link>
-            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+            <Link href="/vendor/earnings/dashboard" className="text-white/60 hover:text-white whitespace-nowrap">
               الأرباح
             </Link>
-            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+            <Link href="/vendor/profile/settings" className="text-white/60 hover:text-white whitespace-nowrap">
               الملف الشخصي
             </Link>
           </div>

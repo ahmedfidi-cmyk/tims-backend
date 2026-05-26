@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <pattern id="lahtha-dark" x="0" y="0" width="800" height="80" patternUnits="userSpaceOnUse">
+      <text x="0" y="55" font-family="Arial, sans-serif" font-size="48" font-weight="900" letter-spacing="6" fill="rgba(255, 255, 255, 0.06)">
+        LAHTHA  ·  LAHTHA  ·  LAHTHA  ·  LAHTHA  ·  LAHTHA  ·  LAHTHA
+      </text>
+    </pattern>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#lahtha-dark)"/>
+</svg>

@@ -1,0 +1,8 @@
+# Use Vercel dashboard "Root Directory" setting → lahtha-click-web
+# This file deploys without Vercel CLI
+node_modules
+.next
+.git
+.env*.local
+README.md
+docs/

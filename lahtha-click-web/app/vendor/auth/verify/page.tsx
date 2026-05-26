@@ -78,8 +78,8 @@ function VerifyContent() {
   const displayError = localError || authError
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-paper-50 px-4">
-      <div className="card w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-lahtha-pattern-dark px-4">
+      <div className="card w-full max-w-md bg-white/95 backdrop-blur">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-ink-900 mb-2">التحقق من الهوية</h1>
           <p className="text-ink-900/60 text-sm break-all">

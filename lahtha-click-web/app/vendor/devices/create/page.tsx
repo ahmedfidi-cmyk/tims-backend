@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import { InventoryItem } from '@/lib/utils/csv-parser'
+import { ImageUploader } from '@/components/ImageUploader'
 
 function formatSar(halalat: number) {
   return (halalat / 100).toLocaleString('ar-SA', {
@@ -27,6 +28,7 @@ export default function CreateDevicePage() {
   const [selectedImei, setSelectedImei] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [images, setImages] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -71,6 +73,7 @@ export default function CreateDevicePage() {
           condition: selected.condition,
           price: priceHalalat,
           description,
+          images,
         }),
       })
       if (!res.ok) throw new Error('Failed')
@@ -86,7 +89,7 @@ export default function CreateDevicePage() {
   const net = price ? parseInt(price, 10) - commission : 0
 
   return (
-    <div className="min-h-screen bg-paper-50">
+    <div className="min-h-screen bg-lahtha-pattern-dark">
       <header className="bg-ink-900 text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
           <div>
@@ -99,14 +102,14 @@ export default function CreateDevicePage() {
         </div>
       </header>
 
-      <nav className="bg-white border-b border-ink-900/10">
+      <nav className="bg-ink-900/80 backdrop-blur border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex gap-4 overflow-x-auto">
-            <Link href="/vendor/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">لوحة التحكم</Link>
-            <Link href="/vendor/inventory/manage" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">المخزون</Link>
-            <Link href="/vendor/devices/list" className="text-coral-500 font-bold border-b-2 border-coral-500 whitespace-nowrap">الإعلانات</Link>
-            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">الطلبات</Link>
-            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">الأرباح</Link>
+            <Link href="/vendor/dashboard" className="text-white/60 hover:text-white whitespace-nowrap">لوحة التحكم</Link>
+            <Link href="/vendor/inventory/manage" className="text-white/60 hover:text-white whitespace-nowrap">المخزون</Link>
+            <Link href="/vendor/devices/list" className="text-gold-500 font-bold border-b-2 border-gold-500 whitespace-nowrap">الإعلانات</Link>
+            <Link href="/vendor/orders/history" className="text-white/60 hover:text-white whitespace-nowrap">الطلبات</Link>
+            <Link href="/vendor/earnings/dashboard" className="text-white/60 hover:text-white whitespace-nowrap">الأرباح</Link>
           </div>
         </div>
       </nav>
@@ -183,6 +186,11 @@ export default function CreateDevicePage() {
                       placeholder="اكتب وصفاً تفصيلياً للجهاز: الحالة، الإكسسوارات، البطارية..."
                       className="w-full px-3 py-2 border border-ink-900/20 rounded-lg focus:outline-none focus:border-coral-500"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-ink-900 mb-2">صور الجهاز</label>
+                    <ImageUploader images={images} onChange={setImages} maxImages={5} maxSizeMB={2} />
                   </div>
                 </div>
               </div>
