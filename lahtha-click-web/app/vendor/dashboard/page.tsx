@@ -39,17 +39,23 @@ export default function VendorDashboard() {
       {/* Navigation */}
       <nav className="bg-white border-b border-ink-900/10">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex gap-4">
-            <Link href="/vendor/dashboard" className="text-coral-500 font-bold border-b-2 border-coral-500">
+          <div className="flex gap-4 overflow-x-auto">
+            <Link href="/vendor/dashboard" className="text-coral-500 font-bold border-b-2 border-coral-500 whitespace-nowrap">
               لوحة التحكم
             </Link>
-            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/inventory/manage" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+              المخزون
+            </Link>
+            <Link href="/vendor/devices/list" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
+              الإعلانات
+            </Link>
+            <Link href="/vendor/orders/history" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
               الطلبات
             </Link>
-            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/earnings/dashboard" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
               الأرباح
             </Link>
-            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900">
+            <Link href="/vendor/profile/settings" className="text-ink-900/60 hover:text-ink-900 whitespace-nowrap">
               الملف الشخصي
             </Link>
           </div>
