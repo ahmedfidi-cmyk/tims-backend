@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 100" width="680" height="100" role="img" aria-label="LAHTHA and CLICK combined logo">
+  <title>LAHTHA × CLICK</title>
+  <desc>Combined ecosystem mark used for the unified platform.</desc>
+  <rect width="680" height="100" fill="transparent"/>
+
+  <!-- LAHTHA -->
+  <circle cx="28" cy="50" r="9" fill="#C8A95E"/>
+  <text x="58" y="62"
+        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+        font-size="42"
+        font-weight="700"
+        fill="#0B1437"
+        letter-spacing="4">LAHTHA</text>
+
+  <!-- Divider -->
+  <line x1="320" y1="22" x2="320" y2="78" stroke="#D1D5DB" stroke-width="1"/>
+
+  <!-- CLICK -->
+  <path d="M 358 30 L 348 30 L 348 70 L 358 70" stroke="#FF6B35" stroke-width="5" fill="none" stroke-linecap="square"/>
+  <text x="380" y="62"
+        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+        font-size="38"
+        font-weight="800"
+        fill="#0B1437"
+        letter-spacing="5">CLICK</text>
+  <path d="M 600 30 L 610 30 L 610 70 L 600 70" stroke="#FF6B35" stroke-width="5" fill="none" stroke-linecap="square"/>
+</svg>
