@@ -1,6 +1,6 @@
 import { mockVendor } from '@/lib/mock/vendor-data'
 
-const MOCK_CODES: Record<string, string> = {}
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export async function POST(req: Request) {
   const { email, code } = await req.json()
@@ -8,6 +8,13 @@ export async function POST(req: Request) {
   if (!email || !code) {
     return Response.json(
       { error: 'Email and code required' },
+      { status: 400 }
+    )
+  }
+
+  if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
+    return Response.json(
+      { error: 'البريد الإلكتروني غير صحيح' },
       { status: 400 }
     )
   }
