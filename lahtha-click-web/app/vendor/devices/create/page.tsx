@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FormEvent, useEffect, useState } from 'react'
 import { InventoryItem } from '@/lib/utils/csv-parser'
+import { ImageUploader } from '@/components/ImageUploader'
 
 function formatSar(halalat: number) {
   return (halalat / 100).toLocaleString('ar-SA', {
@@ -27,6 +28,7 @@ export default function CreateDevicePage() {
   const [selectedImei, setSelectedImei] = useState('')
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
+  const [images, setImages] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -71,6 +73,7 @@ export default function CreateDevicePage() {
           condition: selected.condition,
           price: priceHalalat,
           description,
+          images,
         }),
       })
       if (!res.ok) throw new Error('Failed')
@@ -183,6 +186,11 @@ export default function CreateDevicePage() {
                       placeholder="اكتب وصفاً تفصيلياً للجهاز: الحالة، الإكسسوارات، البطارية..."
                       className="w-full px-3 py-2 border border-ink-900/20 rounded-lg focus:outline-none focus:border-coral-500"
                     />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-ink-900 mb-2">صور الجهاز</label>
+                    <ImageUploader images={images} onChange={setImages} maxImages={5} maxSizeMB={2} />
                   </div>
                 </div>
               </div>

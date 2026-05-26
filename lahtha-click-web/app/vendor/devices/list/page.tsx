@@ -143,8 +143,12 @@ export default function DevicesListPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(device => (
               <div key={device.id} className="card hover:shadow-lg transition">
-                <div className="bg-ink-900/5 h-32 rounded-lg mb-3 flex items-center justify-center text-5xl">
-                  📱
+                <div className="bg-ink-900/5 h-32 rounded-lg mb-3 flex items-center justify-center text-5xl overflow-hidden">
+                  {device.images && device.images.length > 0 ? (
+                    <img src={device.images[0]} alt={device.model} className="w-full h-full object-cover" />
+                  ) : (
+                    '📱'
+                  )}
                 </div>
                 <div className="flex justify-between items-start mb-2">
                   <div>

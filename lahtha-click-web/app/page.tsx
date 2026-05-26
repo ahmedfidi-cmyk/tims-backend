@@ -101,6 +101,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-ink-900 text-white py-6 text-center">
         <p>© 2026 LAHTHA & CLICK. جميع الحقوق محفوظة.</p>
+        <p className="text-xs text-white/40 mt-2">
+          <a href="/admin/auth/login" className="hover:text-white/80">دخول الإدارة</a>
+        </p>
       </footer>
     </div>
   );
