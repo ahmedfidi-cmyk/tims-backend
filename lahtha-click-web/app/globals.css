@@ -20,6 +20,21 @@
 }
 
 @layer utilities {
+  .bg-lahtha-pattern {
+    background-image: url('/lahtha-pattern.svg');
+    background-repeat: repeat;
+    background-size: 600px 600px;
+  }
+  .bg-lahtha-pattern-dark {
+    background-color: #0b1437;
+    background-image: url('/lahtha-pattern-dark.svg');
+    background-repeat: repeat;
+    background-size: 800px 800px;
+  }
+  .bg-lahtha-ink {
+    background: linear-gradient(135deg, #0b1437 0%, #142152 100%);
+  }
+
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-colors;
   }

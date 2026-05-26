@@ -27,8 +27,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-ink-900 px-4">
-      <div className="card w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-lahtha-pattern-dark px-4">
+      <div className="card w-full max-w-md bg-white/95 backdrop-blur">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-ink-900 mb-1">👑 لوحة الإدارة</h1>
           <p className="text-ink-900/60 text-sm">LAHTHA & CLICK</p>
