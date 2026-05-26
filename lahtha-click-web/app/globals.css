@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-900: #0b1437;
+  --color-paper-50: #fafafa;
+  --color-gold-500: #c8a95e;
+  --color-coral-500: #ff6b35;
+  --font-sans: "IBM Plex Sans Arabic", "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    direction: rtl;
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-paper-50 text-ink-900;
+  }
+}
+
+@layer utilities {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors bg-coral-500 text-white hover:opacity-90;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors border border-ink-900/10 text-ink-900 hover:bg-ink-900 hover:text-paper-50;
+  }
+
+  .card {
+    @apply border border-ink-900/10 rounded-lg bg-white p-4 shadow-sm;
+  }
+
+  .price {
+    @apply font-bold text-xl text-coral-500;
+  }
+}

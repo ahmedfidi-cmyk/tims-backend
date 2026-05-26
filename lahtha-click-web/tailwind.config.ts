@@ -36,6 +36,28 @@ const config: Config = {
         sm: '0 1px 2px rgba(11,20,55,0.05)',
         md: '0 4px 12px rgba(11,20,55,0.08)',
         lg: '0 12px 32px rgba(11,20,55,0.12)',
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        ink: { 900: '#0B1437' },
+        paper: { 50: '#FAFAFA' },
+        gold: { 500: '#C8A95E' },
+        coral: { 500: '#FF6B35' },
+      },
+      fontFamily: {
+        sans: [
+          '"IBM Plex Sans Arabic"',
+          '"Inter"',
+          'system-ui',
+          'sans-serif',
+        ],
       },
     },
   },
@@ -43,3 +65,6 @@ const config: Config = {
 };
 
 export default config;
+}
+
+export default config
