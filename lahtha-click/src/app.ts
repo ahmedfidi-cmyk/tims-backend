@@ -1,9 +1,12 @@
-import express, { type Express, type Request } from 'express';
+import express, { type Express } from 'express';
 import pinoHttp from 'pino-http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { correlationId } from './middleware/correlation-id.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
 import { logger } from './lib/logger.js';
+
+type RequestWithCorrelation = IncomingMessage & { correlationId?: string };
 
 export function createApp(): Express {
   const app = express();
@@ -12,7 +15,9 @@ export function createApp(): Express {
   app.use(
     pinoHttp({
       logger,
-      customProps: (req) => ({ correlationId: (req as Request).correlationId }),
+      customProps: (req: IncomingMessage, _res: ServerResponse) => ({
+        correlationId: (req as RequestWithCorrelation).correlationId,
+      }),
     }),
   );
   app.use(express.json({ limit: '1mb' }));
