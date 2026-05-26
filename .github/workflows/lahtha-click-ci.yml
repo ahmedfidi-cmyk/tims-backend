@@ -1,0 +1,62 @@
+name: lahtha-click CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lahtha-click/**'
+      - '.github/workflows/lahtha-click-ci.yml'
+  pull_request:
+    paths:
+      - 'lahtha-click/**'
+      - '.github/workflows/lahtha-click-ci.yml'
+
+defaults:
+  run:
+    working-directory: lahtha-click
+
+jobs:
+  build-test-migrate:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      MONGO_URI: mongodb://localhost:27017
+      MONGO_DB_NAME: lahtha_click_ci
+      LOG_LEVEL: silent
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Apply migrations
+        run: npm run migrate:up
+
+      - name: Verify migration status
+        run: npm run migrate:status
