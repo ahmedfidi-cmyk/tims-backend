@@ -1,25 +1,36 @@
-import express, { type Express } from 'express';
-import pinoHttp from 'pino-http';
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import express, {
+  type Express,
+  type NextFunction,
+  type Request,
+  type Response,
+} from 'express';
 import { correlationId } from './middleware/correlation-id.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
 import { logger } from './lib/logger.js';
 
-type RequestWithCorrelation = IncomingMessage & { correlationId?: string };
+function requestLogger(req: Request, res: Response, next: NextFunction): void {
+  const start = Date.now();
+  res.on('finish', () => {
+    logger.info(
+      {
+        correlationId: req.correlationId,
+        method: req.method,
+        path: req.path,
+        status: res.statusCode,
+        durationMs: Date.now() - start,
+      },
+      'request',
+    );
+  });
+  next();
+}
 
 export function createApp(): Express {
   const app = express();
 
   app.use(correlationId);
-  app.use(
-    pinoHttp({
-      logger,
-      customProps: (req: IncomingMessage, _res: ServerResponse) => ({
-        correlationId: (req as RequestWithCorrelation).correlationId,
-      }),
-    }),
-  );
+  app.use(requestLogger);
   app.use(express.json({ limit: '1mb' }));
 
   app.use(healthRouter);
