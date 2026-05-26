@@ -1,189 +1,207 @@
-# الهوية البصرية — LAHTHA & CLICK
-## Brand Identity Proposal
+# Brand Identity — LAHZA & CLICK
+## Bold Minimalism
 
-> اقتراح أولي للمالك. بعد الموافقة، يُحوَّل إلى ملف Figma رسمي + brand guidelines PDF.
-
----
-
-## 1. الاستراتيجية والموقع (Strategic Positioning)
-
-| | LAHTHA | CLICK |
-|---|---|---|
-| **الاسم العربي** | لحظة | كلِك |
-| **الجوهر** | "اللحظة الموثوقة" — لحظة شراء واحدة، ضمان كامل | "السوق السريع" — قرار في كلكة واحدة |
-| **الجمهور** | مستهلك نهائي + شركات (B2C/B2B) | تجار الجملة وإعادة البيع (B2B) |
-| **الشخصية** | متّزن، فاخر، موثوق، أبل-aligned | حيوي، سريع، عملي، مباشر |
-| **الوعد** | "هاتفك الجديد، بسعر شفاف، بفاتورة معتمدة" | "بِع واشترِ بسرعة، السيولة في لحظتها" |
-| **الجار البصري** | Apple, Nice One, Jarir للنخبة | StockX, Whatnot, Tabby (energy) |
-
-### المظلة الموحدة
-المنصتان كيان واحد بهويتين متجاورتين: نفس **الأساس البصري** (نفس الأزرق الأساسي، نفس نظام التايبوجرافي)، باختلاف **لون اللهجة** ومستوى الحيوية.
+> Visual identity proposal for owner review. Direction: **Bold Minimalism** — restraint with intention.
 
 ---
 
-## 2. لوحة الألوان (Color Palette)
+## 1. The Idea
 
-### الأساسية (مشتركة)
+**LAHZA** (لحظة, "the moment") is the trustworthy front door — clean, decisive, premium. **CLICK** is the marketplace pulse — sharp, fast, marketplace-energy. They share the same DNA. Same typography. Same accent. The brand never shouts. It states.
 
-| Token | Hex | Use |
-|---|---|---|
-| `--color-ink-900` | `#0B1437` | الخلفية الداكنة، النصوص الرئيسية، شعارات |
-| `--color-ink-700` | `#1F2A55` | عناوين ثانوية |
-| `--color-ink-500` | `#3A4775` | نص ثانوي على خلفية فاتحة |
-| `--color-paper-50` | `#FAFAF7` | الخلفية الفاتحة الافتراضية |
-| `--color-paper-100` | `#F1F0EA` | الأسطح المرتفعة |
-| `--color-neutral-500` | `#6B7280` | نصوص مساعدة |
-| `--color-neutral-300` | `#D1D5DB` | الحدود والفواصل |
+The system is built on three rules:
 
-### لهجة LAHTHA (الذهب الفاخر)
-
-| Token | Hex | Use |
-|---|---|---|
-| `--lahtha-gold-500` | `#C8A95E` | accent، CTA ثانوي، شارات الجودة |
-| `--lahtha-gold-700` | `#A88B3F` | hover state |
-| `--lahtha-gold-100` | `#F5EBCF` | خلفية لطيفة (badges) |
-
-> **لماذا الذهب؟** يربط الإحساس الفاخر بالموروث الخليجي دون مبالغة. يبدو ممتازاً على الأزرق الداكن.
-
-### لهجة CLICK (المرجاني الحيوي)
-
-| Token | Hex | Use |
-|---|---|---|
-| `--click-coral-500` | `#FF6B35` | CTA رئيسي، lampes إشعار حية، أسعار المزادات |
-| `--click-coral-700` | `#D4501F` | hover state |
-| `--click-coral-100` | `#FFE2D4` | خلفية ناعمة |
-
-> **لماذا المرجاني؟** يعكس الإلحاح والسرعة دون أن يبدو عدوانياً (الأحمر الصرف). يتناقض جيداً مع الأزرق الداكن.
-
-### ألوان وظيفية (مشتركة)
-
-| Token | Hex | Use |
-|---|---|---|
-| `--success-500` | `#10B981` | نجاح، تأكيد دفع |
-| `--warning-500` | `#F59E0B` | تحذير، KYC pending |
-| `--danger-500` | `#EF4444` | خطأ، رفض |
-| `--info-500` | `#3B82F6` | معلومة، إشعار محايد |
+1. **Two colors.** Ink + paper. One accent. Nothing else.
+2. **Type does the work.** Wordmarks are massive. Type is the design.
+3. **Whitespace is a feature.** If in doubt, add more space.
 
 ---
 
-## 3. التايبوجرافي (Typography)
+## 2. Color System
 
-### العائلات
+Three colors. That is the whole palette.
 
-**العربي:** `IBM Plex Sans Arabic` — مفتوحة المصدر، خطوط حديثة بدون زوائد، تدعم الأرقام العربية والإنجليزية.
+| Role | Token | Hex | Use |
+|---|---|---|---|
+| **Ink** | `--ink` | `#0A0A0A` | All text, all wordmarks, all primary surfaces on dark mode. Near-black (not pure `#000`) for screen comfort. |
+| **Paper** | `--paper` | `#FFFFFF` | Default surface. Generous use. |
+| **Accent** | `--accent` | `#FF4D00` | A single high-energy orange. **Used sparingly** — one accent per screen, max. CTAs, key indicators, the underline beneath each wordmark. |
 
-**اللاتيني:** `Inter` — مفتوحة المصدر، صُممت للشاشات، Apple-adjacent من ناحية الحس.
+Functional neutrals (used quietly, never decoratively):
 
-**الأرقام/الأسعار:** `Inter` بـ `font-variant-numeric: tabular-nums` لمحاذاة الأرقام في الجداول والأسعار.
+| Token | Hex | Use |
+|---|---|---|
+| `--ink-60` | `#666666` | Secondary text |
+| `--ink-20` | `#E5E5E5` | Hairlines, dividers |
+| `--success` | `#00A86B` | Confirmation |
+| `--danger` | `#E11D2A` | Errors |
 
-### السلم (Type Scale)
+> **Why one accent?** Bold minimalism is about restraint. Two accents = decorated. One accent = decisive. The `#FF4D00` is warm enough to feel KSA-rooted, electric enough to feel modern.
+
+---
+
+## 3. Typography
+
+One family. One job. **Size carries the meaning.**
+
+- **Latin / numerics:** [Inter](https://rsms.me/inter/) — open source, screen-optimized.
+- **Arabic:** [IBM Plex Sans Arabic](https://www.ibm.com/plex/) — open source, sits cleanly next to Inter.
+
+### Type scale (intentionally aggressive)
 
 | Token | px | Use |
 |---|---|---|
-| `text-xs` | 12 | تعليقات صغيرة، captions |
-| `text-sm` | 14 | نص ثانوي، tooltips |
-| `text-base` | 16 | الجسم الافتراضي |
-| `text-lg` | 18 | نص بارز |
-| `text-xl` | 20 | عناوين فرعية |
-| `text-2xl` | 24 | عناوين بطاقات |
-| `text-3xl` | 30 | عناوين أقسام |
-| `text-4xl` | 36 | عناوين صفحات |
-| `text-5xl` | 48 | hero headlines |
+| `text-xs` | 12 | captions only |
+| `text-sm` | 14 | metadata |
+| `text-base` | 16 | body |
+| `text-lg` | 20 | secondary headlines |
+| `text-2xl` | 32 | section heads |
+| `text-4xl` | 56 | page heads |
+| `text-6xl` | 80 | hero |
+| `text-8xl` | 112 | wordmark on the splash |
 
-### الأوزان
-`400` regular · `500` medium (الأرقام والـ labels) · `600` semibold (العناوين) · `700` bold (الـ hero)
+Weights: `400` regular, `600` semibold for emphasis, **`900` black for all hero and wordmark use**.
+
+Numerics use `font-variant-numeric: tabular-nums`. Prices align in tables.
 
 ---
 
-## 4. اللوقو (Logos)
+## 4. Logos
 
-ملفات SVG في [`./logos/`](./logos/) — قابلة للتكبير دون فقدان جودة.
+Bold minimalism logos are wordmarks. No icon. No mascot. The wordmark *is* the mark.
 
-### LAHTHA
-- **النقطة الذهبية**: ترمز إلى "اللحظة" — لحظة الشراء، لحظة الموثوقية.
-- **الـ wordmark** بحروف لاتينية كبيرة، spacing مفتوح للإحساس الفاخر.
-- **التاجلاين العربي**: "لحظة · موثوق"
+### LAHZA
+A short orange block sits beneath the **L** — the "moment." Small. Decisive.
 
-![LAHTHA Logo](./logos/lahtha.svg)
+![LAHZA logo](./logos/lahza.svg)
 
 ### CLICK
-- **الأقواس البرتقالية** `[ ]` تحيط الاسم — تعطي إحساس السوق/الـ marketplace.
-- **wordmark** أثقل وزناً من LAHTHA (font-weight 800) لإيصال الحيوية والسرعة.
-- **التاجلاين العربي**: "سوق التجار"
+A full-width orange block underlines the entire word — the "complete action."
 
-![CLICK Logo](./logos/click.svg)
+![CLICK logo](./logos/click.svg)
 
-### الشعار الموحد
-يُستخدم في الـ footer، الصفحة الرئيسية الموحدة، والمراسلات الرسمية.
+### LAHZA × CLICK
+The ecosystem mark. Used in footers and unified surfaces.
 
-![LAHTHA × CLICK Combined](./logos/lahtha-click-combined.svg)
+![LAHZA × CLICK combined](./logos/lahza-click-combined.svg)
 
-### قواعد الاستخدام
-| | افعل | لا تفعل |
-|---|---|---|
-| **اللون** | استخدم الأزرق الأساسي على فاتح، أو أبيض على داكن | لا تستخدم ألوان عشوائية للـ wordmark |
-| **المسافة** | اترك مسافة آمنة = ارتفاع الحرف "L" حول الشعار | لا تضع نص أو عنصر داخل المسافة الآمنة |
-| **التشويه** | حافظ على النسبة | لا تمدد، لا تدوّر، لا تضف ظلال |
-| **الحجم الأدنى** | 80px عرضاً للشاشة، 20mm للطباعة | لا تستخدم أصغر من ذلك |
+### Usage rules
+| Do | Don't |
+|---|---|
+| Use the ink-on-paper version on white backgrounds | Don't add a stroke, shadow, or gradient |
+| Use the paper-on-ink version on the `--ink` background | Don't rotate, skew, or distort |
+| Keep clear space ≥ `cap-height` of the wordmark on all sides | Don't place text or graphics inside the clear-space |
+| Minimum width: 80px on screen, 25mm in print | Don't reproduce smaller |
+| Keep the accent block proportional to the wordmark | Don't recolor the block to any non-accent value |
 
 ---
 
-## 5. الـ Voice & Tone (نبرة الخطاب)
+## 5. Voice & Tone
 
-### المبادئ العامة
-1. **العربية أولاً، لكن دون تكلّف.** نتحدث كما يتحدث الناس، ليس كنشرة أخبار.
-2. **الأرقام والحقائق قبل الصفات.** "iPhone 17 Pro 256GB · مختوم · ضمان سنة" أفضل من "أفضل آيفون في السوق".
-3. **شفافية تامة.** نذكر العمولة، نذكر الرسوم، نذكر متى يصل الجهاز.
-4. **بدون استعجال مفتعل.** لا "عرض ينتهي خلال 3 دقائق" — هذا ليس برنامج خصومات.
+### Universal principles
+1. **Arabic first, but plain-spoken.** We write the way people actually speak — never news-anchor formal.
+2. **Numbers and facts before adjectives.** "iPhone 17 Pro · 256GB · مختوم · ضمان سنة" beats "أفضل آيفون متاح".
+3. **Total transparency.** Commission, fees, delivery dates: stated up front. No surprises in checkout.
+4. **No manufactured urgency.** No "ends in 3 minutes" theatrics. We are not a flash-sale app.
 
-### اختلافات النبرة
-- **LAHTHA**: هادئة، واثقة، تشبه شخصية مدير مبيعات أبل ستور. مثال: "جهازك جاهز للاستلام في فرع الرياض."
-- **CLICK**: أكثر مباشرة وحيوية، تشبه شخصية مدير سوق نشط. مثال: "بِعت! 4,850 ريال. تحويل بنكي خلال 24 ساعة."
+### Brand-specific voice
+- **LAHZA**: calm, certain, the way an Apple Store senior speaks. *"جهازك جاهز في فرع الرياض."*
+- **CLICK**: direct, alive, the way a busy market manager speaks. *"بِعت! 4,850 ريال. تحويل خلال 24 ساعة."*
 
-### مفردات نستخدمها
-| نستخدم | بدلاً من |
+### Words we use
+| Use | Don't use |
 |---|---|
 | "جهازك" | "المنتج" |
-| "العملية" / "الطلب" | "الـ Transaction" |
-| "موثّق" | "Verified ✓" (في النصوص العربية) |
-| "السوق" / "كلِك" | "Marketplace" |
-| "تاجر" | "Dealer" (نتجنب الترجمة الحرفية) |
+| "العملية" / "الطلب" | "Transaction" |
+| "موثّق" | "Verified ✓" inside Arabic |
+| "سوق" / "كلِك" | "Marketplace" |
+| "تاجر" | Direct transliteration of "Dealer" |
 
 ---
 
-## 6. المسافات والزوايا (Spacing & Radius)
+## 6. Layout & Spacing
 
-### Spacing scale (نظام 4px)
-`4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 64 · 80 · 96`
+Bold minimalism = generous whitespace. **8px base grid.**
 
-### Border radius
+Spacing scale: `4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128 · 192`.
+
+| Surface | Minimum padding | Notes |
+|---|---|---|
+| Mobile screen | 24px sides | |
+| Desktop content | 48px sides | Maximum content width: 1280px |
+| Card | 32px all around | |
+| Hero section | 128px vertical | Bigger than you think. |
+
+### Radius
 | Token | px | Use |
 |---|---|---|
-| `radius-none` | 0 | tables, technical surfaces |
-| `radius-sm` | 4 | inputs |
-| `radius-md` | 8 | buttons, badges |
-| `radius-lg` | 12 | cards |
-| `radius-xl` | 16 | modals, sheets |
-| `radius-full` | 9999 | avatars, pills |
+| `radius-none` | 0 | Tables, structural surfaces |
+| `radius-sm` | 4 | Inputs |
+| `radius-md` | 8 | Buttons, badges |
+| `radius-lg` | 16 | Cards, modals |
+| `radius-full` | 9999 | Avatars |
 
-### الظلال (Elevation)
+### Elevation (used minimally)
 | Token | CSS | Use |
 |---|---|---|
-| `shadow-sm` | `0 1px 2px rgba(11,20,55,0.05)` | inputs, subtle buttons |
-| `shadow-md` | `0 4px 12px rgba(11,20,55,0.08)` | cards, dropdowns |
-| `shadow-lg` | `0 12px 32px rgba(11,20,55,0.12)` | modals |
+| `shadow-sm` | `0 1px 2px rgba(10,10,10,0.06)` | Hover on inputs |
+| `shadow-md` | `0 8px 24px rgba(10,10,10,0.08)` | Dropdowns, popovers |
+| `shadow-lg` | `0 24px 56px rgba(10,10,10,0.12)` | Modals only |
+
+> A bold-minimalist UI uses **borders and whitespace** to create hierarchy, not shadows.
 
 ---
 
-## 7. الأيقونة (App Icon) — مقترح أولي
-رمز هندسي بسيط: **دائرة ذهبية صغيرة على مربع بزوايا منحنية بلون الأزرق الأساسي**. تحاكي ساعة في لحظة واحدة. نفس المنطق للنسخة العربية والإنجليزية.
+## 7. Iconography
 
-(يُنفّذ كأصل منفصل بأحجام متعددة قبل النشر على متجر التطبيقات.)
+- Line icons only. 1.5px stroke.
+- 24×24 grid. Round caps and joins.
+- Single color: `--ink` or `--accent`.
+- Source: [Lucide](https://lucide.dev) (open source, MIT) — consistent line weight, RTL-friendly.
 
 ---
 
-## 8. الخطوة التالية
-- [ ] مراجعة المالك لاختيارات الألوان والـ tone
-- [ ] إعداد Figma library رسمية بالـ tokens
-- [ ] تصدير اللوقو بصيغ متعددة (PNG شفاف، طباعة CMYK)
-- [ ] تطبيق النظام في الـ frontend (ADR-001)
+## 8. Application Examples
+
+### Splash / first screen
+```
+[                                                          ]
+[                                                          ]
+[                                                          ]
+[                  LAHZA                                   ]
+[                  ▬▬▬                                     ]
+[                                                          ]
+[                  لحظة                                    ]
+[                                                          ]
+[                                                          ]
+[                                                          ]
+```
+Wordmark at `text-8xl`. Accent block. Arabic at `text-lg`. The whole screen is whitespace and one word.
+
+### Product card
+- Image: 1:1, no border-radius beyond `radius-lg`.
+- Title at `text-lg` weight `600`.
+- Price at `text-2xl` weight `900` — the visual anchor.
+- One badge maximum (e.g., "موثّق").
+- No drop shadow. Just a 1px `--ink-20` border.
+
+### Primary CTA
+- Background: `--ink`, text: `--paper`. *Or* background: `--accent`, text: `--paper`.
+- Height: 48px (mobile), 56px (desktop).
+- Padding: 24px horizontal.
+- Weight: `600`, never `900` (block ink shouts; the button doesn't have to).
+
+---
+
+## 9. App Icon (preview)
+
+A monochrome ink-on-paper tile with a single `--accent` block — the same visual hook as the LAHZA wordmark's underline. Produced as a separate asset bundle in the launch prep workstream.
+
+---
+
+## 10. What's Next
+
+1. [ ] Owner sign-off on direction (bold minimalism, this palette, LAHZA spelling).
+2. [ ] Codify tokens in `lahtha-click-web/` (see [`design-tokens.md`](./design-tokens.md)).
+3. [ ] Production Figma library + brand PDF (out of scope for this PR).
+4. [ ] App icon set (PNG @ 1×/2×/3×, SVG, ICO) when frontend ships.
