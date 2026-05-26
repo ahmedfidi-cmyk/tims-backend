@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink-900: 11 20 55;
+    --ink-700: 31 42 85;
+    --ink-500: 58 71 117;
+    --paper-50: 250 250 247;
+    --paper-100: 241 240 234;
+    --gold-500: 200 169 94;
+    --gold-100: 245 235 207;
+    --coral-500: 255 107 53;
+    --coral-100: 255 226 212;
+  }
+
+  html {
+    direction: rtl;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+
+  body {
+    background: rgb(var(--paper-50));
+    color: rgb(var(--ink-900));
+    font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'tnum';
+  }
+
+  h1, h2, h3 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-base transition-colors duration-150;
+  }
+  .btn-primary {
+    @apply btn bg-ink-900 text-white hover:bg-ink-700;
+  }
+  .btn-secondary {
+    @apply btn bg-paper-100 text-ink-900 hover:bg-paper-50 border border-ink-900/10;
+  }
+  .btn-gold {
+    @apply btn bg-gold-500 text-ink-900 hover:opacity-90;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-ink-900/5;
+  }
+  .price-sar::after {
+    content: ' ر.س';
+    font-size: 0.75em;
+    color: rgb(var(--ink-500));
+    margin-inline-start: 0.25em;
+  }
+}
