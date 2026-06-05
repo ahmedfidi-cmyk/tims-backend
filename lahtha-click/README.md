@@ -65,6 +65,91 @@ The acting principal is taken from the `x-actor-id` header; `x-correlation-id`
 flows into every audit record. Persistence is in the `vendors` and
 `vendor_audit_log` collections (see the `*-vendor-approval` migration).
 
+> The vendor-approval states **are** the KYC state machine:
+> `PENDING_OWNERSHIP_PROOF` ≈ `AWAITING_DOCUMENTS`, `PENDING_REVIEW` ≈ `UNDER_REVIEW`.
+
+### Identity, OTP auth & sessions (Workstream 2 — IAM)
+
+Passwordless vendor authentication with scoped, opaque sessions. Built with
+hexagonal ports & adapters: pure use cases (`use-cases.ts`) depend on interfaces,
+with Mongo/Entra adapters in production and in-memory adapters in tests.
+
+**Scope model — LAHTHA login ≠ CLICK access.** A session gets only base scopes
+(`lahtha:access`, `lahtha:kyc:write`) at login. The elevated scopes
+(`click:access`, `click:wallet:write`, `settlement:write`) are granted **only when
+both** hold: the vendor is `LAHTHA_APPROVED` (Rule 4) **and** the session has
+passed MFA step-up.
+
+```
+register → request OTP → verify OTP (login, base scopes)
+                                   └→ MFA step-up (Entra) ──┐
+        vendor LAHTHA_APPROVED ─────────────────────────────┴→ elevated scopes
+```
+
+| Method & path | Purpose |
+|---|---|
+| `POST /iam/vendors` | Register a vendor identity (business name, email, phone). |
+| `POST /iam/auth/otp/request` | Issue a one-time code (SMS/email). |
+| `POST /iam/auth/otp/verify` | Verify the code → opaque session (HttpOnly cookie + bearer token). |
+| `POST /iam/auth/mfa/step-up` | Verify a Microsoft Entra OIDC token → elevate the session. |
+| `GET /iam/auth/session` | Current session (whoami). |
+| `POST /iam/auth/logout` | Revoke the session. |
+| `GET /iam/click/ping` | Demo route gated on `click:access` (proves the gate). |
+
+**Security properties:** OTP codes are stored only as `HMAC(code, IAM_OTP_PEPPER)`,
+verified in constant time with an attempt budget and a 5-minute expiry; session
+tokens are random 256-bit values stored only as SHA-256 hashes, with a 12h sliding
+/ 7d absolute lifetime and instant revocation. OTP challenges and sessions also
+carry MongoDB TTL indexes. Auditable events (`VENDOR_OTP_REQUESTED`, `LOGIN_SUCCESS`,
+`MFA_VERIFIED`, `LOGOUT`, `AUTHZ_DENIED`, …) are emitted via the injected Pino logger.
+
+**MFA (Microsoft Entra ID):** `EntraMfaVerifier` validates an OIDC ID token's RS256
+signature against the tenant JWKS (no extra deps — Node imports JWKs directly) plus
+`iss`/`aud`/`exp`/`nbf`/`tid` claims. Configure via `ENTRA_TENANT_ID` /
+`ENTRA_CLIENT_ID` (/ `ENTRA_ISSUER`); when unset, step-up fails closed. A live
+tenant is required to exercise it end-to-end — unit tests use a fake verifier.
+
+Collections: `vendor_identities`, `otp_challenges`, `sessions` (see the
+`*-iam-identity-sessions` migration).
+
+### RBAC — persons, principals, roles & permission checks (Workstream 2 — IAM)
+
+Role-based access control per `docs/architecture/iam-rbac.md`. The role/permission
+catalog is an in-code source of truth (`rbac/rbac-policy.ts`, validated at module
+load); persons, users (principals) and role grants are persisted.
+
+- **Persons & multi-principal users:** one human (`person`) can hold several
+  principals (`customer` + `vendor` + `dealer`), unique per `(person, principalType)`.
+  National ids are stored only as an HMAC hash, never raw.
+- **Seed roles** (e.g. `vendor.owner`, `dealer.bidder`, `admin.compliance`) map to
+  `{domain}.{resource}.{action}` permissions. A role is grantable only to its
+  matching principal type.
+- **Effective permissions** are the union over granted roles — but a non-active user
+  (pending KYC / suspended / revoked) has **none**.
+- **User status state machine:** `pending_kyc → active → suspended ⇄ active`, and
+  `→ revoked` (terminal).
+- **`requirePermission(service, perm)`** middleware resolves the actor (Phase-1:
+  `x-user-id` header), and records every decision (allow/deny) in `access_audit`
+  with the correlation id.
+
+| Method & path | Purpose |
+|---|---|
+| `GET /iam/roles` | Seed role/permission catalog. |
+| `POST /iam/persons` | Create a person. |
+| `POST /iam/persons/:id/users` | Create a principal (user) for a person. |
+| `GET /iam/users/:id` | User + roles + effective permissions. |
+| `POST /iam/users/:id/roles` | Grant a role (idempotent). |
+| `DELETE /iam/users/:id/roles/:roleId` | Revoke a role. |
+| `POST /iam/users/:id/status` | Apply a status transition (`ACTIVATE`/`SUSPEND`/`REINSTATE`/`REVOKE`). |
+| `GET /iam/access-audit` | Audit log — gated on `platform.audit.read`. |
+| `GET /iam/rbac/ping` | Demo route gated on `platform.read_all`. |
+
+Collections: `persons`, `users`, `user_roles`, `access_audit` (see the `*-iam-rbac`
+migration). Roles/permissions are not persisted (in-code catalog).
+
+> The management endpoints above are open in this slice; they will be gated by
+> `requirePermission` once sessions carry a `user_id` (auth↔user bridge).
+
 ## Testing
 
 ```bash

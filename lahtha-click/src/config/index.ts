@@ -7,6 +7,15 @@ const ConfigSchema = z.object({
   MONGO_DB_NAME: z.string().min(1),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   SERVICE_NAME: z.string().default('lahtha-click'),
+
+  // IAM (identity + sessions). The OTP pepper keys the HMAC of one-time codes;
+  // it MUST be overridden with a secret outside local development.
+  IAM_OTP_PEPPER: z.string().min(1).default('dev-otp-pepper-change-me'),
+
+  // Microsoft Entra ID (MFA step-up). When unset, MFA fails closed.
+  ENTRA_TENANT_ID: z.string().optional(),
+  ENTRA_CLIENT_ID: z.string().optional(),
+  ENTRA_ISSUER: z.string().optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
