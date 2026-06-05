@@ -112,6 +112,44 @@ tenant is required to exercise it end-to-end — unit tests use a fake verifier.
 Collections: `vendor_identities`, `otp_challenges`, `sessions` (see the
 `*-iam-identity-sessions` migration).
 
+### RBAC — persons, principals, roles & permission checks (Workstream 2 — IAM)
+
+Role-based access control per `docs/architecture/iam-rbac.md`. The role/permission
+catalog is an in-code source of truth (`rbac/rbac-policy.ts`, validated at module
+load); persons, users (principals) and role grants are persisted.
+
+- **Persons & multi-principal users:** one human (`person`) can hold several
+  principals (`customer` + `vendor` + `dealer`), unique per `(person, principalType)`.
+  National ids are stored only as an HMAC hash, never raw.
+- **Seed roles** (e.g. `vendor.owner`, `dealer.bidder`, `admin.compliance`) map to
+  `{domain}.{resource}.{action}` permissions. A role is grantable only to its
+  matching principal type.
+- **Effective permissions** are the union over granted roles — but a non-active user
+  (pending KYC / suspended / revoked) has **none**.
+- **User status state machine:** `pending_kyc → active → suspended ⇄ active`, and
+  `→ revoked` (terminal).
+- **`requirePermission(service, perm)`** middleware resolves the actor (Phase-1:
+  `x-user-id` header), and records every decision (allow/deny) in `access_audit`
+  with the correlation id.
+
+| Method & path | Purpose |
+|---|---|
+| `GET /iam/roles` | Seed role/permission catalog. |
+| `POST /iam/persons` | Create a person. |
+| `POST /iam/persons/:id/users` | Create a principal (user) for a person. |
+| `GET /iam/users/:id` | User + roles + effective permissions. |
+| `POST /iam/users/:id/roles` | Grant a role (idempotent). |
+| `DELETE /iam/users/:id/roles/:roleId` | Revoke a role. |
+| `POST /iam/users/:id/status` | Apply a status transition (`ACTIVATE`/`SUSPEND`/`REINSTATE`/`REVOKE`). |
+| `GET /iam/access-audit` | Audit log — gated on `platform.audit.read`. |
+| `GET /iam/rbac/ping` | Demo route gated on `platform.read_all`. |
+
+Collections: `persons`, `users`, `user_roles`, `access_audit` (see the `*-iam-rbac`
+migration). Roles/permissions are not persisted (in-code catalog).
+
+> The management endpoints above are open in this slice; they will be gated by
+> `requirePermission` once sessions carry a `user_id` (auth↔user bridge).
+
 ## Testing
 
 ```bash
