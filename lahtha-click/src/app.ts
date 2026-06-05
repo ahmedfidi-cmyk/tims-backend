@@ -7,6 +7,7 @@ import express, {
 import { correlationId } from './middleware/correlation-id.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
+import { createLahthaVendorRouter } from './domains/lahtha/vendor/index.js';
 import { logger } from './lib/logger.js';
 
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -35,9 +36,9 @@ export function createApp(): Express {
 
   app.use(healthRouter);
 
-  // Domain routers will be mounted here as workstreams 2+ ship.
-  // app.use('/lahtha', lahthaRouter);
-  // app.use('/click',  clickRouter);
+  // LAHTHA domain (Workstream 2 — IAM): vendor approval lifecycle.
+  app.use('/lahtha', createLahthaVendorRouter());
+  // app.use('/click',  clickRouter);  // future
 
   app.use(errorHandler);
   return app;
