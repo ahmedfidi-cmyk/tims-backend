@@ -28,6 +28,8 @@ const identitySchema = new Schema<VendorIdentity>(
     businessName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
+    personId: { type: String, required: true },
+    userId: { type: String, required: true },
     createdAt: { type: Date, required: true },
   },
   { collection: 'vendor_identities', versionKey: false },
@@ -52,6 +54,7 @@ const sessionSchema = new Schema<Session>(
     sessionId: { type: String, required: true, unique: true },
     tokenHash: { type: String, required: true, unique: true },
     vendorId: { type: String, required: true },
+    userId: { type: String, required: true },
     scopes: { type: [String], required: true },
     mfaVerified: { type: Boolean, required: true, default: false },
     device: { type: Schema.Types.Mixed, default: null },
@@ -95,6 +98,8 @@ function strip(d: VendorIdentity): VendorIdentity {
     businessName: d.businessName,
     email: d.email,
     phone: d.phone,
+    personId: d.personId,
+    userId: d.userId,
     createdAt: d.createdAt,
   };
 }

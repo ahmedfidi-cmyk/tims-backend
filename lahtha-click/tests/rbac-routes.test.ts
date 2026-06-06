@@ -28,7 +28,8 @@ function makeApp() {
   const app = express();
   app.use(correlationId);
   app.use(express.json());
-  app.use('/iam', createRbacRouter(service));
+  // Header-actor mode (dev/bootstrap); production resolves the actor from the session.
+  app.use('/iam', createRbacRouter(service, { allowHeaderActor: true }));
   app.use(errorHandler);
   return app;
 }

@@ -147,8 +147,30 @@ load); persons, users (principals) and role grants are persisted.
 Collections: `persons`, `users`, `user_roles`, `access_audit` (see the `*-iam-rbac`
 migration). Roles/permissions are not persisted (in-code catalog).
 
-> The management endpoints above are open in this slice; they will be gated by
-> `requirePermission` once sessions carry a `user_id` (auth↔user bridge).
+### Auth ↔ user bridge (secured session principal)
+
+The identity and RBAC layers are joined so authorization derives the acting
+principal from the **authenticated session**, never from a client header.
+
+- **Registration provisions the link**: `POST /iam/vendors` find-or-creates an
+  RBAC `person` (by phone) and a `vendor` principal, and stores `personId` +
+  `userId` on the vendor identity. The response returns both ids.
+- **Sessions carry `userId`**: login binds the session to that principal, so every
+  authenticated request resolves to a real RBAC user.
+- **`GET /iam/me`** returns the session plus the principal's roles and **live**
+  effective permissions.
+- **Session-based authorization** (`authz.requirePermission`): the actor is
+  `session.userId`; checks read current RBAC state (so an out-of-band role grant or
+  suspension takes effect immediately, without re-login) and are recorded in
+  `access_audit`.
+- **`x-user-id` is not trusted in production.** It is accepted only as a
+  dev/bootstrap fallback (`allowHeaderActor`, enabled when `NODE_ENV !== production`)
+  so the first admin can be provisioned before any admin session exists.
+
+> Still open by design: creating persons/principals is unauthenticated (bootstrap
+> + self-service vendor signup). Activating users and granting roles are admin
+> actions — gate them behind `requirePermission('platform.…')` once an admin
+> bootstrap/seed exists; the mechanism is already wired.
 
 ## Testing
 

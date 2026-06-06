@@ -182,6 +182,32 @@ export class RbacService {
   }
 
   /**
+   * Find-or-create a person (keyed by phone) and their principal of the given
+   * type. Idempotent — the bridge calls this to link a vendor identity to an
+   * RBAC user without duplicating either.
+   */
+  async provisionPrincipal(input: {
+    fullName: string;
+    primaryPhone: string;
+    nationalId?: string;
+    principalType: PrincipalType;
+  }): Promise<{ personId: string; userId: string }> {
+    let person = await this.deps.persons.findByPhone(input.primaryPhone);
+    if (!person) {
+      person = await this.createPerson({
+        fullName: input.fullName,
+        primaryPhone: input.primaryPhone,
+        ...(input.nationalId ? { nationalId: input.nationalId } : {}),
+      });
+    }
+    let user = await this.deps.users.findByPersonAndType(person.personId, input.principalType);
+    if (!user) {
+      user = await this.createUser(person.personId, input.principalType);
+    }
+    return { personId: person.personId, userId: user.userId };
+  }
+
+  /**
    * Authorization decision for an actor + permission, recorded in access_audit.
    * A missing actor or insufficient permission both yield a denied (audited) result.
    */

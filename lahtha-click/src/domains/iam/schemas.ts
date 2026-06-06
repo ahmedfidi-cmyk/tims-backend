@@ -14,6 +14,10 @@ export const vendorRegistrationSchema = z.object({
   businessName: z.string().trim().min(2).max(200),
   email: z.string().trim().email().toLowerCase(),
   phone: phoneSchema,
+  /** The human owner's name; defaults to the business name when omitted. */
+  ownerFullName: z.string().trim().min(2).max(200).optional(),
+  /** Optional national id — stored only as a hash by RBAC. */
+  nationalId: z.string().trim().min(4).max(40).optional(),
 });
 export type VendorRegistrationInput = z.infer<typeof vendorRegistrationSchema>;
 

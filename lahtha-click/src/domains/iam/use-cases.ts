@@ -25,6 +25,7 @@ import {
   type OtpSenderPort,
   type Session,
   type SessionRepository,
+  type VendorAccountProvisioner,
   type VendorIdentity,
   type VendorIdentityRepository,
   type VendorStatusPort,
@@ -36,6 +37,7 @@ export interface IamDeps {
   otps: OtpChallengeRepository;
   sessions: SessionRepository;
   vendorStatus: VendorStatusPort;
+  provisioner: VendorAccountProvisioner;
   otpSender: OtpSenderPort;
   mfa: MfaVerifierPort;
   clock: Clock;
@@ -75,6 +77,7 @@ export class SessionInvalidError extends Error {
 export interface SessionView {
   sessionId: string;
   vendorId: string;
+  userId: string;
   scopes: Scope[];
   mfaVerified: boolean;
   idleExpiresAt: Date;
@@ -85,6 +88,7 @@ export function toSessionView(s: Session): SessionView {
   return {
     sessionId: s.sessionId,
     vendorId: s.vendorId,
+    userId: s.userId,
     scopes: s.scopes,
     mfaVerified: s.mfaVerified,
     idleExpiresAt: s.idleExpiresAt,
@@ -102,16 +106,27 @@ export async function registerVendorIdentity(
   const existing = await deps.identities.findByEmail(input.email);
   if (existing) throw new IdentityConflictError(`email ${input.email} already registered`);
 
+  // Bridge: link (or create) the RBAC person + vendor principal up front so the
+  // session can carry a real userId.
+  const { personId, userId } = await deps.provisioner.provision({
+    businessName: input.businessName,
+    ownerFullName: input.ownerFullName ?? input.businessName,
+    phone: input.phone,
+    ...(input.nationalId ? { nationalId: input.nationalId } : {}),
+  });
+
   const identity: VendorIdentity = {
     vendorId: randomUUID(),
     businessName: input.businessName,
     email: input.email,
     phone: input.phone,
+    personId,
+    userId,
     createdAt: deps.clock.now(),
   };
   await deps.identities.create(identity);
   deps.logger.info(
-    { event: 'VENDOR_REGISTERED', vendorId: identity.vendorId },
+    { event: 'VENDOR_REGISTERED', vendorId: identity.vendorId, personId, userId },
     'vendor identity registered',
   );
   return identity;
@@ -205,6 +220,7 @@ export async function verifyOtpAndLogin(
     sessionId: randomUUID(),
     tokenHash,
     vendorId: input.vendorId,
+    userId: identity.userId,
     scopes,
     mfaVerified: false,
     device: input.device ?? null,

@@ -23,6 +23,14 @@ import {
   InMemoryVendorIdentityRepository,
   InMemoryVendorStatus,
 } from '../src/domains/iam/in-memory-adapters.js';
+import { RbacService } from '../src/domains/iam/rbac/rbac.service.js';
+import { RbacVendorAccountProvisioner } from '../src/domains/iam/account-provisioner.js';
+import {
+  InMemoryAccessAuditRepository,
+  InMemoryPersonRepository,
+  InMemoryRoleGrantRepository,
+  InMemoryUserRepository,
+} from '../src/domains/iam/rbac/rbac.in-memory.js';
 
 const silentLogger = { info: () => {}, warn: () => {} };
 
@@ -30,18 +38,28 @@ function harness(mfaTokens: Record<string, { subject: string; issuer: string; ve
   const clock = new FixedClock(new Date('2026-06-05T00:00:00Z'));
   const otpSender = new CapturingOtpSender();
   const vendorStatus = new InMemoryVendorStatus();
+  const rbac = new RbacService({
+    persons: new InMemoryPersonRepository(),
+    users: new InMemoryUserRepository(),
+    grants: new InMemoryRoleGrantRepository(),
+    audit: new InMemoryAccessAuditRepository(),
+    clock,
+    logger: silentLogger,
+    piiPepper: 'test-pii-pepper',
+  });
   const deps: IamDeps = {
     identities: new InMemoryVendorIdentityRepository(),
     otps: new InMemoryOtpChallengeRepository(),
     sessions: new InMemorySessionRepository(),
     vendorStatus,
+    provisioner: new RbacVendorAccountProvisioner(rbac),
     otpSender,
     mfa: new FakeMfaVerifier(mfaTokens),
     clock,
     logger: silentLogger,
     otpPepper: 'test-pepper',
   };
-  return { deps, clock, otpSender, vendorStatus };
+  return { deps, clock, otpSender, vendorStatus, rbac };
 }
 
 const reg = { businessName: 'Acme Devices', email: 'ops@acme.test', phone: '+966500000000' };
@@ -72,10 +90,21 @@ describe('IAM auth use cases', () => {
   });
 
   it('logs in with a valid OTP and gets only base scopes', async () => {
-    const { session } = await registerAndLogin(h);
+    const { identity, session } = await registerAndLogin(h);
     expect(session.scopes).toContain(SCOPES.LAHTHA_ACCESS);
     expect(session.scopes).not.toContain(SCOPES.CLICK_ACCESS);
     expect(session.mfaVerified).toBe(false);
+    // Bridge: the session is bound to the provisioned RBAC principal.
+    expect(session.userId).toBe(identity.userId);
+    expect(identity.userId).toMatch(/^[0-9a-f-]{36}$/);
+  });
+
+  it('provisions a person + vendor principal on registration', async () => {
+    const identity = await registerVendorIdentity(h.deps, { ...reg, ownerFullName: 'Owner One' });
+    const view = await h.rbac.getUserView(identity.userId);
+    expect(view.user.principalType).toBe('vendor');
+    expect(view.user.personId).toBe(identity.personId);
+    expect(view.user.status).toBe('pending_kyc');
   });
 
   it('rejects a wrong OTP and burns an attempt', async () => {
