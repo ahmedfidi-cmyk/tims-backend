@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Accepted (implemented) |
 | **Date** | 2026-06-06 |
 | **Decision owners** | Engineering + Owner |
 | **Relates to** | [`../architecture/imei-inventory-schema.md`](../architecture/imei-inventory-schema.md) (schema design, §3), [`../architecture/iam-rbac.md`](../architecture/iam-rbac.md) (permissions) |
@@ -84,7 +84,7 @@ An `ObjectStoragePort` (`presignUpload`, `headObject`) abstracts S3. Phase 1 shi
 - Service: register with mandatory invoice; duplicate IMEI → conflict; transfer happy path + no-self-transfer + single-current-owner invariant under contention.
 - HTTP: permission gating via the session principal (incl. a vendor lacking `lahtha.device.register` → `403`).
 
-## Open questions (to resolve after PR #19 merges)
-1. **Mount path** — `/lahtha/devices` (recommended) vs `/lahtha/inventory/*`.
-2. **Transfer endpoint scope in W3** — ship now as `admin.ops`-gated, or defer until checkout needs it.
-3. **GSMA blacklist / customs checks** — confirmed out of scope for Phase 1 (per the schema doc); revisit in Phase 2.
+## Resolved choices (post-#19)
+1. **Mount path** — `/lahtha/inventory/*` (chosen) — groups the workstream under one prefix.
+2. **Transfer endpoint** — shipped in W3, gated by `lahtha.state.override` (`admin.ops`); checkout/auctions reuse the service later.
+3. **GSMA blacklist / customs checks** — out of scope for Phase 1 (per the schema doc); revisit in Phase 2.
