@@ -14,16 +14,34 @@ import {
   InMemoryVendorIdentityRepository,
   InMemoryVendorStatus,
 } from '../src/domains/iam/in-memory-adapters.js';
+import { RbacService } from '../src/domains/iam/rbac/rbac.service.js';
+import { RbacVendorAccountProvisioner } from '../src/domains/iam/account-provisioner.js';
+import {
+  InMemoryAccessAuditRepository,
+  InMemoryPersonRepository,
+  InMemoryRoleGrantRepository,
+  InMemoryUserRepository,
+} from '../src/domains/iam/rbac/rbac.in-memory.js';
 
 const silentLogger = { info: () => {}, warn: () => {} };
 
 function makeApp() {
   const vendorStatus = new InMemoryVendorStatus();
+  const rbac = new RbacService({
+    persons: new InMemoryPersonRepository(),
+    users: new InMemoryUserRepository(),
+    grants: new InMemoryRoleGrantRepository(),
+    audit: new InMemoryAccessAuditRepository(),
+    clock: new SystemClock(),
+    logger: silentLogger,
+    piiPepper: 'test-pii-pepper',
+  });
   const deps: IamDeps = {
     identities: new InMemoryVendorIdentityRepository(),
     otps: new InMemoryOtpChallengeRepository(),
     sessions: new InMemorySessionRepository(),
     vendorStatus,
+    provisioner: new RbacVendorAccountProvisioner(rbac),
     otpSender: new CapturingOtpSender(),
     mfa: new FakeMfaVerifier({ 'entra-good': { subject: 'oid-1', issuer: 'entra' } }),
     clock: new SystemClock(),

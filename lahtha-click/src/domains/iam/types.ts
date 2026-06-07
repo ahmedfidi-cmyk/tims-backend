@@ -14,6 +14,10 @@ export interface VendorIdentity {
   businessName: string;
   email: string;
   phone: string;
+  /** Linked RBAC person (the human owner). */
+  personId: string;
+  /** Linked RBAC vendor principal — the session's authenticated user. */
+  userId: string;
   createdAt: Date;
 }
 
@@ -32,6 +36,8 @@ export interface Session {
   sessionId: string;
   tokenHash: string;
   vendorId: string;
+  /** RBAC principal bound to this session (from the linked vendor identity). */
+  userId: string;
   scopes: Scope[];
   mfaVerified: boolean;
   device: { userAgent?: string; ip?: string } | null;
@@ -68,6 +74,19 @@ export interface SessionRepository {
 /** Knows whether a vendor has cleared LAHTHA approval (Rule 4 gate source). */
 export interface VendorStatusPort {
   isApproved(vendorId: string): Promise<boolean>;
+}
+
+/**
+ * Provisions (or links) the RBAC person + principal for a registering vendor,
+ * so the session can carry a real `userId`. Implemented over the RBAC service.
+ */
+export interface VendorAccountProvisioner {
+  provision(input: {
+    businessName: string;
+    ownerFullName: string;
+    phone: string;
+    nationalId?: string;
+  }): Promise<{ personId: string; userId: string }>;
 }
 
 /** Delivers an OTP code to the vendor. Implementations: SMS, email, log (dev). */

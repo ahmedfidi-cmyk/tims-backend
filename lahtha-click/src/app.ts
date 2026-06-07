@@ -8,8 +8,7 @@ import { correlationId } from './middleware/correlation-id.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
 import { createLahthaVendorRouter } from './domains/lahtha/vendor/index.js';
-import { createLahthaIamRouter } from './domains/iam/index.js';
-import { createLahthaRbacRouter } from './domains/iam/rbac/index.js';
+import { createIamModule } from './domains/iam/index.js';
 import { logger } from './lib/logger.js';
 
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -38,9 +37,8 @@ export function createApp(): Express {
 
   app.use(healthRouter);
 
-  // Workstream 2 — IAM.
-  app.use('/iam', createLahthaIamRouter()); // identity, OTP auth, sessions, MFA step-up
-  app.use('/iam', createLahthaRbacRouter()); // persons, users, roles, permission checks
+  // Workstream 2 — IAM (identity + OTP/sessions + MFA + RBAC, one composition root).
+  app.use('/iam', createIamModule());
   app.use('/lahtha', createLahthaVendorRouter()); // vendor approval lifecycle
   // app.use('/click',  clickRouter);  // future
 

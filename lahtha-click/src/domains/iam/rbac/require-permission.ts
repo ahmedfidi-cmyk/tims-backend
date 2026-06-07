@@ -16,9 +16,25 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export function requirePermission(service: RbacService, permission: PermissionId) {
+export interface RequirePermissionOptions {
+  /**
+   * Trust the `x-user-id` header as a fallback actor when no session principal is
+   * present. Intended for local/dev bootstrap only — disabled in production so the
+   * principal can only come from an authenticated session.
+   */
+  allowHeaderActor?: boolean;
+}
+
+export function requirePermission(
+  service: RbacService,
+  permission: PermissionId,
+  opts: RequirePermissionOptions = {},
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const actorUserId = req.header(ACTOR_HEADER)?.trim();
+    // Prefer the session-derived principal; fall back to the header only when
+    // explicitly allowed (never in production).
+    const actorUserId =
+      req.principalUserId ?? (opts.allowHeaderActor ? req.header(ACTOR_HEADER)?.trim() : undefined);
     if (!actorUserId) {
       res.status(401).json({ error: 'unauthenticated', correlationId: req.correlationId });
       return;

@@ -26,8 +26,9 @@ import {
 } from './use-cases.js';
 import { hasScope, SCOPES, type Scope } from './scopes.js';
 import { MfaVerificationError, type Session } from './types.js';
+import { bearerToken, setSessionCookie } from './http-token.js';
 
-export const SESSION_COOKIE = 'lc_session';
+export { SESSION_COOKIE } from './http-token.js';
 
 export interface IamRouterOptions {
   /** Return the OTP code in the response + logs (local/dev only). */
@@ -40,34 +41,6 @@ declare module 'express-serve-static-core' {
   interface Request {
     iamSession?: Session;
   }
-}
-
-function bearerToken(req: Request): string | null {
-  const auth = req.header('authorization');
-  if (auth && auth.startsWith('Bearer ')) return auth.slice(7).trim();
-  const cookie = req.header('cookie');
-  if (cookie) {
-    for (const part of cookie.split(';')) {
-      const eq = part.indexOf('=');
-      if (eq === -1) continue;
-      if (part.slice(0, eq).trim() === SESSION_COOKIE) {
-        return decodeURIComponent(part.slice(eq + 1).trim());
-      }
-    }
-  }
-  return null;
-}
-
-function setSessionCookie(res: Response, token: string, maxAgeMs: number, secure: boolean): void {
-  const attrs = [
-    `${SESSION_COOKIE}=${encodeURIComponent(token)}`,
-    'HttpOnly',
-    'Path=/',
-    'SameSite=Lax',
-    `Max-Age=${Math.floor(maxAgeMs / 1000)}`,
-  ];
-  if (secure) attrs.push('Secure');
-  res.setHeader('Set-Cookie', attrs.join('; '));
 }
 
 function asyncHandler(
@@ -163,6 +136,8 @@ export function createIamRouter(deps: IamDeps, opts: IamRouterOptions): Router {
         businessName: identity.businessName,
         email: identity.email,
         phone: identity.phone,
+        personId: identity.personId,
+        userId: identity.userId,
         createdAt: identity.createdAt,
       });
     }),

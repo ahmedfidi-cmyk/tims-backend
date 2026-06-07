@@ -82,8 +82,15 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
   next(err);
 }
 
-export function createRbacRouter(service: RbacService): Router {
+export interface RbacRouterOptions {
+  /** Allow `x-user-id` as a fallback actor for permission checks (dev bootstrap). */
+  allowHeaderActor?: boolean;
+}
+
+export function createRbacRouter(service: RbacService, opts: RbacRouterOptions = {}): Router {
   const router = Router();
+  const actorOf = (req: Request): string =>
+    req.principalUserId ?? (opts.allowHeaderActor ? req.header(ACTOR_HEADER)?.trim() || 'system' : 'system');
 
   router.get('/roles', (_req: Request, res: Response) => {
     res.json({ items: listRoleCatalog() });
@@ -133,8 +140,7 @@ export function createRbacRouter(service: RbacService): Router {
     '/users/:userId/roles',
     asyncHandler(async (req, res) => {
       const { roleId } = grantRoleSchema.parse(req.body);
-      const grantedBy = req.header(ACTOR_HEADER)?.trim() || 'system';
-      await service.grantRole(param(req, 'userId'), roleId, grantedBy);
+      await service.grantRole(param(req, 'userId'), roleId, actorOf(req));
       res.status(204).end();
     }),
   );
@@ -142,8 +148,7 @@ export function createRbacRouter(service: RbacService): Router {
   router.delete(
     '/users/:userId/roles/:roleId',
     asyncHandler(async (req, res) => {
-      const revokedBy = req.header(ACTOR_HEADER)?.trim() || 'system';
-      await service.revokeRole(param(req, 'userId'), param(req, 'roleId'), revokedBy);
+      await service.revokeRole(param(req, 'userId'), param(req, 'roleId'), actorOf(req));
       res.status(204).end();
     }),
   );
@@ -160,7 +165,7 @@ export function createRbacRouter(service: RbacService): Router {
   // Reading the access audit requires the compliance permission.
   router.get(
     '/access-audit',
-    requirePermission(service, 'platform.audit.read'),
+    requirePermission(service, 'platform.audit.read', opts),
     asyncHandler(async (req, res) => {
       const actorUserId = typeof req.query.actorUserId === 'string' ? req.query.actorUserId : undefined;
       const actedOnUserId = typeof req.query.actedOnUserId === 'string' ? req.query.actedOnUserId : undefined;
@@ -176,7 +181,7 @@ export function createRbacRouter(service: RbacService): Router {
   // Demo of requirePermission: needs platform.read_all (admin.support+).
   router.get(
     '/rbac/ping',
-    requirePermission(service, 'platform.read_all'),
+    requirePermission(service, 'platform.read_all', opts),
     (req: Request, res: Response) => {
       res.json({ ok: true, actorUserId: req.rbacActorUserId });
     },
