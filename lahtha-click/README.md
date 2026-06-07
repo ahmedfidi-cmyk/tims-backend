@@ -203,6 +203,38 @@ auth↔user bridge.
 Collections: `devices`, `device_ownership`, `device_documents` (see the
 `*-inventory` migration).
 
+## Checkout (Workstream 4)
+
+Dual-path order lifecycle (see [ADR-0004](../docs/adr/0004-checkout-state-machine.md)).
+The **device knows nothing about price**; the **order** carries the commercial terms
+(`subtotalHalalat` snapshotted at placement, commission derived via `commission.ts`,
+`total == subtotal` — no VAT yet). Authorized by the shared IAM session principal.
+
+```
+PENDING_PAYMENT ─pay──→ ┌ physical → AWAITING_FULFILLMENT ─ship→ SHIPPED ─deliver→ COMPLETED (→ buyer)
+        │               └ digital  → IN_CUSTODY (→ LAHTHA custody)
+        ├ pay_failed → PAYMENT_FAILED   ├ cancel → CANCELLED   (post-payment) ─refund→ REFUNDED
+```
+
+- **Buyers** self-onboard as `customer` principals (generalized `POST /iam/vendors`
+  with `principalType: "customer"` → active + `customer.standard`), then place orders.
+- **Payment seam**: `POST /orders/:id/payment-event` (idempotent by `paymentRef`) is
+  what W5's webhook will call; ops-gated for now.
+- **Ownership** transfers in-process (W3 inventory): digital → `lahtha_custody` on pay;
+  physical → `customer` on delivery.
+
+| Method & path | Permission / rule |
+|---|---|
+| `POST /lahtha/orders` | `lahtha.order.place` (buyer) |
+| `GET /lahtha/orders/:id` | session; buyer or selling vendor |
+| `GET /lahtha/orders[?role=vendor]` | session; caller's orders |
+| `POST /lahtha/orders/:id/cancel` | buyer, while `PENDING_PAYMENT` |
+| `POST /lahtha/orders/:id/payment-event` | `lahtha.state.override` (W5 seam) |
+| `POST /lahtha/orders/:id/ship` · `/deliver` | `lahtha.state.override` |
+| `POST /lahtha/orders/:id/refund` | `lahtha.order.refund` (reverses commission) |
+
+Collection: `orders` (see the `*-checkout` migration); `devices` unchanged.
+
 ## Testing
 
 ```bash

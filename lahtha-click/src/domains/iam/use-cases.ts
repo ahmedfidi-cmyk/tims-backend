@@ -112,6 +112,7 @@ export async function registerVendorIdentity(
     businessName: input.businessName,
     ownerFullName: input.ownerFullName ?? input.businessName,
     phone: input.phone,
+    principalType: input.principalType ?? 'vendor',
     ...(input.nationalId ? { nationalId: input.nationalId } : {}),
   });
 

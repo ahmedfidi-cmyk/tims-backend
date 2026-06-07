@@ -85,6 +85,7 @@ export interface VendorAccountProvisioner {
     businessName: string;
     ownerFullName: string;
     phone: string;
+    principalType: 'vendor' | 'customer';
     nationalId?: string;
   }): Promise<{ personId: string; userId: string }>;
 }

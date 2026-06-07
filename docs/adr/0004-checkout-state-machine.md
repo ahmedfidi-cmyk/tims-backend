@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Accepted (implemented) |
 | **Date** | 2026-06-07 |
 | **Decision owners** | Engineering + Owner |
 | **Relates to** | [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §3.3 (Checkout State Machine), [`imei-inventory-schema.md`](../architecture/imei-inventory-schema.md) (ownership), [`../product/commission-policy.md`](../product/commission-policy.md) |
