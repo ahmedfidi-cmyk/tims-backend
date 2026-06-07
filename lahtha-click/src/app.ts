@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
 import { createLahthaVendorRouter } from './domains/lahtha/vendor/index.js';
 import { createLahthaInventoryRouter } from './domains/lahtha/inventory/index.js';
+import { createLahthaCheckoutRouter } from './domains/lahtha/checkout/index.js';
 import { createIamModule } from './domains/iam/index.js';
 import { logger } from './lib/logger.js';
 
@@ -44,6 +45,8 @@ export function createApp(): Express {
   app.use('/lahtha', createLahthaVendorRouter()); // vendor approval lifecycle
   // Workstream 3 — Inventory / IMEI (authorized by the shared IAM session authz).
   app.use('/lahtha/inventory', createLahthaInventoryRouter(iam.authz));
+  // Workstream 4 — Checkout (orders) — same session authz; in-process inventory transfer.
+  app.use('/lahtha', createLahthaCheckoutRouter(iam.authz));
   // app.use('/click',  clickRouter);  // future
 
   app.use(errorHandler);

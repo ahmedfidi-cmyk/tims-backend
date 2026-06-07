@@ -99,6 +99,20 @@ describe('IAM auth use cases', () => {
     expect(identity.userId).toMatch(/^[0-9a-f-]{36}$/);
   });
 
+  it('customer registration provisions an ACTIVE customer.standard principal (self-service)', async () => {
+    const identity = await registerVendorIdentity(h.deps, {
+      businessName: 'Sara',
+      email: 'cust@acme.test',
+      phone: '+966500000123',
+      principalType: 'customer',
+    });
+    const view = await h.rbac.getUserView(identity.userId);
+    expect(view.user.principalType).toBe('customer');
+    expect(view.user.status).toBe('active');
+    expect(view.roles).toContain('customer.standard');
+    expect(view.permissions).toContain('lahtha.order.place');
+  });
+
   it('provisions a person + vendor principal on registration', async () => {
     const identity = await registerVendorIdentity(h.deps, { ...reg, ownerFullName: 'Owner One' });
     const view = await h.rbac.getUserView(identity.userId);

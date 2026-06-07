@@ -11,13 +11,25 @@ export class RbacVendorAccountProvisioner implements VendorAccountProvisioner {
     businessName: string;
     ownerFullName: string;
     phone: string;
+    principalType: 'vendor' | 'customer';
     nationalId?: string;
   }): Promise<{ personId: string; userId: string }> {
-    return this.rbac.provisionPrincipal({
+    const link = await this.rbac.provisionPrincipal({
       fullName: input.ownerFullName,
       primaryPhone: input.phone,
-      principalType: 'vendor',
+      principalType: input.principalType,
       ...(input.nationalId ? { nationalId: input.nationalId } : {}),
     });
+
+    // Onboarding policy: customers are self-service (active immediately with the
+    // standard role); vendors stay pending_kyc until admin approval.
+    if (input.principalType === 'customer') {
+      const view = await this.rbac.getUserView(link.userId);
+      if (view.user.status === 'pending_kyc') {
+        await this.rbac.setUserStatus(link.userId, 'ACTIVATE');
+      }
+      await this.rbac.grantRole(link.userId, 'customer.standard', 'self-service');
+    }
+    return link;
   }
 }

@@ -21,10 +21,10 @@ export * from './model-catalog.js';
 export * from './device-state.js';
 export type * from './types.js';
 
-/** Build the production inventory router, mounted at /lahtha/inventory. */
-export function createLahthaInventoryRouter(authz: Authz): Router {
+/** Build the production (Mongo-backed) inventory service. */
+export function createInventoryService(): InventoryService {
   const clock = new SystemClock();
-  const service = new InventoryService({
+  return new InventoryService({
     devices: new MongoDeviceRepository(),
     ownership: new MongoDeviceOwnershipRepository(),
     documents: new MongoDeviceDocumentRepository(),
@@ -32,5 +32,9 @@ export function createLahthaInventoryRouter(authz: Authz): Router {
     clock,
     logger,
   });
-  return createInventoryRouter(service, authz);
+}
+
+/** Build the production inventory router, mounted at /lahtha/inventory. */
+export function createLahthaInventoryRouter(authz: Authz): Router {
+  return createInventoryRouter(createInventoryService(), authz);
 }
