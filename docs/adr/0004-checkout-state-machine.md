@@ -7,7 +7,7 @@
 | **Decision owners** | Engineering + Owner |
 | **Relates to** | [`../../ARCHITECTURE.md`](../../ARCHITECTURE.md) §3.3 (Checkout State Machine), [`imei-inventory-schema.md`](../architecture/imei-inventory-schema.md) (ownership), [`../product/commission-policy.md`](../product/commission-policy.md) |
 | **Builds on** | IAM session authz (ADR for the bridge) + W3 inventory ownership transfer |
-| **Decisions locked with owner** | Buyer auth = generalize identity to customers; order targets a device directly; money = subtotal + commission, **no VAT yet** |
+| **Decisions locked with owner** | Buyer auth = generalize identity to customers; order targets a device directly; **price + commission live on the order, not the device**; money = subtotal + commission, **no VAT yet** |
 
 ## Context
 
@@ -29,13 +29,12 @@ A new domain `src/domains/lahtha/checkout/`, same pure-core + ports/adapters sha
 - Registration accepts an optional `principalType` (`vendor` | `customer`, default `vendor` for backward compatibility); the provisioner creates the matching RBAC principal. Customers self-register + verify OTP exactly like vendors and receive a session bound to their `userId`.
 - Placing an order is gated by `lahtha.order.place` (held by `customer.standard`), resolved from the **session principal** (the buyer), via the shared IAM `authz`.
 
-### 2. Sale price on the device (no Listing entity)
+### 2. Price lives on the order, not the device
 
-To keep "order targets a device directly" while still having a price:
-- A vendor sets a **sale price** on a device they own (`PATCH /lahtha/inventory/devices/:id/sale-price`, gated by `lahtha.vendor.manage_profile`). A device is **purchasable** when it has a sale price AND is currently vendor-owned.
-- The order **snapshots** `subtotalHalalat` from the device's sale price at creation — the order is immune to later price changes.
+The **device knows nothing about price** — it stays pure inventory identity + ownership. The **order carries the commercial terms**: `subtotalHalalat` is supplied at order creation and **snapshotted** onto the order, and `commissionHalalat` is derived from it. The order is therefore immune to anything changing later, and the inventory domain is untouched by W4.
 
-> This is a deliberately thin stand-in for listings; a full `Listing` (multiple offers, visibility, expiry) remains a later option if the catalog needs it.
+- Order creation validates the device is **currently vendor-owned** (purchasable) and that `subtotalHalalat` is a positive integer.
+- W4 takes the price as a placement input. Binding it to a vendor-authored source (a quote, or a future `Listing`) is a later refinement — the order remains the system of record for what was actually charged.
 
 ### 3. Order entity & money (integer halalat, decimal-safe)
 
@@ -48,7 +47,7 @@ order {
   createdAt, updatedAt
 }
 ```
-- `subtotalHalalat` = device sale price (what the buyer pays). **`totalHalalat == subtotalHalalat`** in W4 (no VAT).
+- `subtotalHalalat` = the price supplied at order creation (what the buyer pays). **`totalHalalat == subtotalHalalat`** in W4 (no VAT).
 - `commissionHalalat` = `computeCommissionHalalat(subtotal, 'lahzaPrimarySale')` (existing `commission.ts`, 5% ceiling) — the platform fee deducted from the vendor's settlement.
 - `vendorNetHalalat` = `subtotal − commission`. All integer math; no floats (NFR).
 
@@ -72,7 +71,7 @@ Checkout ↔ inventory are **both LAHTHA** (same DB), so ownership transfer is a
 
 - `digital_custody`: on `PAID → IN_CUSTODY`, transfer device → `lahtha_custody` (`acquisitionType: 'purchase'`, `sourceEventId = orderId`).
 - `physical_fulfillment`: on `DELIVERED → COMPLETED`, transfer device → `customer`.
-- A guard at **order creation** verifies the device is vendor-owned and priced (reserve-on-create is a later refinement; for W4 the ownership transfer happens at the state transition above).
+- A guard at **order creation** verifies the device is currently vendor-owned (reserve-on-create is a later refinement; for W4 the ownership transfer happens at the state transition above).
 
 ### 6. Payment as a seam (W5 plugs in)
 
@@ -83,7 +82,7 @@ Checkout ↔ inventory are **both LAHTHA** (same DB), so ownership transfer is a
 
 | Method & path | Permission / rule |
 |---|---|
-| `POST /lahtha/orders` (place; body: deviceId, fulfillmentType, idempotencyKey?) | `lahtha.order.place` (buyer session) |
+| `POST /lahtha/orders` (place; body: deviceId, fulfillmentType, subtotalHalalat, idempotencyKey?) | `lahtha.order.place` (buyer session) |
 | `GET /lahtha/orders/:id` | session; requester must be buyer, selling vendor, or admin (`platform.read_all`) |
 | `GET /lahtha/orders?role=buyer\|vendor` | session; lists the caller's orders |
 | `POST /lahtha/orders/:id/payment-event` | `lahtha.state.override` (W5 seam) |
@@ -98,8 +97,8 @@ Checkout ↔ inventory are **both LAHTHA** (same DB), so ownership transfer is a
 
 ## Collections & indexes
 - **`orders`** — unique `orderId`; unique `(buyerUserId, idempotencyKey)` sparse; index `(buyerUserId, createdAt)`, `(vendorUserId, createdAt)`, `(deviceId)`.
-- Device gains `salePriceHalalat` (nullable) — no new collection.
-- Migration `*-checkout.cjs`.
+- **No change to the `devices` collection** — price/commission live only on the order.
+- Migration `*-checkout.cjs` (adds the `orders` collection only).
 
 ## Consequences
 
@@ -110,16 +109,16 @@ Checkout ↔ inventory are **both LAHTHA** (same DB), so ownership transfer is a
 
 ### Negative / trade-offs
 - No VAT yet — totals are pre-tax; W6 (ZATCA) adds VAT to the breakdown. Acceptable per owner decision.
-- Sale-price-on-device is a thin listing substitute; revisit if multi-offer listings are needed.
 - Vendor-driven fulfillment (vendor marks shipped) is deferred — W4 routes fulfillment transitions through ops to keep the surface small.
+- Price is a placement input in W4 (the order is the record of what was charged); a vendor-authored price source (quote/`Listing`) is a later refinement. The inventory domain is intentionally left unchanged.
 - No payment reservation/hold at creation; a device could in principle receive two pending orders. Mitigation: the ownership transfer (single-current-owner index) makes only one completion possible; a reserve-on-create refinement can come with W5.
 
 ### Migration
-- `*-checkout.cjs` creates `orders` with indexes and is additive; `salePriceHalalat` is schemaless-add on `devices`.
+- `*-checkout.cjs` creates `orders` with indexes and is additive; the `devices` collection is unchanged.
 
 ## Test plan (~40, no live DB)
 - Pure: state-machine transitions (all legal + rejected), money breakdown (subtotal/commission/net), idempotency key behavior.
-- Service: place (priced + vendor-owned guard), pay→branch per path, digital custody ownership transfer, physical ship→deliver→complete + transfer, cancel, refund + commission reversal.
+- Service: place (vendor-owned guard + price snapshot + commission), pay→branch per path, digital custody ownership transfer, physical ship→deliver→complete + transfer, cancel, refund + commission reversal.
 - HTTP: permission gating via session principal (buyer places; non-buyer 403; admin drives payment/fulfillment); buyer/vendor/admin read visibility.
 - IAM: customer registration + login issues a `customer`-principal session.
 
