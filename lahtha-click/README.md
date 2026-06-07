@@ -172,6 +172,37 @@ principal from the **authenticated session**, never from a client header.
 > actions — gate them behind `requirePermission('platform.…')` once an admin
 > bootstrap/seed exists; the mechanism is already wired.
 
+## Inventory / IMEI (Workstream 3)
+
+Device registration with global IMEI uniqueness, append-only ownership, and proof
+documents (see [ADR-0003](../docs/adr/0003-inventory-imei-implementation.md) and
+[`imei-inventory-schema.md`](../docs/architecture/imei-inventory-schema.md)). Every
+write is authorized by the **shared IAM session authz** — the first consumer of the
+auth↔user bridge.
+
+- **Global IMEI uniqueness** (`imei`, sparse `imei2`, `serialNumber`) and **exactly
+  one current owner** (partial unique index on `device_ownership`) are enforced at
+  the DB layer. **Luhn** checksum + a **model-code allowlist** are enforced in code.
+- **Mandatory `supplier_invoice`** at registration (device + initial vendor
+  ownership + invoice created together; device rolled back on partial failure).
+- **Ownership transfer** is an atomic compare-and-set (release current → insert new);
+  self-transfer rejected. Lifecycle state is **derived** from the current owner.
+- **Object storage** is a stubbed `ObjectStoragePort` seam (presigned-URL shaped);
+  real S3 (versioning, Object Lock, KMS) is the follow-up.
+
+| Method & path | Permission |
+|---|---|
+| `GET /lahtha/inventory/models` | (public reference) |
+| `POST /lahtha/inventory/devices` | `lahtha.device.register` |
+| `GET /lahtha/inventory/devices[?ownerId=]` | `lahtha.device.list` |
+| `GET /lahtha/inventory/devices/:id` | `lahtha.device.list` |
+| `POST /lahtha/inventory/devices/:id/documents/upload-url` | `lahtha.document.upload` |
+| `POST /lahtha/inventory/devices/:id/documents` | `lahtha.document.upload` |
+| `POST /lahtha/inventory/devices/:id/transfer` | `lahtha.state.override` |
+
+Collections: `devices`, `device_ownership`, `device_documents` (see the
+`*-inventory` migration).
+
 ## Testing
 
 ```bash

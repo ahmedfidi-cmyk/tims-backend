@@ -17,7 +17,7 @@ import {
 import { EntraMfaVerifier } from './entra-mfa-verifier.js';
 import { RbacVendorAccountProvisioner } from './account-provisioner.js';
 import { createIamRouter } from './iam.routes.js';
-import { createAuthz } from './authz.js';
+import { createAuthz, type Authz } from './authz.js';
 import type { IamDeps } from './use-cases.js';
 import type { MfaVerifierPort } from './types.js';
 import { RbacService } from './rbac/rbac.service.js';
@@ -40,8 +40,14 @@ function buildMfaVerifier(cfg: Config): MfaVerifierPort {
   return new DisabledMfaVerifier();
 }
 
-/** Build the production IAM router (identity + RBAC + session authz), mounted at /iam. */
-export function createIamModule(): Router {
+export interface IamModule {
+  router: Router;
+  /** Session-based authorization, reusable by other domains (e.g. inventory). */
+  authz: Authz;
+}
+
+/** Build the production IAM module (identity + RBAC + session authz), mounted at /iam. */
+export function createIamModule(): IamModule {
   const cfg = loadConfig();
   const isProd = cfg.NODE_ENV === 'production';
   const exposeDevCode = !isProd;
@@ -83,5 +89,5 @@ export function createIamModule(): Router {
   // Attach the session principal (if any) before RBAC routes so their permission
   // checks use the session, not a spoofable header.
   router.use(authz.attachPrincipal, createRbacRouter(rbac, { allowHeaderActor }));
-  return router;
+  return { router, authz };
 }
