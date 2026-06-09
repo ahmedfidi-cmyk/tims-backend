@@ -30,7 +30,13 @@ import {
   type VendorIdentityRepository,
   type VendorStatusPort,
 } from './types.js';
-import type { RequestOtpInput, VendorRegistrationInput, VerifyOtpInput } from './schemas.js';
+import type {
+  RequestOtpByEmailInput,
+  RequestOtpInput,
+  VendorRegistrationInput,
+  VerifyOtpByEmailInput,
+  VerifyOtpInput,
+} from './schemas.js';
 
 export interface IamDeps {
   identities: VendorIdentityRepository;
@@ -233,6 +239,35 @@ export async function verifyOtpAndLogin(
 
   deps.logger.info({ event: 'LOGIN_SUCCESS', vendorId: input.vendorId, sessionId: session.sessionId }, 'login success');
   return { token, session: toSessionView(session) };
+}
+
+/**
+ * Email-keyed OTP request: resolve the identity by email, then delegate to the
+ * vendorId-based flow. (Enumeration hardening — returning a neutral response for
+ * unknown emails — is a follow-up; for now an unknown email is a 404.)
+ */
+export async function requestOtpByEmail(
+  deps: IamDeps,
+  input: RequestOtpByEmailInput,
+  opts: { exposeCode?: boolean } = {},
+): Promise<OtpRequestResult> {
+  const identity = await deps.identities.findByEmail(input.email);
+  if (!identity) throw new IdentityNotFoundError(input.email);
+  return requestOtp(deps, { vendorId: identity.vendorId, channel: input.channel }, opts);
+}
+
+/** Email-keyed OTP verify + login: resolve by email, then delegate. */
+export async function verifyOtpByEmailAndLogin(
+  deps: IamDeps,
+  input: VerifyOtpByEmailInput,
+): Promise<LoginResult> {
+  const identity = await deps.identities.findByEmail(input.email);
+  if (!identity) throw new IdentityNotFoundError(input.email);
+  return verifyOtpAndLogin(deps, {
+    vendorId: identity.vendorId,
+    code: input.code,
+    ...(input.device ? { device: input.device } : {}),
+  });
 }
 
 /**

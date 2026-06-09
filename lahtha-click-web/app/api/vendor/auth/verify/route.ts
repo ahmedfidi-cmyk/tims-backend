@@ -1,43 +1,32 @@
-import { mockVendor } from '@/lib/mock/vendor-data'
+import { NextResponse, type NextRequest } from 'next/server'
+import { backendHeaders, backendUrl, copySetCookie } from '@/lib/api/backend'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export async function POST(req: Request) {
-  const { email, code } = await req.json()
-
-  if (!email || !code) {
-    return Response.json(
-      { error: 'Email and code required' },
-      { status: 400 }
-    )
-  }
-
+// Proxy: verify the email-keyed OTP. On success the backend returns Set-Cookie
+// (HttpOnly lc_session) which we forward to the browser — no token in the body.
+export async function POST(req: NextRequest) {
+  const { email, code } = await req.json().catch(() => ({}))
   if (typeof email !== 'string' || !EMAIL_REGEX.test(email)) {
-    return Response.json(
-      { error: 'البريد الإلكتروني غير صحيح' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'البريد الإلكتروني غير صحيح' }, { status: 400 })
+  }
+  if (typeof code !== 'string' || !/^\d{6}$/.test(code)) {
+    return NextResponse.json({ error: 'رمز التحقق يجب أن يكون 6 أرقام' }, { status: 400 })
   }
 
-  if (!/^\d{6}$/.test(code)) {
-    return Response.json({ error: 'Invalid code format' }, { status: 400 })
-  }
-
-  const payload = {
-    sub: mockVendor.id,
-    email,
-    role: mockVendor.role,
-    iat: Date.now(),
-    exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-  }
-
-  const token = Buffer.from(JSON.stringify(payload)).toString('base64')
-
-  return Response.json({
-    token,
-    vendor: {
-      ...mockVendor,
-      email,
-    },
+  const backendRes = await fetch(backendUrl('/iam/auth/otp/verify-by-email'), {
+    method: 'POST',
+    headers: backendHeaders(req),
+    body: JSON.stringify({ email, code }),
   })
+
+  const data = await backendRes.json().catch(() => ({}))
+  if (!backendRes.ok) {
+    const error = data?.error === 'otp_rejected' ? 'رمز التحقق غير صحيح أو منتهي' : 'فشل التحقق'
+    return NextResponse.json({ error }, { status: backendRes.status })
+  }
+
+  const res = NextResponse.json({ session: data.session ?? null })
+  copySetCookie(backendRes, res.headers) // forward the HttpOnly lc_session cookie
+  return res
 }

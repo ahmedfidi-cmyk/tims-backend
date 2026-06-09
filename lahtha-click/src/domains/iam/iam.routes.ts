@@ -5,9 +5,11 @@
 import { Router, type NextFunction, type Request, type Response } from 'express';
 import { ZodError } from 'zod';
 import {
+  requestOtpByEmailSchema,
   requestOtpSchema,
   stepUpMfaSchema,
   vendorRegistrationSchema,
+  verifyOtpByEmailSchema,
   verifyOtpSchema,
 } from './schemas.js';
 import {
@@ -18,10 +20,12 @@ import {
   OtpError,
   registerVendorIdentity,
   requestOtp,
+  requestOtpByEmail,
   SessionInvalidError,
   stepUpMfa,
   toSessionView,
   verifyOtpAndLogin,
+  verifyOtpByEmailAndLogin,
   type IamDeps,
 } from './use-cases.js';
 import { hasScope, SCOPES, type Scope } from './scopes.js';
@@ -157,6 +161,27 @@ export function createIamRouter(deps: IamDeps, opts: IamRouterOptions): Router {
     asyncHandler(deps, async (req, res) => {
       const input = verifyOtpSchema.parse(req.body);
       const { token, session } = await verifyOtpAndLogin(deps, input);
+      const maxAge = session.absoluteExpiresAt.getTime() - Date.now();
+      setSessionCookie(res, token, maxAge, opts.secureCookies);
+      res.json({ token, session });
+    }),
+  );
+
+  // Email-keyed OTP (web vendor login knows the email, not the vendorId).
+  router.post(
+    '/auth/otp/request-by-email',
+    asyncHandler(deps, async (req, res) => {
+      const input = requestOtpByEmailSchema.parse(req.body);
+      const result = await requestOtpByEmail(deps, input, { exposeCode: opts.exposeDevCode });
+      res.json(result);
+    }),
+  );
+
+  router.post(
+    '/auth/otp/verify-by-email',
+    asyncHandler(deps, async (req, res) => {
+      const input = verifyOtpByEmailSchema.parse(req.body);
+      const { token, session } = await verifyOtpByEmailAndLogin(deps, input);
       const maxAge = session.absoluteExpiresAt.getTime() - Date.now();
       setSessionCookie(res, token, maxAge, opts.secureCookies);
       res.json({ token, session });

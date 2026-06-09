@@ -109,6 +109,35 @@ describe('IAM HTTP API', () => {
     expect(setCookie).toContain('SameSite=Lax');
   });
 
+  it('logs in via email-keyed OTP and sets the session cookie', async () => {
+    await request(app)
+      .post('/iam/vendors')
+      .send({ businessName: 'Acme Devices', email: 'by-email@acme.test', phone: '+966500000044' });
+
+    const otp = await request(app)
+      .post('/iam/auth/otp/request-by-email')
+      .send({ email: 'by-email@acme.test' });
+    expect(otp.status).toBe(200);
+    expect(otp.body.devCode).toMatch(/^\d{6}$/);
+
+    const verify = await request(app)
+      .post('/iam/auth/otp/verify-by-email')
+      .send({ email: 'by-email@acme.test', code: otp.body.devCode });
+    expect(verify.status).toBe(200);
+    expect(verify.body.session.scopes).toContain('lahtha:access');
+    const setCookie = verify.headers['set-cookie'][0] as string;
+    expect(setCookie).toContain('lc_session=');
+    expect(setCookie).toContain('HttpOnly');
+  });
+
+  it('email OTP request for an unknown email is 404', async () => {
+    const res = await request(app)
+      .post('/iam/auth/otp/request-by-email')
+      .send({ email: 'nobody@acme.test' });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('identity_not_found');
+  });
+
   it('a wrong OTP code is rejected with 401', async () => {
     const reg = await request(app)
       .post('/iam/vendors')

@@ -42,6 +42,26 @@ export const verifyOtpSchema = z.object({
 });
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;
 
+// Email-keyed OTP — same flow as the vendorId variants, but the caller (e.g. the
+// web vendor login) only knows the email; the identity is resolved server-side.
+export const requestOtpByEmailSchema = z.object({
+  email: z.string().trim().email().toLowerCase(),
+  channel: z.enum(OTP_CHANNELS).default('email'),
+});
+export type RequestOtpByEmailInput = z.infer<typeof requestOtpByEmailSchema>;
+
+export const verifyOtpByEmailSchema = z.object({
+  email: z.string().trim().email().toLowerCase(),
+  code: z.string().trim().regex(/^\d{6}$/, 'code must be 6 digits'),
+  device: z
+    .object({
+      userAgent: z.string().trim().max(512).optional(),
+      ip: z.string().trim().max(64).optional(),
+    })
+    .optional(),
+});
+export type VerifyOtpByEmailInput = z.infer<typeof verifyOtpByEmailSchema>;
+
 // MFA step-up: the client presents an OIDC ID token issued by Microsoft Entra.
 export const stepUpMfaSchema = z.object({
   idToken: z.string().trim().min(1),
