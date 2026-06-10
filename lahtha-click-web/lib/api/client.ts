@@ -13,6 +13,7 @@ export async function apiFetch<T = any>(
 
   const res = await fetch(url, {
     ...options,
+    credentials: 'include', // send the HttpOnly lc_session cookie on same-origin /api calls
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
