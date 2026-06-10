@@ -47,6 +47,15 @@ export class InMemoryUserRepository implements UserRepository {
   async listByPerson(personId: string): Promise<User[]> {
     return [...this.byId.values()].filter((u) => u.personId === personId).map((u) => ({ ...u }));
   }
+  async list(filter: { principalType?: PrincipalType; status?: UserStatus; limit?: number }): Promise<User[]> {
+    let out = [...this.byId.values()]
+      .filter((u) => (filter.principalType ? u.principalType === filter.principalType : true))
+      .filter((u) => (filter.status ? u.status === filter.status : true))
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .map((u) => ({ ...u }))
+    if (filter.limit) out = out.slice(0, filter.limit)
+    return out
+  }
   async updateStatus(userId: string, status: UserStatus): Promise<void> {
     const u = this.byId.get(userId);
     if (u) u.status = status;

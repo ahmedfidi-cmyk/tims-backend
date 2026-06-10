@@ -147,6 +147,26 @@ load); persons, users (principals) and role grants are persisted.
 Collections: `persons`, `users`, `user_roles`, `access_audit` (see the `*-iam-rbac`
 migration). Roles/permissions are not persisted (in-code catalog).
 
+### Admin portal backend (vendor review + IAM management)
+
+Admin actions are gated on the **session principal's** permissions (two added perms):
+- `platform.vendor.review` (held by `admin.ops`, `admin.compliance`) — approve/reject
+  vendors + read the review queue.
+- `platform.iam.manage` (held by `admin.ops`) — grant/revoke roles, change user status,
+  list users.
+
+Gated endpoints (formerly open / header-actor):
+- `GET /lahtha/admin/vendors?status=` — review queue (defaults `PENDING_REVIEW`);
+  `POST /lahtha/admin/vendors/:id/approve|reject` now require `platform.vendor.review`
+  (the audit actor is the session principal, not `x-actor-id`).
+- `POST /iam/users/:id/roles`, `DELETE …/roles/:roleId`, `POST /iam/users/:id/status`,
+  and `GET /iam/admin/users?principalType=&status=` require `platform.iam.manage`.
+
+**Admin login reuses email-OTP** (no new auth path): admins have no self-service signup,
+so bootstrap one with `npm run seed:admin <email> <phone> [fullName] [roleId]`. It creates
+the admin person + principal, grants an admin role, and writes a `vendor_identities` row so
+the admin signs in through `/iam/auth/otp/{request,verify}-by-email`. (Phase 2 → enterprise SSO.)
+
 ### Auth ↔ user bridge (secured session principal)
 
 The identity and RBAC layers are joined so authorization derives the acting

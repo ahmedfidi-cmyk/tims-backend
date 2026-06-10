@@ -52,6 +52,8 @@ export interface UserRepository {
   findById(userId: string): Promise<User | null>;
   findByPersonAndType(personId: string, principalType: PrincipalType): Promise<User | null>;
   listByPerson(personId: string): Promise<User[]>;
+  /** Admin listing, optionally filtered by principal type and/or status. */
+  list(filter: { principalType?: PrincipalType; status?: UserStatus; limit?: number }): Promise<User[]>;
   updateStatus(userId: string, status: UserStatus): Promise<void>;
 }
 

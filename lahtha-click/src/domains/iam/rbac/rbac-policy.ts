@@ -35,6 +35,8 @@ export const PERMISSIONS = {
   'platform.user.suspend': 'Suspend a user',
   'platform.pii.read': 'Read PII (national id, etc.)',
   'platform.audit.read': 'Read audit logs',
+  'platform.vendor.review': 'Approve or reject vendors (admin)',
+  'platform.iam.manage': 'Grant/revoke roles and change user status (admin)',
 } as const;
 
 export type PermissionId = keyof typeof PERMISSIONS;
@@ -89,18 +91,25 @@ export const ROLES = {
   },
   'admin.ops': {
     domain: 'platform',
-    description: 'Issue refunds, override states, suspend users',
+    description: 'Issue refunds, override states, suspend users, review vendors, manage IAM',
     permissions: [
       'lahtha.order.refund',
       'lahtha.state.override',
       'click.auction.close',
       'platform.user.suspend',
+      'platform.vendor.review',
+      'platform.iam.manage',
     ],
   },
   'admin.compliance': {
     domain: 'platform',
-    description: 'Access PII and audit logs',
-    permissions: ['platform.pii.read', 'platform.audit.read', 'platform.read_all'],
+    description: 'Access PII and audit logs, review vendors',
+    permissions: [
+      'platform.pii.read',
+      'platform.audit.read',
+      'platform.read_all',
+      'platform.vendor.review',
+    ],
   },
 } as const satisfies Record<string, RoleDefinition>;
 

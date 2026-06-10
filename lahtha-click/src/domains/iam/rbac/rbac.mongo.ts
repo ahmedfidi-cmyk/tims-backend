@@ -100,6 +100,12 @@ export class MongoUserRepository implements UserRepository {
   async listByPerson(personId: string): Promise<User[]> {
     return UserModel.find({ personId }).lean<User[]>().exec();
   }
+  async list(filter: { principalType?: PrincipalType; status?: UserStatus; limit?: number }): Promise<User[]> {
+    const q: Record<string, unknown> = {};
+    if (filter.principalType) q.principalType = filter.principalType;
+    if (filter.status) q.status = filter.status;
+    return UserModel.find(q).sort({ createdAt: 1 }).limit(filter.limit ?? 200).lean<User[]>().exec();
+  }
   async updateStatus(userId: string, status: UserStatus): Promise<void> {
     await UserModel.updateOne({ userId }, { $set: { status } }).exec();
   }

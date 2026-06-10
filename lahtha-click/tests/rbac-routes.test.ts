@@ -31,27 +31,34 @@ function makeApp() {
   // Header-actor mode (dev/bootstrap); production resolves the actor from the session.
   app.use('/iam', createRbacRouter(service, { allowHeaderActor: true }));
   app.use(errorHandler);
-  return app;
+  return { app, service };
 }
 
-async function makeActiveAdmin(app: Express, role: string): Promise<string> {
-  const person = await request(app)
-    .post('/iam/persons')
-    .send({ fullName: 'Admin User', primaryPhone: `+9665${Math.floor(Math.random() * 1e8)}` });
-  const userRes = await request(app)
-    .post(`/iam/persons/${person.body.personId}/users`)
-    .send({ principalType: 'admin' });
-  const userId = userRes.body.userId as string;
-  await request(app).post(`/iam/users/${userId}/status`).send({ action: 'ACTIVATE' });
-  await request(app).post(`/iam/users/${userId}/roles`).send({ roleId: role });
-  return userId;
+// Bootstrap an admin OUT OF BAND via the service (the gated HTTP routes can't
+// create the first admin — same as scripts/seed-admin.ts).
+async function bootstrapAdmin(service: RbacService, role = 'admin.ops'): Promise<string> {
+  const person = await service.createPerson({
+    fullName: 'Admin',
+    primaryPhone: `+9665${Math.floor(Math.random() * 1e8)}`,
+  });
+  const user = await service.createUser(person.personId, 'admin');
+  await service.setUserStatus(user.userId, 'ACTIVATE');
+  await service.grantRole(user.userId, role, 'seed');
+  return user.userId;
 }
 
 describe('RBAC HTTP API', () => {
   let app: Express;
-  beforeEach(() => {
-    app = makeApp();
+  let service: RbacService;
+  let adminId: string; // admin.ops — holds platform.iam.manage
+  beforeEach(async () => {
+    const built = makeApp();
+    app = built.app;
+    service = built.service;
+    adminId = await bootstrapAdmin(service, 'admin.ops');
   });
+
+  const asAdmin = (req: request.Test) => req.set('x-user-id', adminId);
 
   it('lists the seed role catalog', async () => {
     const res = await request(app).get('/iam/roles');
@@ -64,7 +71,7 @@ describe('RBAC HTTP API', () => {
     expect(res.status).toBe(400);
   });
 
-  it('creates a person + principal and grants a coherent role', async () => {
+  it('creates a person + principal and (admin) grants a coherent role', async () => {
     const person = await request(app)
       .post('/iam/persons')
       .send({ fullName: 'Sara A', primaryPhone: '+966500000010', nationalId: '1234567890' });
@@ -77,8 +84,8 @@ describe('RBAC HTTP API', () => {
     expect(user.status).toBe(201);
     const userId = user.body.userId as string;
 
-    await request(app).post(`/iam/users/${userId}/status`).send({ action: 'ACTIVATE' }).expect(200);
-    await request(app).post(`/iam/users/${userId}/roles`).send({ roleId: 'vendor.owner' }).expect(204);
+    await asAdmin(request(app).post(`/iam/users/${userId}/status`)).send({ action: 'ACTIVATE' }).expect(200);
+    await asAdmin(request(app).post(`/iam/users/${userId}/roles`)).send({ roleId: 'vendor.owner' }).expect(204);
 
     const view = await request(app).get(`/iam/users/${userId}`);
     expect(view.body.roles).toContain('vendor.owner');
@@ -92,9 +99,7 @@ describe('RBAC HTTP API', () => {
     const user = await request(app)
       .post(`/iam/persons/${person.body.personId}/users`)
       .send({ principalType: 'vendor' });
-    const res = await request(app)
-      .post(`/iam/users/${user.body.userId}/roles`)
-      .send({ roleId: 'admin.ops' });
+    const res = await asAdmin(request(app).post(`/iam/users/${user.body.userId}/roles`)).send({ roleId: 'admin.ops' });
     expect(res.status).toBe(422);
     expect(res.body.error).toBe('role_not_grantable');
   });
@@ -106,11 +111,47 @@ describe('RBAC HTTP API', () => {
     const user = await request(app)
       .post(`/iam/persons/${person.body.personId}/users`)
       .send({ principalType: 'vendor' });
-    const res = await request(app)
-      .post(`/iam/users/${user.body.userId}/status`)
-      .send({ action: 'SUSPEND' });
+    const res = await asAdmin(request(app).post(`/iam/users/${user.body.userId}/status`)).send({ action: 'SUSPEND' });
     expect(res.status).toBe(409);
     expect(res.body.error).toBe('invalid_status_transition');
+  });
+
+  describe('admin-gated management routes (platform.iam.manage)', () => {
+    it('401 without an actor on role grant', async () => {
+      const person = await request(app).post('/iam/persons').send({ fullName: 'Xavier', primaryPhone: '+966500000014' });
+      const user = await request(app)
+        .post(`/iam/persons/${person.body.personId}/users`)
+        .send({ principalType: 'vendor' });
+      const res = await request(app).post(`/iam/users/${user.body.userId}/roles`).send({ roleId: 'vendor.owner' });
+      expect(res.status).toBe(401);
+    });
+
+    it('403 for a non-admin actor on role grant', async () => {
+      const vp = await request(app).post('/iam/persons').send({ fullName: 'Vera', primaryPhone: '+966500000015' });
+      const vu = await request(app).post(`/iam/persons/${vp.body.personId}/users`).send({ principalType: 'vendor' });
+      await asAdmin(request(app).post(`/iam/users/${vu.body.userId}/status`)).send({ action: 'ACTIVATE' });
+      await asAdmin(request(app).post(`/iam/users/${vu.body.userId}/roles`)).send({ roleId: 'vendor.owner' });
+      // vendor.owner lacks platform.iam.manage
+      const res = await request(app)
+        .post(`/iam/users/${vu.body.userId}/roles`)
+        .set('x-user-id', vu.body.userId)
+        .send({ roleId: 'vendor.warehouse_manager' });
+      expect(res.status).toBe(403);
+      expect(res.body.requiredPermission).toBe('platform.iam.manage');
+    });
+
+    it('lists users (with roles) for an admin', async () => {
+      const res = await asAdmin(request(app).get('/iam/admin/users?principalType=admin'));
+      expect(res.status).toBe(200);
+      expect(res.body.items.some((u: { user: { userId: string } }) => u.user.userId === adminId)).toBe(true);
+      const me = res.body.items.find((u: { user: { userId: string } }) => u.user.userId === adminId);
+      expect(me.roles).toContain('admin.ops');
+    });
+
+    it('401s an unauthenticated users list', async () => {
+      const res = await request(app).get('/iam/admin/users');
+      expect(res.status).toBe(401);
+    });
   });
 
   describe('requirePermission middleware', () => {
@@ -126,29 +167,26 @@ describe('RBAC HTTP API', () => {
       const vendorUser = await request(app)
         .post(`/iam/persons/${vendorPerson.body.personId}/users`)
         .send({ principalType: 'vendor' });
-      const res = await request(app)
-        .get('/iam/rbac/ping')
-        .set('x-user-id', vendorUser.body.userId);
+      const res = await request(app).get('/iam/rbac/ping').set('x-user-id', vendorUser.body.userId);
       expect(res.status).toBe(403);
       expect(res.body.requiredPermission).toBe('platform.read_all');
     });
 
     it('200 for an actor holding the permission', async () => {
-      const adminId = await makeActiveAdmin(app, 'admin.support');
-      const res = await request(app).get('/iam/rbac/ping').set('x-user-id', adminId);
+      const supportId = await bootstrapAdmin(service, 'admin.support');
+      const res = await request(app).get('/iam/rbac/ping').set('x-user-id', supportId);
       expect(res.status).toBe(200);
-      expect(res.body).toMatchObject({ ok: true, actorUserId: adminId });
+      expect(res.body).toMatchObject({ ok: true, actorUserId: supportId });
     });
 
     it('gates the access-audit read behind platform.audit.read', async () => {
-      const supportId = await makeActiveAdmin(app, 'admin.support'); // lacks audit.read
+      const supportId = await bootstrapAdmin(service, 'admin.support'); // lacks audit.read
       const denied = await request(app).get('/iam/access-audit').set('x-user-id', supportId);
       expect(denied.status).toBe(403);
 
-      const complianceId = await makeActiveAdmin(app, 'admin.compliance'); // has audit.read
+      const complianceId = await bootstrapAdmin(service, 'admin.compliance'); // has audit.read
       const ok = await request(app).get('/iam/access-audit').set('x-user-id', complianceId);
       expect(ok.status).toBe(200);
-      // The compliance read itself is audited (allow).
       expect(ok.body.items.some((e: { decision: string }) => e.decision === 'allow')).toBe(true);
     });
   });

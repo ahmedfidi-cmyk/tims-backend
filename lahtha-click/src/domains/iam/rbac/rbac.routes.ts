@@ -2,7 +2,16 @@
 
 import { Router, type NextFunction, type Request, type Response } from 'express';
 import { z, ZodError } from 'zod';
-import { PRINCIPAL_TYPES, USER_STATUS_ACTIONS, listRoleCatalog, InvalidUserStatusTransition, type PermissionId } from './rbac-policy.js';
+import {
+  PRINCIPAL_TYPES,
+  USER_STATUSES,
+  USER_STATUS_ACTIONS,
+  listRoleCatalog,
+  InvalidUserStatusTransition,
+  type PermissionId,
+  type PrincipalType,
+  type UserStatus,
+} from './rbac-policy.js';
 import {
   PersonNotFoundError,
   RbacConflictError,
@@ -136,8 +145,27 @@ export function createRbacRouter(service: RbacService, opts: RbacRouterOptions =
     }),
   );
 
+  // Admin listing of users (with roles) for the role-management table.
+  router.get(
+    '/admin/users',
+    requirePermission(service, 'platform.iam.manage', opts),
+    asyncHandler(async (req, res) => {
+      const pt = typeof req.query.principalType === 'string' ? req.query.principalType : undefined;
+      const st = typeof req.query.status === 'string' ? req.query.status : undefined;
+      const items = await service.listUsers({
+        ...(pt && (PRINCIPAL_TYPES as readonly string[]).includes(pt) ? { principalType: pt as PrincipalType } : {}),
+        ...(st && (USER_STATUSES as readonly string[]).includes(st) ? { status: st as UserStatus } : {}),
+        limit: 200,
+      });
+      res.json({ items, total: items.length });
+    }),
+  );
+
+  // --- RBAC mutations: gated on the session principal's platform.iam.manage ---
+
   router.post(
     '/users/:userId/roles',
+    requirePermission(service, 'platform.iam.manage', opts),
     asyncHandler(async (req, res) => {
       const { roleId } = grantRoleSchema.parse(req.body);
       await service.grantRole(param(req, 'userId'), roleId, actorOf(req));
@@ -147,6 +175,7 @@ export function createRbacRouter(service: RbacService, opts: RbacRouterOptions =
 
   router.delete(
     '/users/:userId/roles/:roleId',
+    requirePermission(service, 'platform.iam.manage', opts),
     asyncHandler(async (req, res) => {
       await service.revokeRole(param(req, 'userId'), param(req, 'roleId'), actorOf(req));
       res.status(204).end();
@@ -155,6 +184,7 @@ export function createRbacRouter(service: RbacService, opts: RbacRouterOptions =
 
   router.post(
     '/users/:userId/status',
+    requirePermission(service, 'platform.iam.manage', opts),
     asyncHandler(async (req, res) => {
       const { action } = statusSchema.parse(req.body);
       const user = await service.setUserStatus(param(req, 'userId'), action);

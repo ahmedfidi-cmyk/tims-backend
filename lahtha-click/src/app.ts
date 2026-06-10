@@ -42,7 +42,7 @@ export function createApp(): Express {
   // Workstream 2 — IAM (identity + OTP/sessions + MFA + RBAC, one composition root).
   const iam = createIamModule();
   app.use('/iam', iam.router);
-  app.use('/lahtha', createLahthaVendorRouter()); // vendor approval lifecycle
+  app.use('/lahtha', createLahthaVendorRouter(iam.authz)); // vendor approval lifecycle (admin routes gated)
   // Workstream 3 — Inventory / IMEI (authorized by the shared IAM session authz).
   app.use('/lahtha/inventory', createLahthaInventoryRouter(iam.authz));
   // Workstream 4 — Checkout (orders) — same session authz; in-process inventory transfer.
