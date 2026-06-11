@@ -14,60 +14,122 @@ interface AdminAuthContextType {
   token: string | null
   isLoading: boolean
   isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
+  error: string | null
+  login: (email: string) => Promise<{ devCode?: string }>
+  verify: (email: string, code: string) => Promise<void>
   logout: () => void
+  clearError: () => void
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined)
 
+interface Principal {
+  userId: string
+  roles: string[]
+}
+
+// Only a principal holding an admin.* role counts as an authenticated admin.
+function principalToAdmin(principal: Principal, emailFallback = ''): Admin | null {
+  const adminRole = principal.roles?.find((r) => r.startsWith('admin.'))
+  if (!adminRole) return null
+  return {
+    id: principal.userId,
+    email: emailFallback,
+    name: emailFallback,
+    role: adminRole === 'admin.ops' ? 'operations' : 'super_admin',
+  }
+}
+
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null)
-  const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const hydrate = useCallback(async (emailFallback?: string): Promise<Admin | null> => {
+    try {
+      const res = await fetch('/api/admin/auth/session', { credentials: 'include' })
+      const data = await res.json().catch(() => ({}))
+      if (data?.authenticated && data.principal) {
+        const a = principalToAdmin(data.principal, emailFallback ?? admin?.email ?? '')
+        setAdmin(a)
+        return a
+      }
+      setAdmin(null)
+      return null
+    } catch {
+      setAdmin(null)
+      return null
+    }
+  }, [admin?.email])
 
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('admin_token')
-      const storedAdmin = localStorage.getItem('admin_data')
-      if (storedToken && storedAdmin) {
-        setToken(storedToken)
-        setAdmin(JSON.parse(storedAdmin))
-      }
-    } catch (_) {
-      localStorage.removeItem('admin_token')
-      localStorage.removeItem('admin_data')
-    } finally {
-      setIsLoading(false)
-    }
+    void hydrate().finally(() => setIsLoading(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string) => {
+    setError(null)
     const res = await fetch('/api/admin/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+      body: JSON.stringify({ email }),
     })
     if (!res.ok) {
       const data = await res.json().catch(() => ({}))
-      throw new Error(data.error || 'فشل تسجيل الدخول')
+      const message = data.error || 'فشل إرسال الرمز'
+      setError(message)
+      throw new Error(message)
     }
-    const { token: t, admin: a } = await res.json()
-    setToken(t)
-    setAdmin(a)
-    localStorage.setItem('admin_token', t)
-    localStorage.setItem('admin_data', JSON.stringify(a))
+    return res.json()
   }, [])
 
+  const verify = useCallback(
+    async (email: string, code: string) => {
+      setError(null)
+      const res = await fetch('/api/admin/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, code }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        const message = data.error || 'فشل التحقق'
+        setError(message)
+        throw new Error(message)
+      }
+      const a = await hydrate(email)
+      if (!a) {
+        const message = 'هذا الحساب ليس لديه صلاحية إدارية'
+        setError(message)
+        throw new Error(message)
+      }
+    },
+    [hydrate],
+  )
+
   const logout = useCallback(() => {
-    setToken(null)
+    void fetch('/api/admin/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {})
     setAdmin(null)
-    localStorage.removeItem('admin_token')
-    localStorage.removeItem('admin_data')
+    setError(null)
   }, [])
+
+  const clearError = useCallback(() => setError(null), [])
 
   return (
     <AdminAuthContext.Provider
-      value={{ admin, token, isLoading, isAuthenticated: !!token, login, logout }}
+      value={{
+        admin,
+        token: null,
+        isLoading,
+        isAuthenticated: !!admin,
+        error,
+        login,
+        verify,
+        logout,
+        clearError,
+      }}
     >
       {children}
     </AdminAuthContext.Provider>
