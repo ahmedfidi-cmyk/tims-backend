@@ -42,6 +42,14 @@ export class InMemoryVendorRepository implements VendorRepository {
     this.store.set(vendorId, updated);
     return { ...updated };
   }
+
+  async listByStatus(status: VendorState, limit = 100): Promise<Vendor[]> {
+    return [...this.store.values()]
+      .filter((v) => v.status === status)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      .slice(0, limit)
+      .map((v) => ({ ...v }));
+  }
 }
 
 export class InMemoryAuditRepository implements AuditRepository {

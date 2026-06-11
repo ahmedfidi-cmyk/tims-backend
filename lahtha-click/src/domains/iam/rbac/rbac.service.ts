@@ -181,6 +181,17 @@ export class RbacService {
     return { user, roles, permissions };
   }
 
+  /** Admin listing of users (with their roles), optionally filtered. */
+  async listUsers(filter: { principalType?: PrincipalType; status?: UserStatus; limit?: number }): Promise<UserView[]> {
+    const users = await this.deps.users.list(filter);
+    return Promise.all(
+      users.map(async (user) => {
+        const roles = await this.deps.grants.listForUser(user.userId);
+        return { user, roles, permissions: [...effectivePermissions(roles, user.status)] };
+      }),
+    );
+  }
+
   /**
    * Find-or-create a person (keyed by phone) and their principal of the given
    * type. Idempotent — the bridge calls this to link a vendor identity to an

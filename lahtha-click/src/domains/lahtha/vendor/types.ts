@@ -60,6 +60,8 @@ export interface VendorRepository {
     expectedFrom: VendorState,
     patch: Partial<Pick<Vendor, 'status' | 'ownershipProofRef' | 'rejectionReason'>>,
   ): Promise<Vendor | null>;
+  /** Admin queue: vendors in a given lifecycle state, oldest first. */
+  listByStatus(status: VendorState, limit?: number): Promise<Vendor[]>;
 }
 
 /** Persistence port for the append-only audit ledger. */

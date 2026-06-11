@@ -118,6 +118,11 @@ export class VendorApprovalService {
     return this.audit.listForEntity(vendorId);
   }
 
+  /** Admin review queue: vendors in a given lifecycle state, oldest first. */
+  async listByStatus(status: VendorState, limit?: number): Promise<Vendor[]> {
+    return this.vendors.listByStatus(status, limit);
+  }
+
   /** Shared transition path: validate (pure) → persist (guarded) → audit. */
   private async transition(
     vendorId: string,

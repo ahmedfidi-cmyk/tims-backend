@@ -122,6 +122,15 @@ export class MongoVendorRepository implements VendorRepository {
       .exec();
     return doc ? toVendor(doc) : null;
   }
+
+  async listByStatus(status: VendorState, limit = 100): Promise<Vendor[]> {
+    const docs = await VendorModel.find({ status })
+      .sort({ createdAt: 1 }) // uses the by_status_created index
+      .limit(limit)
+      .lean<VendorDoc[]>()
+      .exec();
+    return docs.map(toVendor);
+  }
 }
 
 export class MongoAuditRepository implements AuditRepository {

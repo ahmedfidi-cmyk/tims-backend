@@ -9,8 +9,9 @@ import {
   VendorNotFoundError,
   type TransitionContext,
 } from './vendor.service.js';
-import { InvalidTransitionError } from './vendor-approval.js';
+import { InvalidTransitionError, VENDOR_STATES, type VendorState } from './vendor-approval.js';
 import type { Vendor as VendorRecord } from './types.js';
+import type { Authz } from '../../iam/authz.js';
 
 const ACTOR_HEADER = 'x-actor-id';
 
@@ -34,6 +35,11 @@ function actorFrom(req: Request, fallback: string): string {
 
 function ctxFrom(req: Request, fallbackActor: string): TransitionContext {
   return { actor: actorFrom(req, fallbackActor), correlationId: req.correlationId };
+}
+
+/** Admin actor comes from the authenticated session principal (set by authz). */
+function adminCtx(req: Request): TransitionContext {
+  return { actor: req.principalUserId ?? 'admin', correlationId: req.correlationId };
 }
 
 /** Read a declared route param (always present for matched routes). */
@@ -87,7 +93,7 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
   next(err);
 }
 
-export function createVendorRouter(service: VendorApprovalService): Router {
+export function createVendorRouter(service: VendorApprovalService, authz: Authz): Router {
   const router = Router();
 
   // Register a new vendor (self-service signup entry point).
@@ -148,29 +154,42 @@ export function createVendorRouter(service: VendorApprovalService): Router {
     }),
   );
 
-  // --- Admin actions ---
+  // --- Admin actions (gated on the session principal's platform.vendor.review) ---
+
+  // Review queue: vendors in a given lifecycle state (defaults to PENDING_REVIEW).
+  router.get(
+    '/admin/vendors',
+    authz.requirePermission('platform.vendor.review'),
+    asyncHandler(async (req, res) => {
+      const raw = typeof req.query.status === 'string' ? req.query.status : VENDOR_STATES.PENDING_REVIEW;
+      if (!Object.values(VENDOR_STATES).includes(raw as VendorState)) {
+        res.status(400).json({ error: 'invalid_status', correlationId: req.correlationId });
+        return;
+      }
+      const items = await service.listByStatus(raw as VendorState);
+      res.json({ items: items.map(vendorView), total: items.length });
+    }),
+  );
 
   router.post(
     '/admin/vendors/:vendorId/approve',
+    authz.requirePermission('platform.vendor.review'),
     asyncHandler(async (req, res) => {
-      const vendor = await service.approve(param(req, 'vendorId'), ctxFrom(req, 'admin'));
+      const vendor = await service.approve(param(req, 'vendorId'), adminCtx(req));
       res.json(vendorView(vendor));
     }),
   );
 
   router.post(
     '/admin/vendors/:vendorId/reject',
+    authz.requirePermission('platform.vendor.review'),
     asyncHandler(async (req, res) => {
       const parsed = rejectSchema.safeParse(req.body);
       if (!parsed.success) {
         res.status(400).json({ error: 'validation_error', issues: parsed.error.issues });
         return;
       }
-      const vendor = await service.reject(
-        param(req, 'vendorId'),
-        parsed.data.reason,
-        ctxFrom(req, 'admin'),
-      );
+      const vendor = await service.reject(param(req, 'vendorId'), parsed.data.reason, adminCtx(req));
       res.json(vendorView(vendor));
     }),
   );
