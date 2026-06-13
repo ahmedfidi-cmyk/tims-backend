@@ -18,6 +18,7 @@ export class InMemoryVendorRepository implements VendorRepository {
   async create(vendor: NewVendor): Promise<Vendor> {
     const record: Vendor = {
       ...vendor,
+      userId: vendor.userId ?? null,
       ownershipProofRef: null,
       rejectionReason: null,
     };

@@ -13,6 +13,8 @@ export interface Vendor {
   name: string;
   contactEmail: string;
   status: VendorState;
+  /** Linked RBAC user (the vendor principal); null for legacy unlinked records. */
+  userId: string | null;
   /** Reference to the latest ownership-proof document (e.g. S3 key). */
   ownershipProofRef: string | null;
   /** Reason captured on the most recent rejection, if any. */
@@ -42,8 +44,17 @@ export interface NewVendor {
   name: string;
   contactEmail: string;
   status: VendorState;
+  userId: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Cross-domain port: on approval, onboard the linked RBAC account (activate the
+ * user + grant the default vendor role). Implemented over the RBAC service.
+ */
+export interface VendorActivationPort {
+  onVendorApproved(userId: string): Promise<void>;
 }
 
 /** Persistence port for vendors. */
