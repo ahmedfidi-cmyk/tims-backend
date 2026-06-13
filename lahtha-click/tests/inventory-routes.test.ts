@@ -149,7 +149,7 @@ describe('Inventory HTTP API', () => {
   });
 
   it('403s a principal lacking lahtha.device.register', async () => {
-    const token = await sessionFor('vendor', 'vendor.owner'); // owner lacks device.register
+    const token = await sessionFor('customer', 'customer.standard'); // lacks device.register
     const res = await request(app)
       .post('/lahtha/inventory/devices')
       .set('Authorization', `Bearer ${token}`)
@@ -167,6 +167,15 @@ describe('Inventory HTTP API', () => {
     expect(res.status).toBe(201);
     expect(res.body.state).toBe('with_vendor');
     expect(res.body.documents).toHaveLength(1);
+  });
+
+  it('an approved vendor.owner can register a device (201)', async () => {
+    const token = await sessionFor('vendor', 'vendor.owner');
+    const res = await request(app)
+      .post('/lahtha/inventory/devices')
+      .set('Authorization', `Bearer ${token}`)
+      .send(registration());
+    expect(res.status).toBe(201);
   });
 
   it('rejects registration without the mandatory invoice (400)', async () => {

@@ -61,8 +61,14 @@ export const ROLES = {
   },
   'vendor.owner': {
     domain: 'lahtha',
-    description: 'Manage vendor profile, list devices, view payouts',
-    permissions: ['lahtha.vendor.manage_profile', 'lahtha.device.list', 'lahtha.payout.view'],
+    description: 'Full self-serve vendor: profile, devices (register + list), docs, payouts',
+    permissions: [
+      'lahtha.vendor.manage_profile',
+      'lahtha.device.list',
+      'lahtha.device.register',
+      'lahtha.document.upload',
+      'lahtha.payout.view',
+    ],
   },
   'vendor.warehouse_manager': {
     domain: 'lahtha',
