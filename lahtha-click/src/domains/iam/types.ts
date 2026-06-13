@@ -90,6 +90,19 @@ export interface VendorAccountProvisioner {
   }): Promise<{ personId: string; userId: string }>;
 }
 
+/**
+ * Cross-domain port: create the linked vendor-approval record at signup, sharing
+ * the identity's vendorId + RBAC userId. Implemented over the vendor-approval service.
+ */
+export interface VendorApprovalProvisioner {
+  createApprovalRecord(input: {
+    vendorId: string;
+    userId: string;
+    name: string;
+    contactEmail: string;
+  }): Promise<void>;
+}
+
 /** Delivers an OTP code to the vendor. Implementations: SMS, email, log (dev). */
 export interface OtpSenderPort {
   send(args: { vendorId: string; channel: OtpChannel; code: string }): Promise<void>;

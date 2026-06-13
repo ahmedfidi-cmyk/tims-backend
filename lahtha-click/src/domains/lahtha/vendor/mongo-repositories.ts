@@ -18,6 +18,7 @@ interface VendorDoc {
   name: string;
   contactEmail: string;
   status: VendorState;
+  userId: string | null;
   ownershipProofRef: string | null;
   rejectionReason: string | null;
   createdAt: Date;
@@ -34,6 +35,7 @@ const vendorSchema = new Schema<VendorDoc>(
       required: true,
       enum: Object.values(VENDOR_STATES),
     },
+    userId: { type: String, default: null },
     ownershipProofRef: { type: String, default: null },
     rejectionReason: { type: String, default: null },
     createdAt: { type: Date, required: true },
@@ -84,6 +86,7 @@ function toVendor(doc: VendorDoc): Vendor {
     name: doc.name,
     contactEmail: doc.contactEmail,
     status: doc.status,
+    userId: doc.userId ?? null,
     ownershipProofRef: doc.ownershipProofRef,
     rejectionReason: doc.rejectionReason,
     createdAt: doc.createdAt,

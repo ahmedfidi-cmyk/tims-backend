@@ -2,7 +2,13 @@
 // and the audit ledger. No HTTP or framework concerns live here.
 
 import { randomUUID } from 'node:crypto';
-import type { AuditEntry, AuditRepository, Vendor, VendorRepository } from './types.js';
+import type {
+  AuditEntry,
+  AuditRepository,
+  Vendor,
+  VendorActivationPort,
+  VendorRepository,
+} from './types.js';
 import {
   applyTransition,
   canParticipateInClick,
@@ -35,6 +41,9 @@ export class ConcurrencyError extends Error {
 export interface RegisterVendorInput {
   name: string;
   contactEmail: string;
+  /** Shared-id linking (IAM signup): reuse the identity's vendorId + RBAC userId. */
+  vendorId?: string;
+  userId?: string | null;
 }
 
 export interface TransitionContext {
@@ -46,16 +55,21 @@ export class VendorApprovalService {
   constructor(
     private readonly vendors: VendorRepository,
     private readonly audit: AuditRepository,
+    /** Optional: onboard the RBAC account on approval (null for legacy/tests). */
+    private readonly activation: VendorActivationPort | null = null,
+    /** Injected so the (best-effort) activation failure can be logged. */
+    private readonly logger: { warn(obj: Record<string, unknown>, msg: string): void } = { warn: () => {} },
   ) {}
 
   /** Register a new vendor in PENDING_OWNERSHIP_PROOF. */
   async register(input: RegisterVendorInput, ctx: TransitionContext): Promise<Vendor> {
     const now = new Date();
     const vendor = await this.vendors.create({
-      vendorId: randomUUID(),
+      vendorId: input.vendorId ?? randomUUID(),
       name: input.name,
       contactEmail: input.contactEmail,
       status: INITIAL_STATE,
+      userId: input.userId ?? null,
       createdAt: now,
       updatedAt: now,
     });
@@ -86,7 +100,19 @@ export class VendorApprovalService {
 
   /** Admin approval — only valid from PENDING_REVIEW (Rule 4 prerequisite). */
   async approve(vendorId: string, ctx: TransitionContext): Promise<Vendor> {
-    return this.transition(vendorId, VENDOR_ACTIONS.APPROVE, ctx, {}, {});
+    const vendor = await this.transition(vendorId, VENDOR_ACTIONS.APPROVE, ctx, {}, {});
+    // Onboard the linked RBAC account (best-effort — approval already persisted).
+    if (vendor.userId && this.activation) {
+      try {
+        await this.activation.onVendorApproved(vendor.userId);
+      } catch (err) {
+        this.logger.warn(
+          { event: 'VENDOR_ACTIVATION_FAILED', vendorId, userId: vendor.userId, err: String(err) },
+          'vendor approved but account activation failed; resolve via the roles page',
+        );
+      }
+    }
+    return vendor;
   }
 
   /** Admin rejection with a mandatory reason; vendor may later resubmit. */

@@ -26,6 +26,7 @@ import {
   type Session,
   type SessionRepository,
   type VendorAccountProvisioner,
+  type VendorApprovalProvisioner,
   type VendorIdentity,
   type VendorIdentityRepository,
   type VendorStatusPort,
@@ -44,6 +45,8 @@ export interface IamDeps {
   sessions: SessionRepository;
   vendorStatus: VendorStatusPort;
   provisioner: VendorAccountProvisioner;
+  /** Optional: link a vendor-approval record at signup (shared id). */
+  approvalProvisioner?: VendorApprovalProvisioner;
   otpSender: OtpSenderPort;
   mfa: MfaVerifierPort;
   clock: Clock;
@@ -132,6 +135,17 @@ export async function registerVendorIdentity(
     createdAt: deps.clock.now(),
   };
   await deps.identities.create(identity);
+
+  // Link a vendor-approval record (shared id) so the admin queue reflects signups.
+  if ((input.principalType ?? 'vendor') === 'vendor' && deps.approvalProvisioner) {
+    await deps.approvalProvisioner.createApprovalRecord({
+      vendorId: identity.vendorId,
+      userId,
+      name: input.businessName,
+      contactEmail: input.email,
+    });
+  }
+
   deps.logger.info(
     { event: 'VENDOR_REGISTERED', vendorId: identity.vendorId, personId, userId },
     'vendor identity registered',

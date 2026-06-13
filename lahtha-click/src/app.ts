@@ -7,10 +7,15 @@ import express, {
 import { correlationId } from './middleware/correlation-id.js';
 import { errorHandler } from './middleware/error-handler.js';
 import { healthRouter } from './routes/health.js';
-import { createLahthaVendorRouter } from './domains/lahtha/vendor/index.js';
+import {
+  createLahthaVendorRouter,
+  createVendorApprovalService,
+  makeApprovalProvisioner,
+  RbacVendorActivation,
+} from './domains/lahtha/vendor/index.js';
 import { createLahthaInventoryRouter } from './domains/lahtha/inventory/index.js';
 import { createLahthaCheckoutRouter } from './domains/lahtha/checkout/index.js';
-import { createIamModule } from './domains/iam/index.js';
+import { createIamModule, createRbacService } from './domains/iam/index.js';
 import { logger } from './lib/logger.js';
 
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -39,10 +44,13 @@ export function createApp(): Express {
 
   app.use(healthRouter);
 
-  // Workstream 2 — IAM (identity + OTP/sessions + MFA + RBAC, one composition root).
-  const iam = createIamModule();
+  // Composition (linear, no cycle): RBAC → vendor-approval (activation over RBAC)
+  // → IAM module (provisions the linked approval record at signup). See ADR-0005.
+  const rbac = createRbacService();
+  const vendorApproval = createVendorApprovalService(new RbacVendorActivation(rbac));
+  const iam = createIamModule({ rbac, approvalProvisioner: makeApprovalProvisioner(vendorApproval) });
   app.use('/iam', iam.router);
-  app.use('/lahtha', createLahthaVendorRouter(iam.authz)); // vendor approval lifecycle (admin routes gated)
+  app.use('/lahtha', createLahthaVendorRouter(vendorApproval, iam.authz)); // vendor approval lifecycle (admin gated)
   // Workstream 3 — Inventory / IMEI (authorized by the shared IAM session authz).
   app.use('/lahtha/inventory', createLahthaInventoryRouter(iam.authz));
   // Workstream 4 — Checkout (orders) — same session authz; in-process inventory transfer.
