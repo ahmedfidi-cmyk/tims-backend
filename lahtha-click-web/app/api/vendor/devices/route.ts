@@ -46,33 +46,28 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ items, total: items.length })
 }
 
-// --- POST/PATCH/DELETE: still mock (device creation/mutation deferred — needs the
-// register-device form fields + invoice upload, tracked as a follow-up). ---
+// --- POST: register a device against the backend (proxy + cookie) ---
+
+export async function POST(req: NextRequest) {
+  const body = await req.json().catch(() => ({}))
+  const backendRes = await fetch(backendUrl('/lahtha/inventory/devices'), {
+    method: 'POST',
+    headers: backendHeaders(req),
+    body: JSON.stringify(body),
+  }).catch(() => null)
+
+  if (!backendRes) return NextResponse.json({ error: 'backend_unreachable' }, { status: 502 })
+  const data = await backendRes.json().catch(() => ({}))
+  if (!backendRes.ok) {
+    return NextResponse.json({ error: data?.error ?? 'request_failed', detail: data }, { status: backendRes.status })
+  }
+  return NextResponse.json({ success: true, device: data })
+}
+
+// --- PATCH/DELETE: still mock (status toggle / delete are a listing concept the
+// backend does not model the same way — tracked as a follow-up). ---
 
 let devices = [...mockDevices]
-
-export async function POST(req: Request) {
-  const body = await req.json()
-  const { imei, brand, model, condition, price, description } = body
-  if (!imei || !brand || !model || !price) {
-    return Response.json({ error: 'Missing required fields' }, { status: 400 })
-  }
-  const newDevice: DeviceListing = {
-    id: `dev_${Date.now()}`,
-    imei,
-    brand,
-    model,
-    condition: condition || 'good',
-    price,
-    description: description || '',
-    images: [],
-    status: 'active',
-    views: 0,
-    created_at: new Date().toISOString(),
-  }
-  devices.push(newDevice)
-  return Response.json({ success: true, device: newDevice })
-}
 
 export async function PATCH(req: Request) {
   const body = await req.json()
