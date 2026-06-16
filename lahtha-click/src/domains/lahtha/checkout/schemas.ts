@@ -11,6 +11,13 @@ export const placeOrderSchema = z.object({
 });
 export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;
 
+export const placeFromListingSchema = z.object({
+  listingId: z.string().trim().min(1),
+  fulfillmentType: z.enum(FULFILLMENT_TYPES),
+  idempotencyKey: z.string().trim().min(1).max(128).optional(),
+});
+export type PlaceFromListingInput = z.infer<typeof placeFromListingSchema>;
+
 export const paymentEventSchema = z.object({
   outcome: z.enum(['captured', 'failed']),
   paymentRef: z.string().trim().min(1).max(256),

@@ -10,6 +10,7 @@ import { SystemClock } from './in-memory-adapters.js';
 import { InventoryServicePort, MongoOrderRepository } from './mongo-adapters.js';
 import { createInventoryService } from '../inventory/index.js';
 import type { Authz } from '../../iam/authz.js';
+import type { ListingQueryPort, ListingSoldPort } from './types.js';
 
 export { CheckoutService } from './checkout.service.js';
 export { createCheckoutRouter } from './checkout.routes.js';
@@ -17,11 +18,18 @@ export * from './order-state.js';
 export * from './order-money.js';
 export type * from './types.js';
 
+export interface CheckoutWiring {
+  listings?: ListingQueryPort;
+  listingSold?: ListingSoldPort;
+}
+
 /** Build the production checkout router, mounted at /lahtha. */
-export function createLahthaCheckoutRouter(authz: Authz): Router {
+export function createLahthaCheckoutRouter(authz: Authz, wiring: CheckoutWiring = {}): Router {
   const service = new CheckoutService({
     orders: new MongoOrderRepository(),
     inventory: new InventoryServicePort(createInventoryService()),
+    ...(wiring.listings ? { listings: wiring.listings } : {}),
+    ...(wiring.listingSold ? { listingSold: wiring.listingSold } : {}),
     clock: new SystemClock(),
     logger,
   });

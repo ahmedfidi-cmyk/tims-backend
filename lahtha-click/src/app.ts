@@ -15,6 +15,12 @@ import {
 } from './domains/lahtha/vendor/index.js';
 import { createLahthaInventoryRouter } from './domains/lahtha/inventory/index.js';
 import { createLahthaCheckoutRouter } from './domains/lahtha/checkout/index.js';
+import {
+  createLahthaListingRouter,
+  createListingService,
+  makeListingQueryPort,
+  makeListingSoldPort,
+} from './domains/lahtha/listing/index.js';
 import { createIamModule, createRbacService } from './domains/iam/index.js';
 import { logger } from './lib/logger.js';
 
@@ -53,8 +59,17 @@ export function createApp(): Express {
   app.use('/lahtha', createLahthaVendorRouter(vendorApproval, iam.authz)); // vendor approval lifecycle (admin gated)
   // Workstream 3 — Inventory / IMEI (authorized by the shared IAM session authz).
   app.use('/lahtha/inventory', createLahthaInventoryRouter(iam.authz));
+  // Listings (storefront offers, ADR-0006) — checkout places from a listing + marks it sold.
+  const listing = createListingService();
+  app.use('/lahtha', createLahthaListingRouter(listing, iam.authz));
   // Workstream 4 — Checkout (orders) — same session authz; in-process inventory transfer.
-  app.use('/lahtha', createLahthaCheckoutRouter(iam.authz));
+  app.use(
+    '/lahtha',
+    createLahthaCheckoutRouter(iam.authz, {
+      listings: makeListingQueryPort(listing),
+      listingSold: makeListingSoldPort(listing),
+    }),
+  );
   // app.use('/click',  clickRouter);  // future
 
   app.use(errorHandler);

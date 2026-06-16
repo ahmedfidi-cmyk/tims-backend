@@ -16,6 +16,8 @@ import type {
   AuditLogger,
   Clock,
   InventoryPort,
+  ListingQueryPort,
+  ListingSoldPort,
   Order,
   OrderPatch,
   OrderRepository,
@@ -28,8 +30,19 @@ export const LAHTHA_CUSTODY_OWNER = 'LAHTHA_CUSTODY';
 export interface CheckoutDeps {
   orders: OrderRepository;
   inventory: InventoryPort;
+  /** Storefront placement: resolve a purchasable listing. */
+  listings?: ListingQueryPort;
+  /** Mark a listing sold when its order completes. */
+  listingSold?: ListingSoldPort;
   clock: Clock;
   logger: AuditLogger;
+}
+
+export class ListingUnavailableError extends Error {
+  constructor(public readonly listingId: string) {
+    super(`Listing ${listingId} is not available`);
+    this.name = 'ListingUnavailableError';
+  }
 }
 
 // --- Errors ---
@@ -62,7 +75,10 @@ export class CheckoutService {
   constructor(private readonly deps: CheckoutDeps) {}
 
   /** Place an order against an available (vendor-owned) device. */
-  async placeOrder(input: PlaceOrderInput, buyerUserId: string): Promise<{ order: Order; created: boolean }> {
+  async placeOrder(
+    input: PlaceOrderInput & { listingId?: string },
+    buyerUserId: string,
+  ): Promise<{ order: Order; created: boolean }> {
     if (input.idempotencyKey) {
       const existing = await this.deps.orders.findByIdempotencyKey(buyerUserId, input.idempotencyKey);
       if (existing) return { order: existing, created: false };
@@ -86,6 +102,7 @@ export class CheckoutService {
       commissionHalalat: money.commissionHalalat,
       vendorNetHalalat: money.vendorNetHalalat,
       totalHalalat: money.totalHalalat,
+      listingId: input.listingId ?? null,
       idempotencyKey: input.idempotencyKey ?? null,
       createdAt: now,
       updatedAt: now,
@@ -95,6 +112,26 @@ export class CheckoutService {
       'order placed',
     );
     return { order, created: true };
+  }
+
+  /** Storefront placement: order against an active listing, snapshotting its price. */
+  async placeOrderFromListing(
+    input: { listingId: string; fulfillmentType: PlaceOrderInput['fulfillmentType']; idempotencyKey?: string },
+    buyerUserId: string,
+  ): Promise<{ order: Order; created: boolean }> {
+    if (!this.deps.listings) throw new ListingUnavailableError(input.listingId);
+    const listing = await this.deps.listings.getActiveListing(input.listingId);
+    if (!listing) throw new ListingUnavailableError(input.listingId);
+    return this.placeOrder(
+      {
+        deviceId: listing.deviceId,
+        fulfillmentType: input.fulfillmentType,
+        subtotalHalalat: listing.priceHalalat,
+        listingId: input.listingId,
+        ...(input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : {}),
+      },
+      buyerUserId,
+    );
   }
 
   /** Apply a payment provider result (idempotent by paymentRef). W5 drives this. */
@@ -107,7 +144,8 @@ export class CheckoutService {
     }
 
     const updated = await this.transition(order, ORDER_ACTIONS.PAY_CAPTURED, { paymentRef });
-    // Digital custody: hand the device to LAHTHA custody on payment.
+    // Digital custody: hand the device to LAHTHA custody on payment, and the
+    // order is complete → mark the listing sold.
     if (updated.status === ORDER_STATES.IN_CUSTODY) {
       await this.deps.inventory.transferOwnership(order.deviceId, {
         newOwnerId: LAHTHA_CUSTODY_OWNER,
@@ -115,6 +153,7 @@ export class CheckoutService {
         acquisitionType: 'purchase',
         sourceEventId: order.orderId,
       });
+      await this.markListingSold(order);
     }
     return updated;
   }
@@ -134,7 +173,21 @@ export class CheckoutService {
       acquisitionType: 'purchase',
       sourceEventId: order.orderId,
     });
+    await this.markListingSold(order);
     return updated;
+  }
+
+  /** Best-effort: mark the source listing sold on completion (logged on failure). */
+  private async markListingSold(order: Order): Promise<void> {
+    if (!order.listingId || !this.deps.listingSold) return;
+    try {
+      await this.deps.listingSold.onOrderCompleted(order.listingId);
+    } catch (err) {
+      this.deps.logger.warn(
+        { event: 'LISTING_MARK_SOLD_FAILED', orderId: order.orderId, listingId: order.listingId, err: String(err) },
+        'order completed but listing could not be marked sold',
+      );
+    }
   }
 
   async cancel(orderId: string, byUserId: string): Promise<Order> {

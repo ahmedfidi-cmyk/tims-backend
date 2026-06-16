@@ -18,6 +18,8 @@ export interface Order {
   paymentRef: string | null;
   shippingRef: string | null;
   refundedHalalat: number | null;
+  /** Listing this order was placed from (storefront path), if any. */
+  listingId: string | null;
   idempotencyKey: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +36,7 @@ export interface NewOrder {
   commissionHalalat: number;
   vendorNetHalalat: number;
   totalHalalat: number;
+  listingId: string | null;
   idempotencyKey: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -73,6 +76,16 @@ export interface InventoryPort {
       sourceEventId?: string;
     },
   ): Promise<void>;
+}
+
+/** Read a purchasable listing (storefront placement). */
+export interface ListingQueryPort {
+  getActiveListing(listingId: string): Promise<{ deviceId: string; vendorUserId: string; priceHalalat: number } | null>;
+}
+
+/** Mark a listing sold when its order completes. */
+export interface ListingSoldPort {
+  onOrderCompleted(listingId: string): Promise<void>;
 }
 
 export interface Clock {
