@@ -39,9 +39,9 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
 export function createListingRouter(service: ListingService, authz: Authz): Router {
   const router = Router();
 
-  // Public browse.
+  // Public browse — listings with a device summary.
   router.get('/listings', asyncHandler(async (_req, res) => {
-    const items = await service.listActive();
+    const items = await service.browse();
     res.json({ items, total: items.length });
   }));
 
@@ -52,7 +52,7 @@ export function createListingRouter(service: ListingService, authz: Authz): Rout
   }));
 
   router.get('/listings/:listingId', asyncHandler(async (req, res) => {
-    res.json(await service.getById(param(req, 'listingId')));
+    res.json(await service.getDetailed(param(req, 'listingId')));
   }));
 
   // Vendor lists an owned device.

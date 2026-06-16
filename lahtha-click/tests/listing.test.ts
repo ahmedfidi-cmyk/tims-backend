@@ -42,6 +42,15 @@ describe('ListingService', () => {
       logger: silentLogger,
     });
     inv.setOwner('dev-1', { ownerId: 'vendor-1', ownerType: 'vendor' });
+    inv.setSummary('dev-1', { modelName: 'iPhone 17 Pro', condition: 'new_sealed', imei: '350000000000000' });
+  });
+
+  it('browse returns active listings with a device summary', async () => {
+    await service.createListing({ deviceId: 'dev-1', priceHalalat: 100_000 }, 'vendor-1');
+    const items = await service.browse();
+    expect(items).toHaveLength(1);
+    expect(items[0]?.listing.priceHalalat).toBe(100_000);
+    expect(items[0]?.device).toEqual({ modelName: 'iPhone 17 Pro', condition: 'new_sealed', imei: '350000000000000' });
   });
 
   it('a vendor lists an owned device', async () => {
