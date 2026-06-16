@@ -22,6 +22,7 @@ const orderSchema = new Schema<Order>(
     paymentRef: { type: String, default: null },
     shippingRef: { type: String, default: null },
     refundedHalalat: { type: Number, default: null },
+    listingId: { type: String, default: null },
     idempotencyKey: { type: String, default: null },
     createdAt: { type: Date, required: true },
     updatedAt: { type: Date, required: true },

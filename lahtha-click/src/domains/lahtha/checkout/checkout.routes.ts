@@ -3,10 +3,11 @@
 
 import { Router, type NextFunction, type Request, type Response } from 'express';
 import { ZodError } from 'zod';
-import { paymentEventSchema, placeOrderSchema, shipSchema } from './schemas.js';
+import { paymentEventSchema, placeFromListingSchema, placeOrderSchema, shipSchema } from './schemas.js';
 import {
   CheckoutService,
   DeviceUnavailableError,
+  ListingUnavailableError,
   NotOrderOwnerError,
   OrderConflictError,
   OrderNotFoundError,
@@ -38,6 +39,10 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
     res.status(409).json({ error: 'device_unavailable', deviceId: err.deviceId, reason: err.reason, correlationId });
     return;
   }
+  if (err instanceof ListingUnavailableError) {
+    res.status(409).json({ error: 'listing_unavailable', listingId: err.listingId, correlationId });
+    return;
+  }
   if (err instanceof InvalidOrderTransition) {
     res.status(409).json({ error: 'invalid_order_transition', from: err.from, action: err.action, correlationId });
     return;
@@ -63,6 +68,17 @@ export function createCheckoutRouter(service: CheckoutService, authz: Authz): Ro
     asyncHandler(async (req, res) => {
       const input = placeOrderSchema.parse(req.body);
       const { order, created } = await service.placeOrder(input, req.principalUserId!);
+      res.status(created ? 201 : 200).json(order);
+    }),
+  );
+
+  // Storefront placement: order against an active listing (snapshots its price).
+  router.post(
+    '/orders/from-listing',
+    authz.requirePermission('lahtha.order.place'),
+    asyncHandler(async (req, res) => {
+      const input = placeFromListingSchema.parse(req.body);
+      const { order, created } = await service.placeOrderFromListing(input, req.principalUserId!);
       res.status(created ? 201 : 200).json(order);
     }),
   );
