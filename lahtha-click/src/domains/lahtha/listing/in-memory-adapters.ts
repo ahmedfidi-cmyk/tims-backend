@@ -41,11 +41,18 @@ export class InMemoryListingRepository implements ListingRepository {
 /** Configurable inventory ownership for tests. */
 export class FakeInventoryOwnership implements InventoryOwnershipPort {
   private readonly owners = new Map<string, { ownerId: string; ownerType: OwnerType }>();
+  private readonly summaries = new Map<string, { modelName: string; condition: string; imei: string }>();
   setOwner(deviceId: string, owner: { ownerId: string; ownerType: OwnerType }): void {
     this.owners.set(deviceId, owner);
   }
+  setSummary(deviceId: string, summary: { modelName: string; condition: string; imei: string }): void {
+    this.summaries.set(deviceId, summary);
+  }
   async getCurrentOwner(deviceId: string) {
     return this.owners.get(deviceId) ?? null;
+  }
+  async getDeviceSummary(deviceId: string) {
+    return this.summaries.get(deviceId) ?? null;
   }
 }
 

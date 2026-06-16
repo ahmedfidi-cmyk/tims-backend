@@ -65,4 +65,13 @@ export class InventoryOwnershipAdapter implements InventoryOwnershipPort {
       throw err;
     }
   }
+  async getDeviceSummary(deviceId: string) {
+    try {
+      const view = await this.inventory.getDevice(deviceId);
+      return { modelName: view.device.modelName, condition: view.device.condition, imei: view.device.imei };
+    } catch (err) {
+      if (err instanceof DeviceNotFoundError) return null;
+      throw err;
+    }
+  }
 }

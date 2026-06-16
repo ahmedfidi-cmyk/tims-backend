@@ -40,6 +40,12 @@ export interface InventoryOwnershipPort {
   getDeviceSummary?(deviceId: string): Promise<{ modelName: string; condition: string; imei: string } | null>;
 }
 
+export type DeviceSummary = { modelName: string; condition: string; imei: string } | null;
+export interface ListingView {
+  listing: Listing;
+  device: DeviceSummary;
+}
+
 export interface Clock {
   now(): Date;
 }

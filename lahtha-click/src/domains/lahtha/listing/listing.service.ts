@@ -7,7 +7,7 @@ import {
   nextListingStatus,
   type ListingStatus,
 } from './listing-state.js';
-import type { AuditLogger, Clock, InventoryOwnershipPort, Listing, ListingRepository } from './types.js';
+import type { AuditLogger, Clock, InventoryOwnershipPort, Listing, ListingRepository, ListingView } from './types.js';
 
 export class ListingNotFoundError extends Error {
   constructor(public readonly listingId: string) {
@@ -96,6 +96,24 @@ export class ListingService {
   }
   listByVendor(vendorUserId: string): Promise<Listing[]> {
     return this.deps.listings.listByVendor(vendorUserId);
+  }
+
+  /** Browse active listings with a device summary (storefront). */
+  async browse(limit?: number): Promise<ListingView[]> {
+    const listings = await this.deps.listings.listActive(limit);
+    return Promise.all(listings.map((listing) => this.withDevice(listing)));
+  }
+
+  /** A single listing with its device summary. */
+  async getDetailed(listingId: string): Promise<ListingView> {
+    return this.withDevice(await this.requireListing(listingId));
+  }
+
+  private async withDevice(listing: Listing): Promise<ListingView> {
+    const device = this.deps.inventory.getDeviceSummary
+      ? await this.deps.inventory.getDeviceSummary(listing.deviceId)
+      : null;
+    return { listing, device };
   }
 
   private async transition(listing: Listing, action: typeof LISTING_ACTIONS[keyof typeof LISTING_ACTIONS]): Promise<Listing> {
