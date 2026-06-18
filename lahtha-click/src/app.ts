@@ -14,7 +14,8 @@ import {
   RbacVendorActivation,
 } from './domains/lahtha/vendor/index.js';
 import { createLahthaInventoryRouter } from './domains/lahtha/inventory/index.js';
-import { createLahthaCheckoutRouter } from './domains/lahtha/checkout/index.js';
+import { createCheckoutService, createLahthaCheckoutRouter } from './domains/lahtha/checkout/index.js';
+import { createLahthaPaymentRouter, createPaymentService } from './domains/lahtha/payment/index.js';
 import {
   createLahthaListingRouter,
   createListingService,
@@ -63,13 +64,13 @@ export function createApp(): Express {
   const listing = createListingService();
   app.use('/lahtha', createLahthaListingRouter(listing, iam.authz));
   // Workstream 4 — Checkout (orders) — same session authz; in-process inventory transfer.
-  app.use(
-    '/lahtha',
-    createLahthaCheckoutRouter(iam.authz, {
-      listings: makeListingQueryPort(listing),
-      listingSold: makeListingSoldPort(listing),
-    }),
-  );
+  const checkout = createCheckoutService({
+    listings: makeListingQueryPort(listing),
+    listingSold: makeListingSoldPort(listing),
+  });
+  app.use('/lahtha', createLahthaCheckoutRouter(checkout, iam.authz));
+  // Payments (ADR-0007) — drives the checkout payment seam; stub auto-captures in dev.
+  app.use('/lahtha', createLahthaPaymentRouter(createPaymentService(checkout), iam.authz));
   // app.use('/click',  clickRouter);  // future
 
   app.use(errorHandler);

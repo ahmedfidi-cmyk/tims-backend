@@ -23,9 +23,9 @@ export interface CheckoutWiring {
   listingSold?: ListingSoldPort;
 }
 
-/** Build the production checkout router, mounted at /lahtha. */
-export function createLahthaCheckoutRouter(authz: Authz, wiring: CheckoutWiring = {}): Router {
-  const service = new CheckoutService({
+/** Build the production (Mongo-backed) checkout service. */
+export function createCheckoutService(wiring: CheckoutWiring = {}): CheckoutService {
+  return new CheckoutService({
     orders: new MongoOrderRepository(),
     inventory: new InventoryServicePort(createInventoryService()),
     ...(wiring.listings ? { listings: wiring.listings } : {}),
@@ -33,5 +33,9 @@ export function createLahthaCheckoutRouter(authz: Authz, wiring: CheckoutWiring 
     clock: new SystemClock(),
     logger,
   });
+}
+
+/** Build the production checkout router, mounted at /lahtha. */
+export function createLahthaCheckoutRouter(service: CheckoutService, authz: Authz): Router {
   return createCheckoutRouter(service, authz);
 }
