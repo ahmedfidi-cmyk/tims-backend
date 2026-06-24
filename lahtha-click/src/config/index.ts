@@ -16,6 +16,14 @@ const ConfigSchema = z.object({
   ENTRA_TENANT_ID: z.string().optional(),
   ENTRA_CLIENT_ID: z.string().optional(),
   ENTRA_ISSUER: z.string().optional(),
+
+  // Payments (ADR-0007). Default provider is the dev stub outside production.
+  PAYMENT_PROVIDER: z.enum(['stub', 'tabby', 'tamara', 'moyasar']).optional(),
+  TABBY_API_KEY: z.string().optional(),
+  TABBY_WEBHOOK_SECRET: z.string().optional(),
+  TAMARA_API_KEY: z.string().optional(),
+  TAMARA_WEBHOOK_SECRET: z.string().optional(),
+  MOYASAR_API_KEY: z.string().optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

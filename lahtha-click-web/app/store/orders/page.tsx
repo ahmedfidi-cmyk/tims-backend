@@ -26,16 +26,44 @@ export default function OrdersPage() {
   const { isAuthenticated, isLoading } = useCustomerAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [payingId, setPayingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  function loadOrders() {
+    return fetch('/api/store/orders', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((d) => setOrders(d.items || []))
+  }
 
   useEffect(() => {
     if (isLoading) return
     if (!isAuthenticated) { router.push('/store/auth?next=/store/orders'); return }
-    fetch('/api/store/orders', { credentials: 'include' }).then((r) => r.json()).then((d) => setOrders(d.items || [])).finally(() => setLoading(false))
+    loadOrders().finally(() => setLoading(false))
   }, [isAuthenticated, isLoading, router])
+
+  async function pay(orderId: string) {
+    setError(null)
+    setPayingId(orderId)
+    try {
+      const r = await fetch(`/api/store/orders/${orderId}/pay`, { method: 'POST', credentials: 'include' })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok) { setError(d.error ?? 'تعذّر إتمام الدفع'); return }
+      // Real providers return a hosted-checkout URL; the dev stub auto-captures.
+      if (d.redirectUrl) { window.location.href = d.redirectUrl; return }
+      await loadOrders()
+    } catch {
+      setError('تعذّر الاتصال بالخادم')
+    } finally {
+      setPayingId(null)
+    }
+  }
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-ink-900 mb-6">طلباتي</h1>
+      {error && (
+        <p className="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+      )}
       {loading ? (
         <p className="text-center py-12 text-ink-900/60">جاري التحميل...</p>
       ) : orders.length === 0 ? (
@@ -46,13 +74,23 @@ export default function OrdersPage() {
       ) : (
         <div className="card divide-y divide-ink-900/10">
           {orders.map((o) => (
-            <div key={o.orderId} className="flex justify-between items-center py-3 text-sm">
+            <div key={o.orderId} className="flex justify-between items-center gap-3 py-3 text-sm">
               <div>
                 <p className="font-mono text-xs text-ink-900/50">{o.orderId.slice(0, 8)}</p>
                 <p className="text-ink-900/70">{new Date(o.createdAt).toLocaleDateString('ar-SA')}</p>
               </div>
               <span className="px-2 py-1 rounded bg-ink-900/5 text-xs">{STATUS[o.status] ?? o.status}</span>
               <span className="price">{sar(o.totalHalalat)}</span>
+              {o.status === 'PENDING_PAYMENT' && (
+                <button
+                  type="button"
+                  onClick={() => pay(o.orderId)}
+                  disabled={payingId === o.orderId}
+                  className="btn-primary text-xs px-3 py-1 disabled:opacity-60"
+                >
+                  {payingId === o.orderId ? 'جارٍ الدفع...' : 'ادفع الآن'}
+                </button>
+              )}
             </div>
           ))}
         </div>
