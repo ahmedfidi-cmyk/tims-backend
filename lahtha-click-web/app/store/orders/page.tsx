@@ -26,7 +26,7 @@ export default function OrdersPage() {
   const { isAuthenticated, isLoading } = useCustomerAuth()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [payingId, setPayingId] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   function loadOrders() {
@@ -43,7 +43,7 @@ export default function OrdersPage() {
 
   async function pay(orderId: string) {
     setError(null)
-    setPayingId(orderId)
+    setBusyId(orderId)
     try {
       const r = await fetch(`/api/store/orders/${orderId}/pay`, { method: 'POST', credentials: 'include' })
       const d = await r.json().catch(() => ({}))
@@ -54,7 +54,22 @@ export default function OrdersPage() {
     } catch {
       setError('تعذّر الاتصال بالخادم')
     } finally {
-      setPayingId(null)
+      setBusyId(null)
+    }
+  }
+
+  async function confirmReceipt(orderId: string) {
+    setError(null)
+    setBusyId(orderId)
+    try {
+      const r = await fetch(`/api/store/orders/${orderId}/confirm-receipt`, { method: 'POST', credentials: 'include' })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok) { setError(d.error ?? 'تعذّر تأكيد الاستلام'); return }
+      await loadOrders()
+    } catch {
+      setError('تعذّر الاتصال بالخادم')
+    } finally {
+      setBusyId(null)
     }
   }
 
@@ -85,10 +100,20 @@ export default function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => pay(o.orderId)}
-                  disabled={payingId === o.orderId}
+                  disabled={busyId === o.orderId}
                   className="btn-primary text-xs px-3 py-1 disabled:opacity-60"
                 >
-                  {payingId === o.orderId ? 'جارٍ الدفع...' : 'ادفع الآن'}
+                  {busyId === o.orderId ? 'جارٍ الدفع...' : 'ادفع الآن'}
+                </button>
+              )}
+              {o.status === 'SHIPPED' && (
+                <button
+                  type="button"
+                  onClick={() => confirmReceipt(o.orderId)}
+                  disabled={busyId === o.orderId}
+                  className="btn-primary text-xs px-3 py-1 disabled:opacity-60"
+                >
+                  {busyId === o.orderId ? 'جارٍ التأكيد...' : 'تأكيد الاستلام'}
                 </button>
               )}
             </div>

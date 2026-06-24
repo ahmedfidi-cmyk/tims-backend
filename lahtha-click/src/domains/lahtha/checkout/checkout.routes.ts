@@ -9,6 +9,7 @@ import {
   DeviceUnavailableError,
   ListingUnavailableError,
   NotOrderOwnerError,
+  NotSellingVendorError,
   OrderConflictError,
   OrderNotFoundError,
 } from './checkout.service.js';
@@ -51,7 +52,7 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
     res.status(409).json({ error: 'order_conflict', message: err.message, correlationId });
     return;
   }
-  if (err instanceof NotOrderOwnerError) {
+  if (err instanceof NotOrderOwnerError || err instanceof NotSellingVendorError) {
     res.status(403).json({ error: 'forbidden', message: err.message, correlationId });
     return;
   }
@@ -148,6 +149,27 @@ export function createCheckoutRouter(service: CheckoutService, authz: Authz): Ro
     authz.requirePermission('lahtha.state.override'),
     asyncHandler(async (req, res) => {
       const order = await service.deliver(param(req, 'orderId'));
+      res.json(order);
+    }),
+  );
+
+  // Selling vendor ships their own order (AWAITING_FULFILLMENT → SHIPPED).
+  router.post(
+    '/orders/:orderId/fulfill',
+    authz.requirePermission('lahtha.order.fulfill'),
+    asyncHandler(async (req, res) => {
+      const input = shipSchema.parse(req.body);
+      const order = await service.shipByVendor(param(req, 'orderId'), input.shippingRef, req.principalUserId!);
+      res.json(order);
+    }),
+  );
+
+  // Buyer confirms receipt of their own order (SHIPPED → COMPLETED).
+  router.post(
+    '/orders/:orderId/confirm-receipt',
+    authz.requireSession,
+    asyncHandler(async (req, res) => {
+      const order = await service.confirmReceipt(param(req, 'orderId'), req.principalUserId!);
       res.json(order);
     }),
   );

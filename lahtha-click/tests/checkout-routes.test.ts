@@ -196,6 +196,71 @@ describe('Checkout HTTP API', () => {
     expect(res.body.status).toBe('CANCELLED');
   });
 
+  it('selling vendor fulfills, then the buyer confirms receipt', async () => {
+    const vendor = await sessionFor('vendor', 'vendor.owner');
+    inventory.setOwner('dev-v', { ownerId: vendor.userId, ownerType: 'vendor' });
+    const buyer = await sessionFor('customer', 'customer.standard');
+    const ops = await sessionFor('admin', 'admin.ops');
+    const created = await request(app)
+      .post('/lahtha/orders')
+      .set('Authorization', `Bearer ${buyer.token}`)
+      .send({ deviceId: 'dev-v', fulfillmentType: 'physical_fulfillment', subtotalHalalat: 100_000 });
+    const orderId = created.body.orderId as string;
+    await request(app)
+      .post(`/lahtha/orders/${orderId}/payment-event`)
+      .set('Authorization', `Bearer ${ops.token}`)
+      .send({ outcome: 'captured', paymentRef: 'pay-1' })
+      .expect(200);
+
+    const shipped = await request(app)
+      .post(`/lahtha/orders/${orderId}/fulfill`)
+      .set('Authorization', `Bearer ${vendor.token}`)
+      .send({ shippingRef: 'TRK-9' });
+    expect(shipped.status).toBe(200);
+    expect(shipped.body.status).toBe('SHIPPED');
+
+    const done = await request(app)
+      .post(`/lahtha/orders/${orderId}/confirm-receipt`)
+      .set('Authorization', `Bearer ${buyer.token}`);
+    expect(done.status).toBe(200);
+    expect(done.body.status).toBe('COMPLETED');
+    expect(await inventory.getCurrentOwner('dev-v')).toMatchObject({ ownerId: buyer.userId, ownerType: 'customer' });
+  });
+
+  it('403s a vendor who is not the seller on fulfill', async () => {
+    const seller = await sessionFor('vendor', 'vendor.owner');
+    inventory.setOwner('dev-v', { ownerId: seller.userId, ownerType: 'vendor' });
+    const other = await sessionFor('vendor', 'vendor.owner');
+    const buyer = await sessionFor('customer', 'customer.standard');
+    const ops = await sessionFor('admin', 'admin.ops');
+    const created = await request(app)
+      .post('/lahtha/orders')
+      .set('Authorization', `Bearer ${buyer.token}`)
+      .send({ deviceId: 'dev-v', fulfillmentType: 'physical_fulfillment', subtotalHalalat: 100_000 });
+    const orderId = created.body.orderId as string;
+    await request(app)
+      .post(`/lahtha/orders/${orderId}/payment-event`)
+      .set('Authorization', `Bearer ${ops.token}`)
+      .send({ outcome: 'captured', paymentRef: 'pay-1' });
+    const res = await request(app)
+      .post(`/lahtha/orders/${orderId}/fulfill`)
+      .set('Authorization', `Bearer ${other.token}`)
+      .send({ shippingRef: 'TRK-9' });
+    expect(res.status).toBe(403);
+  });
+
+  it('403s a customer lacking lahtha.order.fulfill', async () => {
+    const buyer = await sessionFor('customer', 'customer.standard');
+    const created = await request(app).post('/lahtha/orders').set('Authorization', `Bearer ${buyer.token}`).send(PLACE);
+    const orderId = created.body.orderId as string;
+    const res = await request(app)
+      .post(`/lahtha/orders/${orderId}/fulfill`)
+      .set('Authorization', `Bearer ${buyer.token}`)
+      .send({ shippingRef: 'TRK-9' });
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('lahtha.order.fulfill');
+  });
+
   it('admin refunds a paid digital order', async () => {
     inventory.setOwner('dev-2', { ownerId: 'vendor-1', ownerType: 'vendor' });
     const buyer = await sessionFor('customer', 'customer.standard');
