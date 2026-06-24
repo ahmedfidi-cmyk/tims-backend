@@ -70,6 +70,12 @@ export class NotOrderOwnerError extends Error {
     this.name = 'NotOrderOwnerError';
   }
 }
+export class NotSellingVendorError extends Error {
+  constructor() {
+    super('Only the selling vendor may perform this action');
+    this.name = 'NotSellingVendorError';
+  }
+}
 
 export class CheckoutService {
   constructor(private readonly deps: CheckoutDeps) {}
@@ -158,14 +164,36 @@ export class CheckoutService {
     return updated;
   }
 
+  /** Admin/ops ship (state override). */
   async ship(orderId: string, shippingRef: string): Promise<Order> {
+    return this.performShip(await this.requireOrder(orderId), shippingRef);
+  }
+
+  /** Selling vendor ships their own order (AWAITING_FULFILLMENT → SHIPPED). */
+  async shipByVendor(orderId: string, shippingRef: string, byVendorUserId: string): Promise<Order> {
     const order = await this.requireOrder(orderId);
+    if (order.vendorUserId !== byVendorUserId) throw new NotSellingVendorError();
+    return this.performShip(order, shippingRef);
+  }
+
+  private performShip(order: Order, shippingRef: string): Promise<Order> {
     return this.transition(order, ORDER_ACTIONS.SHIP, { shippingRef });
   }
 
-  /** Mark delivered → COMPLETED, transferring the device to the buyer. */
+  /** Admin/ops mark delivered (state override). */
   async deliver(orderId: string): Promise<Order> {
+    return this.performDeliver(await this.requireOrder(orderId));
+  }
+
+  /** Buyer confirms receipt of their own order (SHIPPED → COMPLETED). */
+  async confirmReceipt(orderId: string, byBuyerUserId: string): Promise<Order> {
     const order = await this.requireOrder(orderId);
+    if (order.buyerUserId !== byBuyerUserId) throw new NotOrderOwnerError();
+    return this.performDeliver(order);
+  }
+
+  /** Mark delivered → COMPLETED, transferring the device to the buyer. */
+  private async performDeliver(order: Order): Promise<Order> {
     const updated = await this.transition(order, ORDER_ACTIONS.DELIVER, {});
     await this.deps.inventory.transferOwnership(order.deviceId, {
       newOwnerId: order.buyerUserId,

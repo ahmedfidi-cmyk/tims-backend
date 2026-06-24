@@ -25,6 +25,7 @@ export const PERMISSIONS = {
   'lahtha.document.upload': 'Upload ownership/KYC documents',
   'lahtha.payout.view': 'View payouts',
   'lahtha.order.refund': 'Issue an order refund',
+  'lahtha.order.fulfill': 'Ship a sold order (selling vendor)',
   'lahtha.state.override': 'Override a state machine (ops)',
   'click.dealer.manage_profile': 'Manage dealer profile',
   'click.wallet.topup': 'Top up a CLICK wallet',
@@ -68,12 +69,18 @@ export const ROLES = {
       'lahtha.device.register',
       'lahtha.document.upload',
       'lahtha.payout.view',
+      'lahtha.order.fulfill',
     ],
   },
   'vendor.warehouse_manager': {
     domain: 'lahtha',
-    description: 'Register IMEI, upload docs (cannot change payout)',
-    permissions: ['lahtha.device.register', 'lahtha.document.upload', 'lahtha.device.list'],
+    description: 'Register IMEI, upload docs, ship orders (cannot change payout)',
+    permissions: [
+      'lahtha.device.register',
+      'lahtha.document.upload',
+      'lahtha.device.list',
+      'lahtha.order.fulfill',
+    ],
   },
   'dealer.owner': {
     domain: 'click',
