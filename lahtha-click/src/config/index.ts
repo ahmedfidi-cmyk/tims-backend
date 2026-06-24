@@ -24,6 +24,17 @@ const ConfigSchema = z.object({
   TAMARA_API_KEY: z.string().optional(),
   TAMARA_WEBHOOK_SECRET: z.string().optional(),
   MOYASAR_API_KEY: z.string().optional(),
+
+  // Object storage for device documents (ADR-0008). Outside production the dev
+  // stub is used unless S3 is configured; in production a stub is refused (the
+  // storage seam fails closed). S3_ENDPOINT switches to path-style addressing.
+  STORAGE_DRIVER: z.enum(['stub', 's3']).optional(),
+  S3_BUCKET: z.string().optional(),
+  S3_REGION: z.string().optional(),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_UPLOAD_EXPIRES_SECONDS: z.coerce.number().int().positive().max(3600).optional(),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
