@@ -91,6 +91,7 @@ export class StubObjectStorage implements ObjectStoragePort {
       key,
       url: `https://${this.bucket}.s3.local/${key}?stub-upload=1`,
       expiresAt: new Date(now.getTime() + 15 * 60_000),
+      stub: true,
     };
   }
 }

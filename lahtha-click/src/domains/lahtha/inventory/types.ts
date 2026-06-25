@@ -87,6 +87,8 @@ export interface PresignedUpload {
   key: string;
   url: string;
   expiresAt: Date;
+  /** True for the dev stub — the client must NOT attempt a real PUT to `url`. */
+  stub?: boolean;
 }
 
 /** Object storage seam (S3 in production; stub in Phase 1). */

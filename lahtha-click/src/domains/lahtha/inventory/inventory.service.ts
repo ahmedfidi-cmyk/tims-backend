@@ -206,6 +206,24 @@ export class InventoryService {
     });
   }
 
+  /**
+   * Presign an upload for a document that belongs to a device that does not
+   * exist yet — registration is atomic with its mandatory invoice, so the
+   * client uploads first, then passes the returned bucket/key into
+   * registerDevice. The object is keyed under an "unassigned" scope.
+   */
+  async presignRegistrationDocument(
+    documentType: DocumentType,
+    contentType: string,
+  ): Promise<PresignedUpload> {
+    return this.deps.storage.presignUpload({
+      deviceId: 'unassigned',
+      documentId: randomUUID(),
+      documentType,
+      contentType,
+    });
+  }
+
   async transferOwnership(
     deviceId: string,
     input: {

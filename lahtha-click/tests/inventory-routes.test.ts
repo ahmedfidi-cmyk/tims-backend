@@ -237,6 +237,29 @@ describe('Inventory HTTP API', () => {
     expect(presign.body.url).toContain(deviceId);
   });
 
+  it('presigns a registration document before the device exists (device.register gated)', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    const presign = await request(app)
+      .post('/lahtha/inventory/documents/upload-url')
+      .set('Authorization', `Bearer ${wh}`)
+      .send({ documentType: 'supplier_invoice', contentType: 'application/pdf' });
+    expect(presign.status).toBe(200);
+    expect(presign.body.url).toMatch(/^https?:\/\//);
+    expect(presign.body.bucket).toBe('test-bucket');
+    expect(presign.body.key).toContain('supplier_invoice');
+    expect(presign.body.stub).toBe(true); // dev stub → client must not PUT
+  });
+
+  it('403s a registration presign without lahtha.device.register', async () => {
+    const token = await sessionFor('customer', 'customer.standard');
+    const res = await request(app)
+      .post('/lahtha/inventory/documents/upload-url')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ documentType: 'supplier_invoice', contentType: 'application/pdf' });
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('lahtha.device.register');
+  });
+
   it('transfers ownership only with lahtha.state.override', async () => {
     const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
     const created = await request(app)

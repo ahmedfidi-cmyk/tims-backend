@@ -49,6 +49,25 @@ export default function RegisterDevicePage() {
 
     setSubmitting(true)
     try {
+      const mimeType = invoice.type || 'application/pdf'
+
+      // 1) Ask the backend for a presigned upload target (device doesn't exist yet).
+      const presignRes = await fetch('/api/vendor/documents/upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentType: 'supplier_invoice', contentType: mimeType }),
+      })
+      const presign = await presignRes.json().catch(() => ({}))
+      if (!presignRes.ok) throw new Error(presign?.error ?? 'تعذّر تجهيز رفع الفاتورة')
+
+      // 2) Upload the file straight to storage — unless this is the dev stub,
+      //    whose URL is not a real PUT target.
+      if (!presign.stub) {
+        const put = await fetch(presign.url, { method: 'PUT', headers: { 'Content-Type': mimeType }, body: invoice })
+        if (!put.ok) throw new Error('فشل رفع الفاتورة إلى التخزين')
+      }
+
+      // 3) Register the device, pointing the invoice at the uploaded object.
       const body = {
         imei,
         ...(imei2 ? { imei2 } : {}),
@@ -59,10 +78,10 @@ export default function RegisterDevicePage() {
         condition,
         invoice: {
           documentType: 'supplier_invoice',
-          s3Bucket: 'lahtha-device-docs',
-          s3Key: `devices/pending/${imei}/invoice`,
+          s3Bucket: presign.bucket,
+          s3Key: presign.key,
           sha256: await sha256Hex(invoice),
-          mimeType: invoice.type || 'application/pdf',
+          mimeType,
           sizeBytes: invoice.size,
         },
       }
@@ -161,7 +180,7 @@ export default function RegisterDevicePage() {
 
           <div className="card space-y-2">
             <h2 className="text-xl font-bold text-ink-900">فاتورة المورّد (إلزامية)</h2>
-            <p className="text-xs text-ink-900/60">يتم احتساب بصمة SHA-256 للملف للتحقق من سلامته. (تخزين الملف الفعلي قيد التفعيل.)</p>
+            <p className="text-xs text-ink-900/60">يُرفع الملف مباشرةً إلى التخزين الآمن، وتُحتسب بصمة SHA-256 للتحقق من سلامته.</p>
             <input type="file" accept="application/pdf,image/*" onChange={(e) => setInvoice(e.target.files?.[0] ?? null)} required />
           </div>
 
