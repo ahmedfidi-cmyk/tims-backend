@@ -96,6 +96,18 @@ export function createInventoryRouter(service: InventoryService, authz: Authz): 
     }),
   );
 
+  // Registration-scoped presign: the device does not exist yet (its invoice is
+  // mandatory and atomic), so this is gated by device.register, not document.upload.
+  router.post(
+    '/documents/upload-url',
+    authz.requirePermission('lahtha.device.register'),
+    asyncHandler(async (req, res) => {
+      const input = presignSchema.parse(req.body);
+      const presigned = await service.presignRegistrationDocument(input.documentType, input.contentType);
+      res.json(presigned);
+    }),
+  );
+
   router.post(
     '/devices/:deviceId/documents/upload-url',
     authz.requirePermission('lahtha.document.upload'),
