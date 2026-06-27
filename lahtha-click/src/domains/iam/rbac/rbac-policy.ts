@@ -23,6 +23,7 @@ export const PERMISSIONS = {
   'lahtha.device.list': 'List devices',
   'lahtha.device.register': 'Register an IMEI device',
   'lahtha.document.upload': 'Upload ownership/KYC documents',
+  'lahtha.document.review': 'Review (download) device documents (compliance)',
   'lahtha.payout.view': 'View payouts',
   'lahtha.order.refund': 'Issue an order refund',
   'lahtha.order.fulfill': 'Ship a sold order (selling vendor)',
@@ -108,6 +109,7 @@ export const ROLES = {
     permissions: [
       'lahtha.order.refund',
       'lahtha.state.override',
+      'lahtha.document.review',
       'click.auction.close',
       'platform.user.suspend',
       'platform.vendor.review',
@@ -116,12 +118,13 @@ export const ROLES = {
   },
   'admin.compliance': {
     domain: 'platform',
-    description: 'Access PII and audit logs, review vendors',
+    description: 'Access PII and audit logs, review vendors and documents',
     permissions: [
       'platform.pii.read',
       'platform.audit.read',
       'platform.read_all',
       'platform.vendor.review',
+      'lahtha.document.review',
     ],
   },
 } as const satisfies Record<string, RoleDefinition>;

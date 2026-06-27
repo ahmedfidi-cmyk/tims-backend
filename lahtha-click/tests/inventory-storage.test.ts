@@ -62,6 +62,29 @@ describe('S3ObjectStorage (SigV4 presigned PUT)', () => {
     expect(u.searchParams.get('X-Amz-Signature')).toMatch(/^[0-9a-f]{64}$/);
   });
 
+  it('presigns a GET for an already-stored object (compliance download)', async () => {
+    const p = await new S3ObjectStorage(cfg, clock).presignDownload({
+      bucket: 'lahtha-device-docs',
+      key: 'devices/dev-9/supplier_invoice/doc-9',
+    });
+    const u = new URL(p.url);
+    expect(u.host).toBe('lahtha-device-docs.s3.me-central-1.amazonaws.com');
+    expect(u.pathname).toBe('/devices/dev-9/supplier_invoice/doc-9');
+    expect(u.searchParams.get('X-Amz-Algorithm')).toBe('AWS4-HMAC-SHA256');
+    expect(u.searchParams.get('X-Amz-SignedHeaders')).toBe('host');
+    expect(u.searchParams.get('X-Amz-Signature')).toMatch(/^[0-9a-f]{64}$/);
+    expect(p.expiresAt.toISOString()).toBe('2026-06-24T12:15:00.000Z');
+    expect(p.stub).toBeUndefined();
+  });
+
+  it('GET and PUT presigns of the same key differ (method is signed)', async () => {
+    const s = new S3ObjectStorage(cfg, clock);
+    const put = await s.presignUpload(args);
+    const get = await s.presignDownload({ bucket: put.bucket, key: put.key });
+    const sig = (url: string) => new URL(url).searchParams.get('X-Amz-Signature');
+    expect(sig(get.url)).not.toBe(sig(put.url));
+  });
+
   it('honours a custom expiry', async () => {
     const p = await new S3ObjectStorage({ ...cfg, expiresSeconds: 300 }, clock).presignUpload(args);
     expect(new URL(p.url).searchParams.get('X-Amz-Expires')).toBe('300');

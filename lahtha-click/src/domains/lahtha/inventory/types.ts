@@ -91,6 +91,13 @@ export interface PresignedUpload {
   stub?: boolean;
 }
 
+export interface PresignedDownload {
+  url: string;
+  expiresAt: Date;
+  /** True for the dev stub — `url` is not a real, fetchable object. */
+  stub?: boolean;
+}
+
 /** Object storage seam (S3 in production; stub in Phase 1). */
 export interface ObjectStoragePort {
   presignUpload(args: {
@@ -99,6 +106,8 @@ export interface ObjectStoragePort {
     documentType: DocumentType;
     contentType: string;
   }): Promise<PresignedUpload>;
+  /** Time-limited GET URL for an already-stored object (compliance review). */
+  presignDownload(args: { bucket: string; key: string }): Promise<PresignedDownload>;
 }
 
 export interface Clock {

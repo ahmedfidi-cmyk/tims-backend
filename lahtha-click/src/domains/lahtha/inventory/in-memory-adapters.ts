@@ -11,6 +11,7 @@ import type {
   DocumentType,
   ObjectStoragePort,
   PresignedUpload,
+  PresignedDownload,
 } from './types.js';
 
 export class InMemoryDeviceRepository implements DeviceRepository {
@@ -90,6 +91,14 @@ export class StubObjectStorage implements ObjectStoragePort {
       bucket: this.bucket,
       key,
       url: `https://${this.bucket}.s3.local/${key}?stub-upload=1`,
+      expiresAt: new Date(now.getTime() + 15 * 60_000),
+      stub: true,
+    };
+  }
+  async presignDownload(args: { bucket: string; key: string }): Promise<PresignedDownload> {
+    const now = this.clock ? this.clock.now() : new Date();
+    return {
+      url: `https://${args.bucket}.s3.local/${args.key}?stub-download=1`,
       expiresAt: new Date(now.getTime() + 15 * 60_000),
       stub: true,
     };

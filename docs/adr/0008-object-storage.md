@@ -51,7 +51,15 @@ the file. Selection is config-driven and **fails closed**:
   issuing dead URLs.
 - The signature is covered by a **golden-master** test (fixed clock + inputs) so the HMAC chain
   can't drift unnoticed; fail-closed selection is unit-tested.
-- **Not yet done** (ops follow-ups): provision the bucket + IAM credentials; add a presign-GET
-  (download) seam for admin/compliance document review; optionally sign `content-type`/size to
-  constrain uploads; lifecycle/retention policy on the bucket. The web upload form is still mock —
-  wiring it to request a presigned URL, PUT the file, then `POST …/documents` is a later slice.
+### Download (compliance review)
+
+`ObjectStoragePort.presignDownload({bucket, key})` issues a time-limited **GET** URL (same SigV4
+signer as the PUT path; the HTTP method is part of the signed canonical request, so a GET and PUT
+URL for the same key differ). `GET /lahtha/inventory/devices/:id/documents` returns each document's
+metadata plus a `downloadUrl`, gated by the new **`lahtha.document.review`** permission
+(admin.compliance + admin.ops). Raw `s3Bucket`/`s3Key` are never returned to the client — only the
+presigned URL.
+
+- **Not yet done** (ops follow-ups): provision the bucket + IAM credentials; optionally sign
+  `content-type`/size to constrain uploads; lifecycle/retention policy on the bucket; an admin web
+  page to browse devices and open the review download links (no admin device-browser exists yet).

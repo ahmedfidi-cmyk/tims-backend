@@ -8,7 +8,13 @@
 // credentials the factory refuses to build it.
 
 import { createHash, createHmac } from 'node:crypto';
-import type { Clock, DocumentType, ObjectStoragePort, PresignedUpload } from './types.js';
+import type {
+  Clock,
+  DocumentType,
+  ObjectStoragePort,
+  PresignedDownload,
+  PresignedUpload,
+} from './types.js';
 
 export interface S3StorageConfig {
   bucket: string;
@@ -71,9 +77,20 @@ export class S3ObjectStorage implements ObjectStoragePort {
     documentType: DocumentType;
     contentType: string;
   }): Promise<PresignedUpload> {
-    const { bucket, region, accessKeyId, secretAccessKey, endpoint } = this.config;
-    const expiresSeconds = this.config.expiresSeconds ?? 900;
     const key = `devices/${args.deviceId}/${args.documentType}/${args.documentId}`;
+    const { url, expiresAt } = this.sign('PUT', this.config.bucket, key);
+    return { bucket: this.config.bucket, key, url, expiresAt };
+  }
+
+  /** Time-limited GET URL for an already-stored object (compliance review). */
+  async presignDownload(args: { bucket: string; key: string }): Promise<PresignedDownload> {
+    return this.sign('GET', args.bucket, args.key);
+  }
+
+  /** Shared SigV4 query-string presigner. host is the only signed header. */
+  private sign(method: 'GET' | 'PUT', bucket: string, key: string): { url: string; expiresAt: Date } {
+    const { region, accessKeyId, secretAccessKey, endpoint } = this.config;
+    const expiresSeconds = this.config.expiresSeconds ?? 900;
 
     const now = this.clock.now();
     const { amzDate, dateStamp } = sigv4Timestamps(now);
@@ -110,7 +127,7 @@ export class S3ObjectStorage implements ObjectStoragePort {
       .join('&');
 
     const canonicalRequest = [
-      'PUT',
+      method,
       canonicalUri,
       canonicalQuery,
       `host:${host}\n`,
@@ -122,8 +139,6 @@ export class S3ObjectStorage implements ObjectStoragePort {
     const signature = hmac(signingKey(secretAccessKey, dateStamp, region), stringToSign).toString('hex');
 
     return {
-      bucket,
-      key,
       url: `${baseUrl}?${canonicalQuery}&X-Amz-Signature=${signature}`,
       expiresAt: new Date(now.getTime() + expiresSeconds * 1000),
     };
