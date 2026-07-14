@@ -260,6 +260,40 @@ describe('Inventory HTTP API', () => {
     expect(res.body.requiredPermission).toBe('lahtha.device.register');
   });
 
+  it('compliance reviews a device\'s documents with download URLs', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    const created = await request(app)
+      .post('/lahtha/inventory/devices')
+      .set('Authorization', `Bearer ${wh}`)
+      .send(registration());
+    const deviceId = created.body.device.deviceId as string;
+
+    const compliance = await sessionFor('admin', 'admin.compliance');
+    const res = await request(app)
+      .get(`/lahtha/inventory/devices/${deviceId}/documents`)
+      .set('Authorization', `Bearer ${compliance}`);
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(1);
+    expect(res.body.items[0].documentType).toBe('supplier_invoice');
+    expect(res.body.items[0].downloadUrl).toContain('stub-download');
+    expect(res.body.items[0].stub).toBe(true);
+    expect(res.body.items[0].s3Key).toBeUndefined(); // raw key not leaked
+  });
+
+  it('403s a document review without lahtha.document.review', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    const created = await request(app)
+      .post('/lahtha/inventory/devices')
+      .set('Authorization', `Bearer ${wh}`)
+      .send(registration());
+    const deviceId = created.body.device.deviceId as string;
+    const res = await request(app)
+      .get(`/lahtha/inventory/devices/${deviceId}/documents`)
+      .set('Authorization', `Bearer ${wh}`); // vendor lacks document.review
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('lahtha.document.review');
+  });
+
   it('transfers ownership only with lahtha.state.override', async () => {
     const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
     const created = await request(app)

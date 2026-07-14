@@ -132,6 +132,16 @@ export function createInventoryRouter(service: InventoryService, authz: Authz): 
     }),
   );
 
+  // Compliance review: list a device's documents with time-limited download URLs.
+  router.get(
+    '/devices/:deviceId/documents',
+    authz.requirePermission('lahtha.document.review'),
+    asyncHandler(async (req, res) => {
+      const items = await service.listDocumentsForReview(param(req, 'deviceId'));
+      res.json({ items, total: items.length });
+    }),
+  );
+
   // Ownership transfer / custody — internal, admin-gated.
   router.post(
     '/devices/:deviceId/transfer',

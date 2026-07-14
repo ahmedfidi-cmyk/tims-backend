@@ -224,6 +224,45 @@ export class InventoryService {
     });
   }
 
+  /**
+   * Compliance review: a device's documents, each with a time-limited download
+   * URL. The raw s3Bucket/s3Key are not returned — only the presigned GET.
+   */
+  async listDocumentsForReview(deviceId: string): Promise<
+    Array<{
+      documentId: string;
+      documentType: DocumentType;
+      sha256: string;
+      mimeType: string;
+      sizeBytes: number;
+      uploadedBy: string;
+      uploadedAt: Date;
+      downloadUrl: string;
+      expiresAt: Date;
+      stub?: boolean;
+    }>
+  > {
+    await this.requireDevice(deviceId);
+    const docs = await this.deps.documents.listByDevice(deviceId);
+    const out = [];
+    for (const d of docs) {
+      const dl = await this.deps.storage.presignDownload({ bucket: d.s3Bucket, key: d.s3Key });
+      out.push({
+        documentId: d.documentId,
+        documentType: d.documentType,
+        sha256: d.sha256,
+        mimeType: d.mimeType,
+        sizeBytes: d.sizeBytes,
+        uploadedBy: d.uploadedBy,
+        uploadedAt: d.uploadedAt,
+        downloadUrl: dl.url,
+        expiresAt: dl.expiresAt,
+        ...(dl.stub ? { stub: true } : {}),
+      });
+    }
+    return out;
+  }
+
   async transferOwnership(
     deviceId: string,
     input: {
