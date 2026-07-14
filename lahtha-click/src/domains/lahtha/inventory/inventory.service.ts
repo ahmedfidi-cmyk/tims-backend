@@ -148,8 +148,7 @@ export class InventoryService {
     return this.getDevice(device.deviceId);
   }
 
-  async getDevice(deviceId: string): Promise<DeviceView> {
-    const device = await this.deps.devices.findById(deviceId);
+  async getDevice(deviceId: string): Promise<DeviceView> {    const device = await this.deps.devices.findById(deviceId);
     if (!device) throw new DeviceNotFoundError(deviceId);
     const currentOwner = await this.deps.ownership.findCurrent(deviceId);
     const documents = await this.deps.documents.listByDevice(deviceId);
@@ -159,6 +158,15 @@ export class InventoryService {
       currentOwner,
       documents,
     };
+  }
+
+  /** Compliance lookup: resolve a device by its IMEI (for document review). */
+  async lookupByImei(imei: string): Promise<DeviceView> {
+    const normalized = normalizeImei(imei);
+    if (!isValidImei(normalized)) throw new InvalidImeiError();
+    const device = await this.deps.devices.findByImei(normalized);
+    if (!device) throw new DeviceNotFoundError(normalized);
+    return this.getDevice(device.deviceId);
   }
 
   async listByOwner(ownerId: string): Promise<Device[]> {
