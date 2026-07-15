@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { AdminNav } from '@/components/AdminNav'
 
 interface Doc {
@@ -47,13 +47,12 @@ export default function AdminDocumentsPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function search(e: FormEvent) {
-    e.preventDefault()
+  const runSearch = useCallback(async (value: string) => {
     setError(null)
     setResult(null)
     setLoading(true)
     try {
-      const r = await fetch(`/api/admin/documents?imei=${encodeURIComponent(imei.trim())}`, { credentials: 'include' })
+      const r = await fetch(`/api/admin/documents?imei=${encodeURIComponent(value)}`, { credentials: 'include' })
       const d = await r.json().catch(() => ({}))
       if (!r.ok) { setError(d.error ?? 'تعذّر البحث'); return }
       setResult(d)
@@ -62,6 +61,17 @@ export default function AdminDocumentsPage() {
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  // Prefill + auto-search when arriving from the device browser (?imei=...).
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get('imei')?.replace(/\D/g, '').slice(0, 15)
+    if (q && q.length === 15) { setImei(q); void runSearch(q) }
+  }, [runSearch])
+
+  function search(e: FormEvent) {
+    e.preventDefault()
+    void runSearch(imei.trim())
   }
 
   return (

@@ -32,6 +32,10 @@ export class InMemoryDeviceRepository implements DeviceRepository {
     for (const d of this.byId.values()) if (d.serialNumber === serialNumber) return { ...d };
     return null;
   }
+  async listAll(limit: number, offset: number): Promise<{ items: Device[]; total: number }> {
+    const all = [...this.byId.values()].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return { items: all.slice(offset, offset + limit).map((d) => ({ ...d })), total: all.length };
+  }
   async deleteById(deviceId: string): Promise<void> {
     this.byId.delete(deviceId);
   }
