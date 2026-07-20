@@ -46,6 +46,25 @@ export interface ListingView {
   device: DeviceSummary;
 }
 
+export type ListingSort = 'newest' | 'price_asc' | 'price_desc';
+
+export interface BrowseFilter {
+  q?: string;
+  condition?: string;
+  minPriceHalalat?: number;
+  maxPriceHalalat?: number;
+  sort?: ListingSort;
+  limit?: number;
+  offset?: number;
+}
+
+export interface BrowsePage {
+  items: ListingView[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 export interface Clock {
   now(): Date;
 }

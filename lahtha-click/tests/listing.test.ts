@@ -47,10 +47,46 @@ describe('ListingService', () => {
 
   it('browse returns active listings with a device summary', async () => {
     await service.createListing({ deviceId: 'dev-1', priceHalalat: 100_000 }, 'vendor-1');
-    const items = await service.browse();
-    expect(items).toHaveLength(1);
-    expect(items[0]?.listing.priceHalalat).toBe(100_000);
-    expect(items[0]?.device).toEqual({ modelName: 'iPhone 17 Pro', condition: 'new_sealed', imei: '350000000000000' });
+    const page = await service.browse();
+    expect(page.total).toBe(1);
+    expect(page.items).toHaveLength(1);
+    expect(page.items[0]?.listing.priceHalalat).toBe(100_000);
+    expect(page.items[0]?.device).toEqual({ modelName: 'iPhone 17 Pro', condition: 'new_sealed', imei: '350000000000000' });
+  });
+
+  it('browse filters by text, condition and price, and sorts', async () => {
+    // dev-1 (iPhone 17 Pro / new_sealed / 100k) is seeded in beforeEach.
+    inv.setOwner('dev-2', { ownerId: 'vendor-1', ownerType: 'vendor' });
+    inv.setSummary('dev-2', { modelName: 'iPhone 16', condition: 'used', imei: '350000000000002' });
+    inv.setOwner('dev-3', { ownerId: 'vendor-1', ownerType: 'vendor' });
+    inv.setSummary('dev-3', { modelName: 'iPad Air', condition: 'refurbished', imei: '350000000000003' });
+    await service.createListing({ deviceId: 'dev-1', priceHalalat: 100_000 }, 'vendor-1');
+    await service.createListing({ deviceId: 'dev-2', priceHalalat: 300_000 }, 'vendor-1');
+    await service.createListing({ deviceId: 'dev-3', priceHalalat: 50_000 }, 'vendor-1');
+
+    expect((await service.browse()).total).toBe(3);
+
+    const iphones = await service.browse({ q: 'iphone' });
+    expect(iphones.total).toBe(2);
+
+    const used = await service.browse({ condition: 'used' });
+    expect(used.items.map((v) => v.listing.deviceId)).toEqual(['dev-2']);
+
+    const cheap = await service.browse({ maxPriceHalalat: 100_000 });
+    expect(cheap.total).toBe(2); // dev-1 + dev-3
+
+    const pricey = await service.browse({ minPriceHalalat: 200_000 });
+    expect(pricey.items.map((v) => v.listing.deviceId)).toEqual(['dev-2']);
+
+    const asc = await service.browse({ sort: 'price_asc' });
+    expect(asc.items[0]?.listing.priceHalalat).toBe(50_000);
+    const desc = await service.browse({ sort: 'price_desc' });
+    expect(desc.items[0]?.listing.priceHalalat).toBe(300_000);
+
+    const paged = await service.browse({ limit: 1 });
+    expect(paged.items).toHaveLength(1);
+    expect(paged.total).toBe(3);
+    expect(paged.limit).toBe(1);
   });
 
   it('a vendor lists an owned device', async () => {

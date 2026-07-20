@@ -7,7 +7,16 @@ import {
   nextListingStatus,
   type ListingStatus,
 } from './listing-state.js';
-import type { AuditLogger, Clock, InventoryOwnershipPort, Listing, ListingRepository, ListingView } from './types.js';
+import type {
+  AuditLogger,
+  BrowseFilter,
+  BrowsePage,
+  Clock,
+  InventoryOwnershipPort,
+  Listing,
+  ListingRepository,
+  ListingView,
+} from './types.js';
 
 export class ListingNotFoundError extends Error {
   constructor(public readonly listingId: string) {
@@ -98,10 +107,40 @@ export class ListingService {
     return this.deps.listings.listByVendor(vendorUserId);
   }
 
-  /** Browse active listings with a device summary (storefront). */
-  async browse(limit?: number): Promise<ListingView[]> {
-    const listings = await this.deps.listings.listActive(limit);
-    return Promise.all(listings.map((listing) => this.withDevice(listing)));
+  /**
+   * Browse active listings with a device summary (storefront discovery).
+   * Text/condition filters match against the device summary; price filter and
+   * sort use the listing. Returns the pre-pagination `total` for the UI.
+   */
+  async browse(filter: BrowseFilter = {}): Promise<BrowsePage> {
+    const listings = await this.deps.listings.listActive();
+    let views = await Promise.all(listings.map((listing) => this.withDevice(listing)));
+
+    const q = filter.q?.trim().toLowerCase();
+    if (q) views = views.filter((v) => v.device?.modelName.toLowerCase().includes(q));
+    if (filter.condition) views = views.filter((v) => v.device?.condition === filter.condition);
+    if (typeof filter.minPriceHalalat === 'number') {
+      views = views.filter((v) => v.listing.priceHalalat >= filter.minPriceHalalat!);
+    }
+    if (typeof filter.maxPriceHalalat === 'number') {
+      views = views.filter((v) => v.listing.priceHalalat <= filter.maxPriceHalalat!);
+    }
+
+    switch (filter.sort) {
+      case 'price_asc':
+        views.sort((a, b) => a.listing.priceHalalat - b.listing.priceHalalat);
+        break;
+      case 'price_desc':
+        views.sort((a, b) => b.listing.priceHalalat - a.listing.priceHalalat);
+        break;
+      default: // 'newest'
+        views.sort((a, b) => b.listing.createdAt.getTime() - a.listing.createdAt.getTime());
+    }
+
+    const total = views.length;
+    const limit = Math.min(Math.max(filter.limit ?? 24, 1), 100);
+    const offset = Math.max(filter.offset ?? 0, 0);
+    return { items: views.slice(offset, offset + limit), total, limit, offset };
   }
 
   /** A single listing with its device summary. */
