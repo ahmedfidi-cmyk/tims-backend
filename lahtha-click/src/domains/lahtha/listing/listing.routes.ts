@@ -17,6 +17,17 @@ const createSchema = z.object({
   priceHalalat: z.number().int().positive(),
 });
 
+const DEVICE_CONDITIONS = ['new_sealed', 'open_box', 'refurbished', 'used'] as const;
+const browseSchema = z.object({
+  q: z.string().trim().max(100).optional(),
+  condition: z.enum(DEVICE_CONDITIONS).optional(),
+  minPriceHalalat: z.coerce.number().int().nonnegative().optional(),
+  maxPriceHalalat: z.coerce.number().int().nonnegative().optional(),
+  sort: z.enum(['newest', 'price_asc', 'price_desc']).optional(),
+  limit: z.coerce.number().int().positive().max(100).optional(),
+  offset: z.coerce.number().int().nonnegative().optional(),
+});
+
 function param(req: Request, name: string): string {
   return req.params[name] ?? '';
 }
@@ -39,10 +50,10 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
 export function createListingRouter(service: ListingService, authz: Authz): Router {
   const router = Router();
 
-  // Public browse — listings with a device summary.
-  router.get('/listings', asyncHandler(async (_req, res) => {
-    const items = await service.browse();
-    res.json({ items, total: items.length });
+  // Public browse — listings with a device summary; supports search/filter/sort.
+  router.get('/listings', asyncHandler(async (req, res) => {
+    const filter = browseSchema.parse(req.query);
+    res.json(await service.browse(filter));
   }));
 
   // Vendor's own listings (must precede /listings/:id).
