@@ -61,6 +61,8 @@ export interface DeviceRepository {
   findById(deviceId: string): Promise<Device | null>;
   findByImei(imei: string): Promise<Device | null>;
   findBySerial(serialNumber: string): Promise<Device | null>;
+  /** Admin audit browse: newest-first page of all devices. */
+  listAll(limit: number, offset: number): Promise<{ items: Device[]; total: number }>;
   /** Compensation only — used to roll back a partial registration. */
   deleteById(deviceId: string): Promise<void>;
 }

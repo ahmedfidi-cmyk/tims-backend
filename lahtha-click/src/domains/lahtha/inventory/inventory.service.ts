@@ -148,8 +148,7 @@ export class InventoryService {
     return this.getDevice(device.deviceId);
   }
 
-  async getDevice(deviceId: string): Promise<DeviceView> {
-    const device = await this.deps.devices.findById(deviceId);
+  async getDevice(deviceId: string): Promise<DeviceView> {    const device = await this.deps.devices.findById(deviceId);
     if (!device) throw new DeviceNotFoundError(deviceId);
     const currentOwner = await this.deps.ownership.findCurrent(deviceId);
     const documents = await this.deps.documents.listByDevice(deviceId);
@@ -159,6 +158,35 @@ export class InventoryService {
       currentOwner,
       documents,
     };
+  }
+
+  /** Admin audit: a newest-first page of all devices, each with its owner state. */
+  async browseDevices(
+    opts: { limit?: number; offset?: number } = {},
+  ): Promise<{ items: DeviceView[]; total: number; limit: number; offset: number }> {
+    const limit = Math.min(Math.max(opts.limit ?? 25, 1), 100);
+    const offset = Math.max(opts.offset ?? 0, 0);
+    const { items, total } = await this.deps.devices.listAll(limit, offset);
+    const views: DeviceView[] = [];
+    for (const device of items) {
+      const currentOwner = await this.deps.ownership.findCurrent(device.deviceId);
+      views.push({
+        device,
+        state: deriveDeviceState(currentOwner ? currentOwner.ownerType : null),
+        currentOwner,
+        documents: [],
+      });
+    }
+    return { items: views, total, limit, offset };
+  }
+
+  /** Compliance lookup: resolve a device by its IMEI (for document review). */
+  async lookupByImei(imei: string): Promise<DeviceView> {
+    const normalized = normalizeImei(imei);
+    if (!isValidImei(normalized)) throw new InvalidImeiError();
+    const device = await this.deps.devices.findByImei(normalized);
+    if (!device) throw new DeviceNotFoundError(normalized);
+    return this.getDevice(device.deviceId);
   }
 
   async listByOwner(ownerId: string): Promise<Device[]> {

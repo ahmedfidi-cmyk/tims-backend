@@ -11,7 +11,9 @@ export function AdminNav() {
   const links = [
     { href: '/admin/dashboard', label: 'لوحة التحكم' },
     { href: '/admin/vendors', label: 'البائعون' },
+    { href: '/admin/devices', label: 'الأجهزة' },
     { href: '/admin/kyc-approvals', label: 'طلبات التحقق' },
+    { href: '/admin/documents', label: 'المستندات' },
     { href: '/admin/roles', label: 'الأدوار' },
     { href: '/admin/analytics', label: 'التحليلات' },
   ]

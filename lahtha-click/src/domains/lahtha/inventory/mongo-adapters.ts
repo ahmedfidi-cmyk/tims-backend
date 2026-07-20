@@ -85,6 +85,13 @@ export class MongoDeviceRepository implements DeviceRepository {
   async findBySerial(serialNumber: string): Promise<Device | null> {
     return DeviceModel.findOne({ serialNumber }).lean<Device>().exec();
   }
+  async listAll(limit: number, offset: number): Promise<{ items: Device[]; total: number }> {
+    const [items, total] = await Promise.all([
+      DeviceModel.find().sort({ createdAt: -1 }).skip(offset).limit(limit).lean<Device[]>().exec(),
+      DeviceModel.countDocuments().exec(),
+    ]);
+    return { items, total };
+  }
   async deleteById(deviceId: string): Promise<void> {
     await DeviceModel.deleteOne({ deviceId }).exec();
   }

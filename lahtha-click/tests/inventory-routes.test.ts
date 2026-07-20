@@ -260,6 +260,68 @@ describe('Inventory HTTP API', () => {
     expect(res.body.requiredPermission).toBe('lahtha.device.register');
   });
 
+  it('admin browses all devices with pagination', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    await request(app).post('/lahtha/inventory/devices').set('Authorization', `Bearer ${wh}`)
+      .send(registration({ imei: withLuhn('35000000000010') }));
+    await request(app).post('/lahtha/inventory/devices').set('Authorization', `Bearer ${wh}`)
+      .send(registration({ imei: withLuhn('35000000000028') }));
+
+    const ops = await sessionFor('admin', 'admin.ops');
+    const all = await request(app).get('/lahtha/inventory/admin/devices').set('Authorization', `Bearer ${ops}`);
+    expect(all.status).toBe(200);
+    expect(all.body.total).toBe(2);
+    expect(all.body.items).toHaveLength(2);
+    expect(all.body.items[0]).toHaveProperty('device');
+    expect(all.body.items[0]).toHaveProperty('state');
+
+    const page = await request(app)
+      .get('/lahtha/inventory/admin/devices?limit=1&offset=0')
+      .set('Authorization', `Bearer ${ops}`);
+    expect(page.body.items).toHaveLength(1);
+    expect(page.body.total).toBe(2);
+    expect(page.body.limit).toBe(1);
+  });
+
+  it('403s a device browse without lahtha.device.audit', async () => {
+    const token = await sessionFor('customer', 'customer.standard');
+    const res = await request(app).get('/lahtha/inventory/admin/devices').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('lahtha.device.audit');
+  });
+
+  it('compliance looks up a device by IMEI', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    const reg = registration();
+    const created = await request(app)
+      .post('/lahtha/inventory/devices')
+      .set('Authorization', `Bearer ${wh}`)
+      .send(reg);
+    const deviceId = created.body.device.deviceId as string;
+
+    const compliance = await sessionFor('admin', 'admin.compliance');
+    const found = await request(app)
+      .get(`/lahtha/inventory/devices/lookup?imei=${reg.imei}`)
+      .set('Authorization', `Bearer ${compliance}`);
+    expect(found.status).toBe(200);
+    expect(found.body.device.deviceId).toBe(deviceId);
+    expect(found.body.currentOwner.ownerType).toBe('vendor');
+
+    const missing = await request(app)
+      .get(`/lahtha/inventory/devices/lookup?imei=${withLuhn('35000000000001')}`)
+      .set('Authorization', `Bearer ${compliance}`);
+    expect(missing.status).toBe(404);
+  });
+
+  it('403s an IMEI lookup without lahtha.document.review', async () => {
+    const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
+    const res = await request(app)
+      .get(`/lahtha/inventory/devices/lookup?imei=${withLuhn('35000000000001')}`)
+      .set('Authorization', `Bearer ${wh}`);
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('lahtha.document.review');
+  });
+
   it('compliance reviews a device\'s documents with download URLs', async () => {
     const wh = await sessionFor('vendor', 'vendor.warehouse_manager');
     const created = await request(app)

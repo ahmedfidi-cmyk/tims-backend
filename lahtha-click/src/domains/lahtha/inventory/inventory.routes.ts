@@ -87,6 +87,30 @@ export function createInventoryRouter(service: InventoryService, authz: Authz): 
     }),
   );
 
+  // Admin oversight: newest-first page of all devices. Gated by device.audit.
+  router.get(
+    '/admin/devices',
+    authz.requirePermission('lahtha.device.audit'),
+    asyncHandler(async (req, res) => {
+      const limit = Number(req.query.limit) || undefined;
+      const offset = Number(req.query.offset) || undefined;
+      const page = await service.browseDevices({ limit, offset });
+      res.json(page);
+    }),
+  );
+
+  // Compliance device lookup by IMEI (registered before :deviceId so "lookup"
+  // is not captured as a deviceId). Gated by document.review.
+  router.get(
+    '/devices/lookup',
+    authz.requirePermission('lahtha.document.review'),
+    asyncHandler(async (req, res) => {
+      const imei = typeof req.query.imei === 'string' ? req.query.imei : '';
+      const { device, state, currentOwner } = await service.lookupByImei(imei);
+      res.json({ device, state, currentOwner });
+    }),
+  );
+
   router.get(
     '/devices/:deviceId',
     authz.requirePermission('lahtha.device.list'),
