@@ -55,7 +55,7 @@ export default function DeviceDetailPage() {
 
   return (
     <div className="min-h-screen bg-lahtha-pattern-dark">
-      <header className="bg-ink-900 text-white py-6 px-4">
+      <header className="bg-lahtha-ink text-white py-6 px-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link href="/">
             <h1 className="text-2xl font-bold">LAHTHA & CLICK</h1>

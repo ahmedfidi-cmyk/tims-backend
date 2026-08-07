@@ -9,7 +9,7 @@ function StoreHeader() {
   const { isAuthenticated, customer, logout } = useCustomerAuth()
   const { items } = useCart()
   return (
-    <header className="bg-ink-900 text-white">
+    <header className="bg-lahtha-ink text-white">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/store" className="text-xl font-bold">لحظة — المتجر</Link>
         <div className="flex items-center gap-4 text-sm">

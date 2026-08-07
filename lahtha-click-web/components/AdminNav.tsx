@@ -20,7 +20,7 @@ export function AdminNav() {
 
   return (
     <>
-      <header className="bg-ink-900 text-white p-6">
+      <header className="bg-lahtha-ink text-white p-6">
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div>
             <h1 className="text-2xl font-bold">👑 لوحة الإدارة</h1>
