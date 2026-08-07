@@ -1,11 +1,32 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens per the NTSC Identity Guideline.
+ * Legacy token names (ink/paper/gold/coral) are kept so existing pages restyle
+ * without edits; their values now map onto the official palette:
+ *   ink-900   → Gable Green   #17332f (secondary dark — the ink)
+ *   paper-50  → Swirl-biased paper (Swirl #d5d0c3 tinted ground)
+ *   gold-500  → Anzac / Gold metallic #deb83b (accent)
+ *   coral-500 → Evening Sea   #004e43 (primary — actions & prices)
+ */
 @theme {
-  --color-ink-900: #0b1437;
-  --color-paper-50: #fafafa;
-  --color-gold-500: #c8a95e;
-  --color-coral-500: #ff6b35;
-  --font-sans: "IBM Plex Sans Arabic", "Inter", system-ui, sans-serif;
+  --color-ink-900: #17332f;
+  --color-paper-50: #f7f6f2;
+  --color-gold-500: #deb83b;
+  --color-coral-500: #004e43;
+
+  /* NTSC palette, by name — for new code. */
+  --color-evening-sea: #004e43;
+  --color-highland: #71946a;
+  --color-swirl: #d5d0c3;
+  --color-gable: #17332f;
+  --color-anzac: #deb83b;
+  --color-persian: #00a29c;
+  --color-yellow-green: #d3eb8e;
+  --color-tan: #cea888;
+  --color-geyser: #dce2eb;
+
+  --font-sans: "TheSansArabic", "IBM Plex Sans Arabic", "Inter", Tahoma, system-ui, sans-serif;
 }
 
 @layer base {
@@ -26,13 +47,14 @@
     background-size: 600px 600px;
   }
   .bg-lahtha-pattern-dark {
-    background-color: #0b1437;
+    background-color: #17332f;
     background-image: url('/lahtha-pattern-dark.svg');
     background-repeat: repeat;
     background-size: 800px 800px;
   }
+  /* Official brand gradient: Evening Sea → Highland. */
   .bg-lahtha-ink {
-    background: linear-gradient(135deg, #0b1437 0%, #142152 100%);
+    background: linear-gradient(115deg, #004e43 0%, #35594c 50%, #71946a 100%);
   }
 
   .btn {
