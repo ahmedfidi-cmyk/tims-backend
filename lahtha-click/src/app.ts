@@ -67,6 +67,7 @@ export function createApp(): Express {
   const checkout = createCheckoutService({
     listings: makeListingQueryPort(listing),
     listingSold: makeListingSoldPort(listing),
+    rbac,
   });
   app.use('/lahtha', createLahthaCheckoutRouter(checkout, iam.authz));
   // Payments (ADR-0007) — drives the checkout payment seam; stub auto-captures in dev.

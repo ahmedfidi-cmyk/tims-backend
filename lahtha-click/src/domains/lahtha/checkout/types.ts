@@ -55,6 +55,9 @@ export interface OrderRepository {
   findByIdempotencyKey(buyerUserId: string, key: string): Promise<Order | null>;
   listByBuyer(buyerUserId: string): Promise<Order[]>;
   listByVendor(vendorUserId: string): Promise<Order[]>;
+  /** Admin analytics: every order, unfiltered. Phase-1 in-memory aggregation —
+   *  revisit with a DB-side aggregation pipeline if order volume grows large. */
+  listAll(): Promise<Order[]>;
   /** Compare-and-set on status to guard against double transitions. */
   updateStatus(orderId: string, expectedFrom: OrderState, patch: OrderPatch): Promise<Order | null>;
 }
@@ -86,6 +89,28 @@ export interface ListingQueryPort {
 /** Mark a listing sold when its order completes. */
 export interface ListingSoldPort {
   onOrderCompleted(listingId: string): Promise<void>;
+}
+
+/** Count active vendor accounts (in-process bridge to IAM/RBAC). */
+export interface VendorCountPort {
+  countActiveVendors(): Promise<number>;
+}
+
+export interface MonthlyGrowth {
+  /** "YYYY-MM", sortable and locale-independent. */
+  month: string;
+  gmv: number;
+  orders: number;
+}
+
+export interface AdminAnalytics {
+  totalGmvHalalat: number;
+  totalCommissionHalalat: number;
+  totalOrders: number;
+  /** Orders that reached a successful terminal state (COMPLETED / IN_CUSTODY). */
+  successfulOrders: number;
+  activeVendors: number;
+  monthlyGrowth: MonthlyGrowth[];
 }
 
 export interface Clock {

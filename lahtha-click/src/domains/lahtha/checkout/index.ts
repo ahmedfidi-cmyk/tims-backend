@@ -7,9 +7,10 @@ import { logger } from '../../../lib/logger.js';
 import { CheckoutService } from './checkout.service.js';
 import { createCheckoutRouter } from './checkout.routes.js';
 import { SystemClock } from './in-memory-adapters.js';
-import { InventoryServicePort, MongoOrderRepository } from './mongo-adapters.js';
+import { InventoryServicePort, MongoOrderRepository, RbacVendorCountPort } from './mongo-adapters.js';
 import { createInventoryService } from '../inventory/index.js';
 import type { Authz } from '../../iam/authz.js';
+import type { RbacService } from '../../iam/rbac/rbac.service.js';
 import type { ListingQueryPort, ListingSoldPort } from './types.js';
 
 export { CheckoutService } from './checkout.service.js';
@@ -21,6 +22,8 @@ export type * from './types.js';
 export interface CheckoutWiring {
   listings?: ListingQueryPort;
   listingSold?: ListingSoldPort;
+  /** Admin analytics: resolves active-vendor counts over RBAC. */
+  rbac?: RbacService;
 }
 
 /** Build the production (Mongo-backed) checkout service. */
@@ -30,6 +33,7 @@ export function createCheckoutService(wiring: CheckoutWiring = {}): CheckoutServ
     inventory: new InventoryServicePort(createInventoryService()),
     ...(wiring.listings ? { listings: wiring.listings } : {}),
     ...(wiring.listingSold ? { listingSold: wiring.listingSold } : {}),
+    ...(wiring.rbac ? { vendorCount: new RbacVendorCountPort(wiring.rbac) } : {}),
     clock: new SystemClock(),
     logger,
   });

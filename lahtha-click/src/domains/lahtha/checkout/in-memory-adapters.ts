@@ -8,6 +8,7 @@ import type {
   Order,
   OrderPatch,
   OrderRepository,
+  VendorCountPort,
 } from './types.js';
 import type { OrderState } from './order-state.js';
 import type { AcquisitionType, OwnerType } from '../inventory/device-state.js';
@@ -36,6 +37,9 @@ export class InMemoryOrderRepository implements OrderRepository {
   async listByVendor(vendorUserId: string): Promise<Order[]> {
     return [...this.byId.values()].filter((o) => o.vendorUserId === vendorUserId).map((o) => ({ ...o }));
   }
+  async listAll(): Promise<Order[]> {
+    return [...this.byId.values()].map((o) => ({ ...o }));
+  }
   async updateStatus(orderId: string, expectedFrom: OrderState, patch: OrderPatch): Promise<Order | null> {
     const o = this.byId.get(orderId);
     if (!o || o.status !== expectedFrom) return null; // compare-and-set guard
@@ -62,6 +66,17 @@ export class FakeInventoryPort implements InventoryPort {
   ): Promise<void> {
     this.owners.set(deviceId, { ownerId: args.newOwnerId, ownerType: args.newOwnerType });
     this.transfers.push({ deviceId, newOwnerId: args.newOwnerId, newOwnerType: args.newOwnerType, acquisitionType: args.acquisitionType });
+  }
+}
+
+/** Configurable in-memory vendor count for tests. */
+export class FakeVendorCountPort implements VendorCountPort {
+  constructor(private count = 0) {}
+  setCount(n: number): void {
+    this.count = n;
+  }
+  async countActiveVendors(): Promise<number> {
+    return this.count;
   }
 }
 

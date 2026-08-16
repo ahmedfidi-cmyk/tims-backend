@@ -2,10 +2,19 @@
 
 import mongoose, { Schema, type Model } from 'mongoose';
 import { FULFILLMENT_TYPES, ORDER_STATES } from './order-state.js';
-import type { CurrentOwner, InventoryPort, NewOrder, Order, OrderPatch, OrderRepository } from './types.js';
+import type {
+  CurrentOwner,
+  InventoryPort,
+  NewOrder,
+  Order,
+  OrderPatch,
+  OrderRepository,
+  VendorCountPort,
+} from './types.js';
 import type { OrderState } from './order-state.js';
 import type { AcquisitionType, OwnerType } from '../inventory/device-state.js';
 import { DeviceNotFoundError, type InventoryService } from '../inventory/inventory.service.js';
+import type { RbacService } from '../../iam/rbac/rbac.service.js';
 
 const orderSchema = new Schema<Order>(
   {
@@ -54,6 +63,9 @@ export class MongoOrderRepository implements OrderRepository {
   async listByVendor(vendorUserId: string): Promise<Order[]> {
     return OrderModel.find({ vendorUserId }).sort({ createdAt: -1 }).lean<Order[]>().exec();
   }
+  async listAll(): Promise<Order[]> {
+    return OrderModel.find({}).lean<Order[]>().exec();
+  }
   async updateStatus(orderId: string, expectedFrom: OrderState, patch: OrderPatch): Promise<Order | null> {
     return OrderModel.findOneAndUpdate(
       { orderId, status: expectedFrom },
@@ -83,5 +95,14 @@ export class InventoryServicePort implements InventoryPort {
     args: { newOwnerId: string; newOwnerType: OwnerType; acquisitionType: AcquisitionType; sourceEventId?: string },
   ): Promise<void> {
     await this.inventory.transferOwnership(deviceId, args);
+  }
+}
+
+/** Adapts RbacService to the checkout VendorCountPort (admin analytics). */
+export class RbacVendorCountPort implements VendorCountPort {
+  constructor(private readonly rbac: RbacService) {}
+  async countActiveVendors(): Promise<number> {
+    const vendors = await this.rbac.listUsers({ principalType: 'vendor', status: 'active', limit: 500 });
+    return vendors.length;
   }
 }
