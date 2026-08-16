@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import ProductTour, { type TourStep } from '@/components/ProductTour'
+
+const STORE_TOUR_STEPS: TourStep[] = [
+  { selector: '[data-tour="store-hero"]', title: 'أهلاً بك في لحظة', body: 'سوق أجهزة Apple الموثّق — كل جهاز يمر بفحص IMEI ومطابقة فاتورة قبل عرضه.' },
+  { selector: '[data-tour="store-stats"]', title: 'أرقام حيّة', body: 'عدد الأجهزة المتاحة الآن، وأقل سعر معروض — تُحدَّث مباشرةً من المتجر.' },
+  { selector: '[data-tour="store-filters"]', title: 'ابحث وفلتر', body: 'اكتب اسم الموديل، أو ضيّق النتائج بالحالة والسعر والترتيب.' },
+  { selector: '[data-tour="store-grid"]', title: 'اختر جهازك', body: 'انقر أي بطاقة لعرض تفاصيل الجهاز وإضافته للسلة.' },
+]
 
 interface ListingView {
   listing: { listingId: string; priceHalalat: number; deviceId: string }
@@ -71,8 +79,10 @@ export default function StorePage() {
 
   return (
     <main>
+      <ProductTour tourId="store" steps={STORE_TOUR_STEPS} />
+
       {/* Front page: dark hero + live stats + trust strip. */}
-      <section className="bg-lahtha-ink text-white">
+      <section className="bg-lahtha-ink text-white" data-tour="store-hero">
         <div className="max-w-6xl mx-auto px-4 py-14 md:py-20">
           <span className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-gold-500 border border-gold-500/40 rounded-full px-3 py-1.5 mb-6">
             ✦ سوق أجهزة Apple الموثّق
@@ -87,7 +97,7 @@ export default function StorePage() {
           <div className="flex flex-wrap gap-3 mt-8">
             <a href="#browse" className="btn-primary">تصفّح المتجر</a>
           </div>
-          <div className="flex flex-wrap gap-8 mt-10">
+          <div className="flex flex-wrap gap-8 mt-10" data-tour="store-stats">
             <div>
               <p className="text-2xl font-extrabold text-white">
                 {heroCount === null ? '…' : heroCount.toLocaleString('ar-SA')}
@@ -124,7 +134,7 @@ export default function StorePage() {
       <div id="browse" className="max-w-6xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-ink-900 mb-4">تصفّح الأجهزة</h2>
 
-        <div className="card mb-6 space-y-3">
+        <div className="card mb-6 space-y-3" data-tour="store-filters">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
@@ -172,7 +182,7 @@ export default function StorePage() {
             <p className="text-ink-900/60">{hasFilters ? 'لا توجد أجهزة تطابق بحثك' : 'لا توجد عروض متاحة حالياً'}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" data-tour="store-grid">
             {items.map(({ listing, device }) => (
               <Link key={listing.listingId} href={`/store/${listing.listingId}`} className="card hover:shadow-lg transition block">
                 <div className="bg-ink-900/5 h-36 rounded-lg mb-3 flex items-center justify-center text-5xl">📱</div>

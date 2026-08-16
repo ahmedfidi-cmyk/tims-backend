@@ -3,6 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useVendorAuth } from '@/lib/hooks/use-vendor-auth'
 import Link from 'next/link'
+import ProductTour, { type TourStep } from '@/components/ProductTour'
+
+const VENDOR_TOUR_STEPS: TourStep[] = [
+  { selector: '[data-tour="vendor-earnings"]', title: 'أرباحك', body: 'الأرباح الكلية، ما زال قيد التسوية، وما تم تحرير دفعه — محدَّثة من طلباتك الفعلية.' },
+  { selector: '[data-tour="vendor-stats"]', title: 'نظرة سريعة', body: 'عدد أجهزتك المسجّلة، النشطة منها، وطلباتك الجارية الآن.' },
+  { selector: '[data-tour="vendor-orders"]', title: 'أحدث الطلبات', body: 'آخر خمسة طلبات على متجرك، مع حالتها الحيّة.' },
+  { selector: '[data-tour="vendor-actions"]', title: 'إجراءات سريعة', body: 'أضف جهازاً جديداً، تابع الطلبات، أو راجع أرباحك من هنا.' },
+]
 
 interface Order {
   orderId: string
@@ -69,6 +77,8 @@ export default function VendorDashboard() {
 
   return (
     <div className="min-h-screen bg-lahtha-pattern-dark">
+      <ProductTour tourId="vendor-dashboard" steps={VENDOR_TOUR_STEPS} autoStart={!loading && !pending} />
+
       {/* Header */}
       <header className="bg-lahtha-ink text-white p-6">
         <div className="flex justify-between items-center max-w-6xl mx-auto">
@@ -122,7 +132,7 @@ export default function VendorDashboard() {
         ) : (
           <>
             {/* Earnings Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" data-tour="vendor-earnings">
               <div className="card border-l-4 border-coral-500">
                 <p className="text-ink-900/60 text-sm mb-2">الأرباح الكلية</p>
                 <p className="price">{formatSar(settledNet + pendingNet)}</p>
@@ -141,7 +151,7 @@ export default function VendorDashboard() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" data-tour="vendor-stats">
               <div className="card">
                 <p className="text-ink-900/60 text-sm mb-2">المنتجات المدرجة</p>
                 <p className="text-3xl font-bold text-ink-900">{devices.length}</p>
@@ -157,7 +167,7 @@ export default function VendorDashboard() {
             </div>
 
             {/* Recent Orders */}
-            <div className="card mb-8">
+            <div className="card mb-8" data-tour="vendor-orders">
               <h2 className="text-xl font-bold text-ink-900 mb-4">الطلبات الأخيرة</h2>
               {recentOrders.length === 0 ? (
                 <p className="text-ink-900/60 text-sm py-6 text-center">لا توجد طلبات بعد.</p>
@@ -199,7 +209,7 @@ export default function VendorDashboard() {
         )}
 
         {/* Action Links */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4" data-tour="vendor-actions">
           <Link
             href="/vendor/inventory/upload"
             className="card text-center hover:bg-ink-900/5 transition"

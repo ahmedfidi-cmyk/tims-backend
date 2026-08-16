@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AdminNav } from '@/components/AdminNav'
+import ProductTour, { type TourStep } from '@/components/ProductTour'
+
+const ADMIN_TOUR_STEPS: TourStep[] = [
+  { selector: '[data-tour="admin-kpis"]', title: 'مؤشرات المنصّة', body: 'إجمالي المبيعات والعمولات والبائعين النشطين والطلبات — من بيانات الطلبات الفعلية.' },
+  { selector: '[data-tour="admin-growth"]', title: 'النمو الشهري', body: 'اتجاه المبيعات المكتملة شهرياً، لرصد نمو المنصة بمرور الوقت.' },
+  { selector: '[data-tour="admin-actions"]', title: 'الوصول السريع', body: 'إدارة البائعين، مراجعة طلبات التحقق، أو فتح التحليلات الكاملة.' },
+]
 
 interface MonthlyGrowth {
   month: string // "YYYY-MM"
@@ -70,11 +77,12 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-lahtha-pattern-dark">
+      <ProductTour tourId="admin-dashboard" steps={ADMIN_TOUR_STEPS} />
       <AdminNav />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8" data-tour="admin-kpis">
           <div className="card border-l-4 border-coral-500">
             <p className="text-ink-900/60 text-sm mb-2">إجمالي المبيعات (GMV)</p>
             <p className="text-3xl font-bold text-coral-500">{formatSar(analytics.totalGmvHalalat)}</p>
@@ -107,7 +115,7 @@ export default function AdminDashboardPage() {
         )}
 
         {/* Growth Chart */}
-        <div className="card mb-8">
+        <div className="card mb-8" data-tour="admin-growth">
           <h2 className="text-xl font-bold text-ink-900 mb-6">النمو الشهري</h2>
           {analytics.monthlyGrowth.length === 0 ? (
             <p className="text-ink-900/60 text-sm py-6 text-center">لا توجد مبيعات مكتملة بعد.</p>
@@ -131,7 +139,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-tour="admin-actions">
           <Link href="/admin/vendors" className="card text-center hover:bg-ink-900/5 transition">
             <p className="text-3xl mb-2">🏪</p>
             <p className="font-bold text-ink-900">إدارة البائعين</p>
