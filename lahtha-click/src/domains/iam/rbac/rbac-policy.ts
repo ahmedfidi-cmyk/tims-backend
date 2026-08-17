@@ -40,6 +40,7 @@ export const PERMISSIONS = {
   'platform.audit.read': 'Read audit logs',
   'platform.vendor.review': 'Approve or reject vendors (admin)',
   'platform.iam.manage': 'Grant/revoke roles and change user status (admin)',
+  'platform.analytics.view': 'View platform-wide sales analytics (admin dashboard)',
 } as const;
 
 export type PermissionId = keyof typeof PERMISSIONS;
@@ -102,7 +103,7 @@ export const ROLES = {
   'admin.support': {
     domain: 'platform',
     description: 'Read-only across both domains',
-    permissions: ['platform.read_all', 'lahtha.device.audit'],
+    permissions: ['platform.read_all', 'lahtha.device.audit', 'platform.analytics.view'],
   },
   'admin.ops': {
     domain: 'platform',
@@ -116,6 +117,7 @@ export const ROLES = {
       'platform.user.suspend',
       'platform.vendor.review',
       'platform.iam.manage',
+      'platform.analytics.view',
     ],
   },
   'admin.compliance': {
@@ -128,6 +130,7 @@ export const ROLES = {
       'platform.vendor.review',
       'lahtha.document.review',
       'lahtha.device.audit',
+      'platform.analytics.view',
     ],
   },
 } as const satisfies Record<string, RoleDefinition>;

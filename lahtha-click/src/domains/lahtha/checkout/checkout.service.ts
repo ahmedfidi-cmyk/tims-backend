@@ -13,15 +13,19 @@ import {
   type OrderState,
 } from './order-state.js';
 import type {
+  AdminAnalytics,
   AuditLogger,
   Clock,
   InventoryPort,
   ListingQueryPort,
   ListingSoldPort,
+  MonthlyGrowth,
   Order,
   OrderPatch,
   OrderRepository,
+  VendorCountPort,
 } from './types.js';
+import { isSuccessTerminal } from './order-state.js';
 import type { PlaceOrderInput } from './schemas.js';
 
 /** Sentinel owner id for devices held under a digital-custody agreement. */
@@ -34,6 +38,8 @@ export interface CheckoutDeps {
   listings?: ListingQueryPort;
   /** Mark a listing sold when its order completes. */
   listingSold?: ListingSoldPort;
+  /** Admin analytics: count active vendor accounts. */
+  vendorCount?: VendorCountPort;
   clock: Clock;
   logger: AuditLogger;
 }
@@ -247,6 +253,38 @@ export class CheckoutService {
   }
   listByVendor(vendorUserId: string): Promise<Order[]> {
     return this.deps.orders.listByVendor(vendorUserId);
+  }
+
+  /**
+   * Admin dashboard aggregation. GMV/commission count only orders that reached
+   * a successful terminal state (COMPLETED / IN_CUSTODY) — a placed-but-unpaid
+   * order isn't revenue. totalOrders counts every order ever placed.
+   */
+  async getAdminAnalytics(): Promise<AdminAnalytics> {
+    const orders = await this.deps.orders.listAll();
+    const successful = orders.filter((o) => isSuccessTerminal(o.status));
+
+    const byMonth = new Map<string, MonthlyGrowth>();
+    for (const o of successful) {
+      const d = o.createdAt;
+      const month = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+      const bucket = byMonth.get(month) ?? { month, gmv: 0, orders: 0 };
+      bucket.gmv += o.totalHalalat;
+      bucket.orders += 1;
+      byMonth.set(month, bucket);
+    }
+    const monthlyGrowth = [...byMonth.values()].sort((a, b) => (a.month < b.month ? -1 : 1)).slice(-12);
+
+    const activeVendors = this.deps.vendorCount ? await this.deps.vendorCount.countActiveVendors() : 0;
+
+    return {
+      totalGmvHalalat: successful.reduce((s, o) => s + o.totalHalalat, 0),
+      totalCommissionHalalat: successful.reduce((s, o) => s + o.commissionHalalat, 0),
+      totalOrders: orders.length,
+      successfulOrders: successful.length,
+      activeVendors,
+      monthlyGrowth,
+    };
   }
 
   private async transition(order: Order, action: OrderAction, patch: OrderPatch): Promise<Order> {

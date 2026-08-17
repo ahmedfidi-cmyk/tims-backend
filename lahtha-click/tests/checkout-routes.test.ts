@@ -11,6 +11,7 @@ import {
   InMemoryOrderRepository,
   SystemClock,
 } from '../src/domains/lahtha/checkout/in-memory-adapters.js';
+import { RbacVendorCountPort } from '../src/domains/lahtha/checkout/mongo-adapters.js';
 import { createAuthz } from '../src/domains/iam/authz.js';
 import { issueSessionToken, sessionLifetimesFrom } from '../src/domains/iam/session.js';
 import type { IamDeps } from '../src/domains/iam/use-cases.js';
@@ -66,6 +67,7 @@ function setup() {
   const service = new CheckoutService({
     orders: new InMemoryOrderRepository(),
     inventory,
+    vendorCount: new RbacVendorCountPort(rbac),
     clock: new SystemClock(),
     logger: silentLogger,
   });
@@ -277,5 +279,33 @@ describe('Checkout HTTP API', () => {
     const refund = await request(app).post(`/lahtha/orders/${orderId}/refund`).set('Authorization', `Bearer ${ops.token}`);
     expect(refund.status).toBe(200);
     expect(refund.body.status).toBe('REFUNDED');
+  });
+
+  it('an admin with platform.analytics.view reads the analytics aggregate', async () => {
+    inventory.setOwner('dev-3', { ownerId: 'vendor-1', ownerType: 'vendor' });
+    const buyer = await sessionFor('customer', 'customer.standard');
+    const ops = await sessionFor('admin', 'admin.ops');
+    const created = await request(app)
+      .post('/lahtha/orders')
+      .set('Authorization', `Bearer ${buyer.token}`)
+      .send({ deviceId: 'dev-3', fulfillmentType: 'digital_custody', subtotalHalalat: 100_000 });
+    await request(app)
+      .post(`/lahtha/orders/${created.body.orderId}/payment-event`)
+      .set('Authorization', `Bearer ${ops.token}`)
+      .send({ outcome: 'captured', paymentRef: 'pay-analytics' });
+
+    const res = await request(app).get('/lahtha/admin/analytics').set('Authorization', `Bearer ${ops.token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.totalGmvHalalat).toBeGreaterThanOrEqual(100_000);
+    expect(res.body.totalCommissionHalalat).toBeGreaterThanOrEqual(5_000);
+    expect(Array.isArray(res.body.monthlyGrowth)).toBe(true);
+    expect(typeof res.body.activeVendors).toBe('number');
+  });
+
+  it('403s analytics for a caller lacking platform.analytics.view', async () => {
+    const buyer = await sessionFor('customer', 'customer.standard');
+    const res = await request(app).get('/lahtha/admin/analytics').set('Authorization', `Bearer ${buyer.token}`);
+    expect(res.status).toBe(403);
+    expect(res.body.requiredPermission).toBe('platform.analytics.view');
   });
 });

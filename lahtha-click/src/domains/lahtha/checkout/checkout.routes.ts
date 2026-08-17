@@ -183,5 +183,14 @@ export function createCheckoutRouter(service: CheckoutService, authz: Authz): Ro
     }),
   );
 
+  // Admin dashboard: platform-wide GMV/commission/vendor/monthly-growth aggregation.
+  router.get(
+    '/admin/analytics',
+    authz.requirePermission('platform.analytics.view'),
+    asyncHandler(async (_req, res) => {
+      res.json(await service.getAdminAnalytics());
+    }),
+  );
+
   return router;
 }
