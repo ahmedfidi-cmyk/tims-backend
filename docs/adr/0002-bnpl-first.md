@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Superseded by [ADR-0010](./0010-drop-bnpl-single-gateway.md) — BNPL dropped for launch |
 | **Date** | 2026-05-26 |
 | **Decision owners** | Product + Engineering + Owner |
 | **Supersedes** | The ordering of payment providers in [`../architecture/payment-gateway-adapters.md`](../architecture/payment-gateway-adapters.md) — that doc to be updated in a follow-up |

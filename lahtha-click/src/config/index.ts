@@ -17,13 +17,11 @@ const ConfigSchema = z.object({
   ENTRA_CLIENT_ID: z.string().optional(),
   ENTRA_ISSUER: z.string().optional(),
 
-  // Payments (ADR-0007). Default provider is the dev stub outside production.
-  PAYMENT_PROVIDER: z.enum(['stub', 'tabby', 'tamara', 'moyasar']).optional(),
-  TABBY_API_KEY: z.string().optional(),
-  TABBY_WEBHOOK_SECRET: z.string().optional(),
-  TAMARA_API_KEY: z.string().optional(),
-  TAMARA_WEBHOOK_SECRET: z.string().optional(),
+  // Payments (ADR-0007, revised by ADR-0010: BNPL dropped for a single direct
+  // gateway). Default provider is the dev stub outside production.
+  PAYMENT_PROVIDER: z.enum(['stub', 'moyasar']).optional(),
   MOYASAR_API_KEY: z.string().optional(),
+  MOYASAR_WEBHOOK_SECRET: z.string().optional(),
 
   // Object storage for device documents (ADR-0008). Outside production the dev
   // stub is used unless S3 is configured; in production a stub is refused (the
