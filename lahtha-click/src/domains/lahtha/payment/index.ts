@@ -7,7 +7,7 @@ import { PaymentService } from './payment.service.js';
 import { createPaymentRouter } from './payment.routes.js';
 import { SystemClock, InMemoryPaymentRepository } from './in-memory-adapters.js';
 import { CheckoutServicePaymentPort, MongoPaymentRepository } from './mongo-adapters.js';
-import { MoyasarAdapter, StubPaymentAdapter, TabbyAdapter, TamaraAdapter } from './adapters.js';
+import { MoyasarAdapter, StubPaymentAdapter } from './adapters.js';
 import type { PaymentAdapter } from './types.js';
 import type { CheckoutService } from '../checkout/checkout.service.js';
 import type { Authz } from '../../iam/authz.js';
@@ -20,12 +20,10 @@ function buildAdapters() {
   const cfg = loadConfig();
   const adapters: Record<string, PaymentAdapter> = {
     stub: new StubPaymentAdapter(),
-    tabby: new TabbyAdapter({ apiKey: cfg.TABBY_API_KEY, webhookSecret: cfg.TABBY_WEBHOOK_SECRET }),
-    tamara: new TamaraAdapter({ apiKey: cfg.TAMARA_API_KEY, webhookSecret: cfg.TAMARA_WEBHOOK_SECRET }),
-    moyasar: new MoyasarAdapter(),
+    moyasar: new MoyasarAdapter({ apiKey: cfg.MOYASAR_API_KEY, webhookSecret: cfg.MOYASAR_WEBHOOK_SECRET }),
   };
   // Default to the stub outside production unless a provider is explicitly chosen.
-  const chosen = cfg.PAYMENT_PROVIDER ?? (cfg.NODE_ENV === 'production' ? 'tabby' : 'stub');
+  const chosen = cfg.PAYMENT_PROVIDER ?? (cfg.NODE_ENV === 'production' ? 'moyasar' : 'stub');
   const defaultAdapter = adapters[chosen] ?? adapters.stub!;
   return { adapters, defaultAdapter };
 }

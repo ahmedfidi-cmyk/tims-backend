@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Accepted (backend; real providers are credentialed follow-ups) |
+| **Status** | Accepted; provider list revised by [ADR-0010](./0010-drop-bnpl-single-gateway.md) (Tabby/Tamara removed, Moyasar-only) |
 | **Date** | 2026-06-16 |
 | **Decision owners** | Engineering + Owner |
 | **Implements** | [ADR-0002](./0002-bnpl-first.md) (BNPL-first) |

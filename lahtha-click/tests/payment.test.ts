@@ -5,7 +5,7 @@ import {
   PaymentService,
 } from '../src/domains/lahtha/payment/payment.service.js';
 import { PaymentNotConfiguredError, type PaymentAdapter } from '../src/domains/lahtha/payment/types.js';
-import { StubPaymentAdapter, TabbyAdapter } from '../src/domains/lahtha/payment/adapters.js';
+import { StubPaymentAdapter, MoyasarAdapter } from '../src/domains/lahtha/payment/adapters.js';
 import { InMemoryPaymentRepository, SystemClock } from '../src/domains/lahtha/payment/in-memory-adapters.js';
 import { CheckoutServicePaymentPort } from '../src/domains/lahtha/payment/mongo-adapters.js';
 import { CheckoutService } from '../src/domains/lahtha/checkout/checkout.service.js';
@@ -117,10 +117,17 @@ describe('PaymentService — webhook (non-auto adapter)', () => {
   });
 });
 
-describe('BNPL adapter shells', () => {
-  it('Tabby fails closed without credentials', async () => {
-    await expect(new TabbyAdapter({}).createIntent({ orderId: 'o', amountHalalat: 1 })).rejects.toBeInstanceOf(
+describe('direct-gateway adapter shell', () => {
+  it('Moyasar fails closed without credentials', async () => {
+    await expect(new MoyasarAdapter({}).createIntent({ orderId: 'o', amountHalalat: 1 })).rejects.toBeInstanceOf(
       PaymentNotConfiguredError,
     );
+  });
+
+  it('Moyasar fails closed on a bad webhook signature even when configured', async () => {
+    const adapter = new MoyasarAdapter({ apiKey: 'key', webhookSecret: 'secret' });
+    await expect(
+      adapter.verifyWebhook({ 'x-signature': 'bogus' }, JSON.stringify({ intentId: 'i', status: 'captured' })),
+    ).rejects.toBeInstanceOf(PaymentNotConfiguredError);
   });
 });

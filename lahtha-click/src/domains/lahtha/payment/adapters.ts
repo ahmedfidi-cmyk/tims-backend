@@ -1,8 +1,11 @@
-// Payment provider adapters (ADR-0002 / ADR-0007).
+// Payment provider adapters (ADR-0002 / ADR-0007, revised by ADR-0010).
 //
 // StubPaymentAdapter is the dev/test default (auto-captures, no external calls).
-// Tabby/Tamara/Moyasar are structured shells that fail closed without credentials;
-// completing their hosted-checkout + live HMAC webhook is a credentialed follow-up.
+// MoyasarAdapter is a direct-gateway shell that fails closed without credentials;
+// completing its real checkout + live HMAC webhook is a credentialed follow-up.
+//
+// Tabby/Tamara (BNPL) were removed per ADR-0010 — their onboarding/hosted-checkout
+// work was cut to ship faster with a single, simpler direct-payment path.
 
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import {
@@ -35,25 +38,27 @@ function verifyHmac(secret: string, rawBody: string, signature: string | undefin
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-interface BnplConfig {
+interface MoyasarConfig {
   apiKey?: string | undefined;
   webhookSecret?: string | undefined;
 }
 
 /**
- * Shared shell for the BNPL providers. Without credentials every operation fails
- * closed; with them, createIntent should call the provider's hosted-checkout API
- * (left as a credentialed follow-up) and verifyWebhook validates the HMAC.
+ * Direct-gateway shell (Moyasar — card + mada, per ADR-0002/ADR-0010). Without
+ * credentials every operation fails closed; with them, createIntent should call
+ * Moyasar's payment API (left as a credentialed follow-up) and verifyWebhook
+ * validates the HMAC signature.
  */
-class BnplAdapter implements PaymentAdapter {
-  constructor(readonly provider: string, private readonly cfg: BnplConfig) {}
+export class MoyasarAdapter implements PaymentAdapter {
+  readonly provider = 'moyasar';
+  constructor(private readonly cfg: MoyasarConfig = {}) {}
   get configured(): boolean {
     return Boolean(this.cfg.apiKey && this.cfg.webhookSecret);
   }
   async createIntent(_args: CreateIntentArgs): Promise<PaymentIntent> {
     if (!this.configured) throw new PaymentNotConfiguredError(this.provider);
-    // Follow-up: POST to the provider's checkout-session API and return its redirect_url.
-    throw new PaymentNotConfiguredError(`${this.provider} (hosted checkout not yet wired)`);
+    // Follow-up: POST to Moyasar's payment API and return its redirect/3-D-Secure URL.
+    throw new PaymentNotConfiguredError(`${this.provider} (checkout not yet wired)`);
   }
   async verifyWebhook(headers: Record<string, string | undefined>, rawBody: string): Promise<WebhookResult> {
     if (!this.configured) throw new PaymentNotConfiguredError(this.provider);
@@ -62,26 +67,5 @@ class BnplAdapter implements PaymentAdapter {
     }
     const body = JSON.parse(rawBody || '{}');
     return { intentId: body.intentId, outcome: body.status === 'captured' ? 'captured' : 'failed' };
-  }
-}
-
-export class TabbyAdapter extends BnplAdapter {
-  constructor(cfg: BnplConfig) {
-    super('tabby', cfg);
-  }
-}
-export class TamaraAdapter extends BnplAdapter {
-  constructor(cfg: BnplConfig) {
-    super('tamara', cfg);
-  }
-}
-/** Direct gateway placeholder (ADR-0002): present but disabled until credentialed. */
-export class MoyasarAdapter implements PaymentAdapter {
-  readonly provider = 'moyasar';
-  async createIntent(): Promise<PaymentIntent> {
-    throw new PaymentNotConfiguredError('moyasar');
-  }
-  async verifyWebhook(): Promise<WebhookResult> {
-    throw new PaymentNotConfiguredError('moyasar');
   }
 }
