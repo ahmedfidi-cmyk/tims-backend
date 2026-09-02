@@ -13,6 +13,7 @@ Single entry point for the platform's technical design. The blueprint lives in [
 | 5 | [`iam-rbac.md`](./iam-rbac.md) | Identity, principals, RBAC, auth evolution | §3.1, §4 |
 | 6 | [`payment-gateway-adapters.md`](./payment-gateway-adapters.md) | Moyasar / Checkout.com / Tabby / Tamara contract | §5 |
 | 7 | [`click-wallet-ledger.md`](./click-wallet-ledger.md) | Double-entry ledger and balance projection | §3.4 |
+| 8 | [`asset-inventory-schema.md`](./asset-inventory-schema.md) | Generic physical IT asset inventory (taxonomy, lifecycle, custody, audit log) — separate from the LAHTHA phone/IMEI inventory | — |
 
 If you add a new doc: append a row here, then link back to this README from the new doc's header.
 
