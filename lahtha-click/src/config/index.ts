@@ -17,6 +17,17 @@ const ConfigSchema = z.object({
   ENTRA_CLIENT_ID: z.string().optional(),
   ENTRA_ISSUER: z.string().optional(),
 
+  // Generic OIDC SSO bearer authentication (admin/staff — see
+  // docs/architecture/iam-rbac.md: `admin` is SSO-only, hard-provisioned).
+  // Any standard OIDC IdP (Keycloak, Cognito, Auth0, Entra, Okta, ...). When
+  // OIDC_ISSUER/OIDC_AUDIENCE are unset, SSO bearer auth is disabled and only
+  // session-cookie auth is available — fails closed, same posture as ENTRA_*.
+  OIDC_ISSUER: z.string().url().optional(),
+  OIDC_AUDIENCE: z.string().optional(),
+  // Skips discovery entirely when set; otherwise derived from OIDC_ISSUER.
+  OIDC_JWKS_URI: z.string().url().optional(),
+  OIDC_ROLES_CLAIM: z.string().optional(),
+
   // Payments (ADR-0007, revised by ADR-0010: BNPL dropped for a single direct
   // gateway). Default provider is the dev stub outside production.
   PAYMENT_PROVIDER: z.enum(['stub', 'moyasar']).optional(),

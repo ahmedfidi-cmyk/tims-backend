@@ -13,6 +13,7 @@ import {
   type UserStatus,
 } from './rbac-policy.js';
 import {
+  OidcNotConfiguredError,
   PersonNotFoundError,
   RbacConflictError,
   RbacService,
@@ -33,6 +34,11 @@ const createUserSchema = z.object({
 });
 
 const grantRoleSchema = z.object({ roleId: z.string().trim().min(1) });
+
+const oidcLinkSchema = z.object({
+  issuer: z.string().trim().url(),
+  subject: z.string().trim().min(1),
+});
 
 const statusSchema = z.object({
   action: z.enum([
@@ -86,6 +92,10 @@ function mapError(err: unknown, req: Request, res: Response, next: NextFunction)
       action: err.action,
       correlationId,
     });
+    return;
+  }
+  if (err instanceof OidcNotConfiguredError) {
+    res.status(501).json({ error: 'oidc_not_configured', correlationId });
     return;
   }
   next(err);
@@ -189,6 +199,29 @@ export function createRbacRouter(service: RbacService, opts: RbacRouterOptions =
       const { action } = statusSchema.parse(req.body);
       const user = await service.setUserStatus(param(req, 'userId'), action);
       res.json(user);
+    }),
+  );
+
+  // Link/unlink an SSO identity to an existing principal (never JIT — see
+  // RbacService.linkOidcIdentity). 501 if this deployment has no OIDC IdP
+  // configured (OIDC_ISSUER/OIDC_AUDIENCE unset).
+  router.post(
+    '/users/:userId/oidc-link',
+    requirePermission(service, 'platform.iam.manage', opts),
+    asyncHandler(async (req, res) => {
+      const { issuer, subject } = oidcLinkSchema.parse(req.body);
+      await service.linkOidcIdentity(param(req, 'userId'), issuer, subject, actorOf(req));
+      res.status(204).end();
+    }),
+  );
+
+  router.delete(
+    '/oidc-link',
+    requirePermission(service, 'platform.iam.manage', opts),
+    asyncHandler(async (req, res) => {
+      const { issuer, subject } = oidcLinkSchema.parse(req.body);
+      const removed = await service.unlinkOidcIdentity(issuer, subject);
+      res.status(removed ? 204 : 404).end();
     }),
   );
 

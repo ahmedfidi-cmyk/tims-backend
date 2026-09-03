@@ -15,6 +15,7 @@ import {
 } from './rbac-policy.js';
 import type {
   AccessAuditRepository,
+  OidcIdentityLinkRepository,
   Person,
   PersonRepository,
   RoleGrantRepository,
@@ -32,6 +33,14 @@ export interface RbacDeps {
   logger: AuditLogger;
   /** Pepper for hashing national ids before storage. */
   piiPepper: string;
+  /**
+   * Optional: OIDC (issuer, subject) -> principal linking, for SSO bearer
+   * authentication. Omitted in most tests and in any deployment that hasn't
+   * configured an OIDC IdP — resolveOidcPrincipal then always returns null
+   * (fails closed) and linkOidcIdentity/unlinkOidcIdentity throw
+   * OidcNotConfiguredError.
+   */
+  oidcLinks?: OidcIdentityLinkRepository;
 }
 
 // --- Errors ---
@@ -63,6 +72,12 @@ export class UnknownRoleError extends Error {
   constructor(public readonly roleId: string) {
     super(`Unknown role "${roleId}"`);
     this.name = 'UnknownRoleError';
+  }
+}
+export class OidcNotConfiguredError extends Error {
+  constructor() {
+    super('OIDC identity linking is not configured for this RBAC service');
+    this.name = 'OidcNotConfiguredError';
   }
 }
 
@@ -253,6 +268,50 @@ export class RbacService {
 
   async listAccessAudit(filter: { actorUserId?: string; actedOnUserId?: string; limit?: number }) {
     return this.deps.audit.list(filter);
+  }
+
+  /**
+   * Link a verified OIDC (issuer, subject) pair to an existing RBAC user, so
+   * that user's future SSO logins resolve to this principal. Idempotent for
+   * the same user; conflicts if the subject is already linked elsewhere.
+   * Always an explicit admin action (never JIT/auto-provisioned) — an `admin`
+   * principal is hard-provisioned per docs/architecture/iam-rbac.md, so an
+   * unrecognized SSO subject must not silently become a new account.
+   */
+  async linkOidcIdentity(userId: string, issuer: string, subject: string, linkedBy: string): Promise<void> {
+    if (!this.deps.oidcLinks) throw new OidcNotConfiguredError();
+    const user = await this.requireUser(userId);
+    const existing = await this.deps.oidcLinks.findByIssuerSubject(issuer, subject);
+    if (existing && existing.userId !== user.userId) {
+      throw new RbacConflictError(`OIDC subject is already linked to a different user`);
+    }
+    if (existing) return; // idempotent
+    await this.deps.oidcLinks.link({
+      issuer,
+      subject,
+      userId: user.userId,
+      linkedAt: this.deps.clock.now(),
+      linkedBy,
+    });
+    this.deps.logger.info({ event: 'OIDC_IDENTITY_LINKED', userId, issuer }, 'oidc identity linked');
+  }
+
+  async unlinkOidcIdentity(issuer: string, subject: string): Promise<boolean> {
+    if (!this.deps.oidcLinks) throw new OidcNotConfiguredError();
+    return this.deps.oidcLinks.unlink(issuer, subject);
+  }
+
+  /**
+   * Resolve the RBAC principal for a verified OIDC (issuer, subject) pair.
+   * Returns null (never throws) when unlinked or when OIDC linking isn't
+   * configured — this is the fail-closed path the OIDC bearer-auth middleware
+   * relies on: an unresolved principal simply falls through to session auth.
+   */
+  async resolveOidcPrincipal(issuer: string, subject: string): Promise<User | null> {
+    if (!this.deps.oidcLinks) return null;
+    const link = await this.deps.oidcLinks.findByIssuerSubject(issuer, subject);
+    if (!link) return null;
+    return this.deps.users.findById(link.userId);
   }
 
   private async requireUser(userId: string): Promise<User> {
