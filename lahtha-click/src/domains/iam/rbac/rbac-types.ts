@@ -68,3 +68,23 @@ export interface AccessAuditRepository {
   append(entry: AccessAuditEntry): Promise<void>;
   list(filter: { actorUserId?: string; actedOnUserId?: string; limit?: number }): Promise<AccessAuditEntry[]>;
 }
+
+/**
+ * Links a verified OIDC (issuer, subject) pair to an RBAC principal, for SSO
+ * bearer authentication. Never created automatically — an admin links it
+ * explicitly (platform.iam.manage), matching the `admin` principal being
+ * hard-provisioned, SSO-only (docs/architecture/iam-rbac.md).
+ */
+export interface OidcIdentityLink {
+  issuer: string;
+  subject: string;
+  userId: string;
+  linkedAt: Date;
+  linkedBy: string;
+}
+
+export interface OidcIdentityLinkRepository {
+  link(link: OidcIdentityLink): Promise<void>;
+  findByIssuerSubject(issuer: string, subject: string): Promise<OidcIdentityLink | null>;
+  unlink(issuer: string, subject: string): Promise<boolean>;
+}

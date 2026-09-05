@@ -15,6 +15,7 @@ import {
   type VendorIdentityRepository,
   type VendorStatusPort,
 } from './types.js';
+import { OidcVerificationError, type OidcClaims, type OidcTokenVerifierPort } from './oidc-verifier.js';
 import type { OtpChannel } from './otp.js';
 import type { Scope } from './scopes.js';
 
@@ -118,6 +119,17 @@ export class FakeMfaVerifier implements MfaVerifierPort {
   async verify(idToken: string): Promise<MfaClaims> {
     const claims = this.tokenToClaims[idToken];
     if (!claims) throw new MfaVerificationError('unknown or invalid MFA token');
+    return claims;
+  }
+}
+
+/** Accepts any token whose value matches a preconfigured map; else rejects.
+ * Mirrors FakeMfaVerifier's shape, for OidcTokenVerifierPort instead. */
+export class FakeOidcVerifier implements OidcTokenVerifierPort {
+  constructor(private readonly tokenToClaims: Record<string, OidcClaims> = {}) {}
+  async verify(token: string): Promise<OidcClaims> {
+    const claims = this.tokenToClaims[token];
+    if (!claims) throw new OidcVerificationError('unknown or invalid OIDC token');
     return claims;
   }
 }

@@ -7,6 +7,7 @@ import { createRbacRouter } from '../src/domains/iam/rbac/rbac.routes.js';
 import { RbacService } from '../src/domains/iam/rbac/rbac.service.js';
 import {
   InMemoryAccessAuditRepository,
+  InMemoryOidcIdentityLinkRepository,
   InMemoryPersonRepository,
   InMemoryRoleGrantRepository,
   InMemoryUserRepository,
@@ -15,12 +16,13 @@ import { SystemClock } from '../src/domains/iam/in-memory-adapters.js';
 
 const silentLogger = { info: () => {}, warn: () => {} };
 
-function makeApp() {
+function makeApp(opts: { withOidc?: boolean } = {}) {
   const service = new RbacService({
     persons: new InMemoryPersonRepository(),
     users: new InMemoryUserRepository(),
     grants: new InMemoryRoleGrantRepository(),
     audit: new InMemoryAccessAuditRepository(),
+    ...(opts.withOidc ? { oidcLinks: new InMemoryOidcIdentityLinkRepository() } : {}),
     clock: new SystemClock(),
     logger: silentLogger,
     piiPepper: 'test-pii-pepper',
@@ -188,6 +190,64 @@ describe('RBAC HTTP API', () => {
       const ok = await request(app).get('/iam/access-audit').set('x-user-id', complianceId);
       expect(ok.status).toBe(200);
       expect(ok.body.items.some((e: { decision: string }) => e.decision === 'allow')).toBe(true);
+    });
+  });
+
+  describe('OIDC identity link/unlink (platform.iam.manage)', () => {
+    it('501s when the service has no OIDC IdP configured (default makeApp)', async () => {
+      const res = await asAdmin(request(app).post(`/iam/users/${adminId}/oidc-link`)).send({
+        issuer: 'https://idp.test',
+        subject: 'sub-1',
+      });
+      expect(res.status).toBe(501);
+      expect(res.body.error).toBe('oidc_not_configured');
+    });
+
+    it('links and unlinks an OIDC subject when OIDC is configured', async () => {
+      const built = makeApp({ withOidc: true });
+      const oidcAdminId = await bootstrapAdmin(built.service, 'admin.ops');
+      const asOidcAdmin = (req: request.Test) => req.set('x-user-id', oidcAdminId);
+
+      const link = await asOidcAdmin(request(built.app).post(`/iam/users/${oidcAdminId}/oidc-link`)).send({
+        issuer: 'https://idp.test',
+        subject: 'sub-1',
+      });
+      expect(link.status).toBe(204);
+
+      const resolved = await built.service.resolveOidcPrincipal('https://idp.test', 'sub-1');
+      expect(resolved?.userId).toBe(oidcAdminId);
+
+      const unlink = await asOidcAdmin(request(built.app).delete('/iam/oidc-link')).send({
+        issuer: 'https://idp.test',
+        subject: 'sub-1',
+      });
+      expect(unlink.status).toBe(204);
+      await expect(built.service.resolveOidcPrincipal('https://idp.test', 'sub-1')).resolves.toBeNull();
+    });
+
+    it('requires platform.iam.manage to link', async () => {
+      const built = makeApp({ withOidc: true });
+      const vendorPerson = await request(built.app)
+        .post('/iam/persons')
+        .send({ fullName: 'Vendor V', primaryPhone: '+966500000016' });
+      const vendorUser = await request(built.app)
+        .post(`/iam/persons/${vendorPerson.body.personId}/users`)
+        .send({ principalType: 'vendor' });
+      const res = await request(built.app)
+        .post(`/iam/users/${vendorUser.body.userId}/oidc-link`)
+        .set('x-user-id', vendorUser.body.userId)
+        .send({ issuer: 'https://idp.test', subject: 'sub-1' });
+      expect(res.status).toBe(403);
+    });
+
+    it('validates the issuer as a URL', async () => {
+      const built = makeApp({ withOidc: true });
+      const oidcAdminId = await bootstrapAdmin(built.service, 'admin.ops');
+      const res = await request(built.app)
+        .post(`/iam/users/${oidcAdminId}/oidc-link`)
+        .set('x-user-id', oidcAdminId)
+        .send({ issuer: 'not-a-url', subject: 'sub-1' });
+      expect(res.status).toBe(400);
     });
   });
 });

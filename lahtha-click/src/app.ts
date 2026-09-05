@@ -22,7 +22,7 @@ import {
   makeListingQueryPort,
   makeListingSoldPort,
 } from './domains/lahtha/listing/index.js';
-import { createIamModule, createRbacService } from './domains/iam/index.js';
+import { createIamModule, createOidcAuthzMiddleware, createRbacService } from './domains/iam/index.js';
 import { logger } from './lib/logger.js';
 
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -54,6 +54,11 @@ export function createApp(): Express {
   // Composition (linear, no cycle): RBAC → vendor-approval (activation over RBAC)
   // → IAM module (provisions the linked approval record at signup). See ADR-0005.
   const rbac = createRbacService();
+  // Mounted before every domain router: resolves an SSO principal (if the
+  // request carries a valid OIDC bearer token) so `iam.authz.requirePermission`
+  // accepts it exactly like a session cookie, in every domain below. A no-op
+  // when this deployment has no OIDC IdP configured.
+  app.use(createOidcAuthzMiddleware(rbac));
   const vendorApproval = createVendorApprovalService(new RbacVendorActivation(rbac));
   const iam = createIamModule({ rbac, approvalProvisioner: makeApprovalProvisioner(vendorApproval) });
   app.use('/iam', iam.router);
