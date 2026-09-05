@@ -33,15 +33,11 @@ export interface Authz {
 
 export function createAuthz(iam: IamDeps, rbac: RbacService): Authz {
   async function resolve(req: Request): Promise<void> {
-    // An upstream middleware (attachOidcPrincipal) may have already resolved
-    // an SSO principal for this request — session resolution is then a no-op.
-    if (req.principalUserId) return;
     const token = bearerToken(req);
     if (!token) throw new SessionInvalidError('not_found');
     const session = await authenticate(iam, token);
     req.iamSession = session;
     req.principalUserId = session.userId;
-    req.principalAuthMethod = 'session';
   }
 
   function requireSession(req: Request, res: Response, next: NextFunction): void {
@@ -90,10 +86,7 @@ export function createAuthz(iam: IamDeps, rbac: RbacService): Authz {
       .then(() => rbac.getUserView(req.principalUserId!))
       .then((view) => {
         res.json({
-          // Only a session-authenticated request carries an IAM session to
-          // describe; an SSO (OIDC) principal has none.
-          session: req.iamSession ? toSessionView(req.iamSession) : null,
-          authMethod: req.principalAuthMethod ?? 'session',
+          session: toSessionView(req.iamSession!),
           principal: {
             userId: view.user.userId,
             personId: view.user.personId,

@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  OidcNotConfiguredError,
   PersonNotFoundError,
   RbacConflictError,
   RbacService,
@@ -11,7 +10,6 @@ import {
 import { InvalidUserStatusTransition, USER_STATUS_ACTIONS } from '../src/domains/iam/rbac/rbac-policy.js';
 import {
   InMemoryAccessAuditRepository,
-  InMemoryOidcIdentityLinkRepository,
   InMemoryPersonRepository,
   InMemoryRoleGrantRepository,
   InMemoryUserRepository,
@@ -169,90 +167,6 @@ describe('RbacService', () => {
       });
       expect(result).toMatchObject({ allowed: false, reason: 'actor_not_found' });
       expect(audit.entries.at(-1)).toMatchObject({ actorUserId: 'ghost', decision: 'deny' });
-    });
-  });
-
-  describe('OIDC identity linking (SSO bearer auth)', () => {
-    it('throws OidcNotConfiguredError when the service has no oidcLinks repository', async () => {
-      // `service` from the top-level build() intentionally omits oidcLinks —
-      // most tests (and most deployments without an OIDC IdP) never need it.
-      const user = await activeVendorUser(service);
-      await expect(service.linkOidcIdentity(user.userId, 'https://idp.test', 'sub-1', 'admin-1')).rejects.toBeInstanceOf(
-        OidcNotConfiguredError,
-      );
-      await expect(service.resolveOidcPrincipal('https://idp.test', 'sub-1')).resolves.toBeNull();
-      await expect(service.unlinkOidcIdentity('https://idp.test', 'sub-1')).rejects.toBeInstanceOf(
-        OidcNotConfiguredError,
-      );
-    });
-
-    function buildWithOidc() {
-      const audit = new InMemoryAccessAuditRepository();
-      const service = new RbacService({
-        persons: new InMemoryPersonRepository(),
-        users: new InMemoryUserRepository(),
-        grants: new InMemoryRoleGrantRepository(),
-        audit,
-        oidcLinks: new InMemoryOidcIdentityLinkRepository(),
-        clock: new FixedClock(new Date('2026-06-05T00:00:00Z')),
-        logger: silentLogger,
-        piiPepper: 'test-pii-pepper',
-      });
-      return service;
-    }
-
-    it('links an OIDC subject to a user and resolves it back', async () => {
-      const service = buildWithOidc();
-      const user = await activeVendorUser(service);
-      await service.linkOidcIdentity(user.userId, 'https://idp.test', 'sub-1', 'admin-1');
-      const resolved = await service.resolveOidcPrincipal('https://idp.test', 'sub-1');
-      expect(resolved?.userId).toBe(user.userId);
-    });
-
-    it('returns null for an unlinked (issuer, subject) pair', async () => {
-      const service = buildWithOidc();
-      await expect(service.resolveOidcPrincipal('https://idp.test', 'nobody')).resolves.toBeNull();
-    });
-
-    it('linking is idempotent for the same user', async () => {
-      const service = buildWithOidc();
-      const user = await activeVendorUser(service);
-      await service.linkOidcIdentity(user.userId, 'https://idp.test', 'sub-1', 'admin-1');
-      await service.linkOidcIdentity(user.userId, 'https://idp.test', 'sub-1', 'admin-1');
-      const resolved = await service.resolveOidcPrincipal('https://idp.test', 'sub-1');
-      expect(resolved?.userId).toBe(user.userId);
-    });
-
-    it('refuses to relink a subject already linked to a different user', async () => {
-      const service = buildWithOidc();
-      const userA = await activeVendorUser(service);
-      const person = await service.createPerson({ fullName: 'Other', primaryPhone: '+966500000099' });
-      const userB = await service.createUser(person.personId, 'vendor');
-      await service.linkOidcIdentity(userA.userId, 'https://idp.test', 'sub-1', 'admin-1');
-      await expect(
-        service.linkOidcIdentity(userB.userId, 'https://idp.test', 'sub-1', 'admin-1'),
-      ).rejects.toBeInstanceOf(RbacConflictError);
-    });
-
-    it('404s linking to an unknown user', async () => {
-      const service = buildWithOidc();
-      await expect(
-        service.linkOidcIdentity('ghost', 'https://idp.test', 'sub-1', 'admin-1'),
-      ).rejects.toBeInstanceOf(UserNotFoundError);
-    });
-
-    it('unlink removes the link and resolveOidcPrincipal reverts to null', async () => {
-      const service = buildWithOidc();
-      const user = await activeVendorUser(service);
-      await service.linkOidcIdentity(user.userId, 'https://idp.test', 'sub-1', 'admin-1');
-      const removed = await service.unlinkOidcIdentity('https://idp.test', 'sub-1');
-      expect(removed).toBe(true);
-      await expect(service.resolveOidcPrincipal('https://idp.test', 'sub-1')).resolves.toBeNull();
-    });
-
-    it('unlink of a non-existent link returns false', async () => {
-      const service = buildWithOidc();
-      await expect(service.unlinkOidcIdentity('https://idp.test', 'nobody')).resolves.toBe(false);
     });
   });
 });

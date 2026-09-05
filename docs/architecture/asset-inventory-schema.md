@@ -115,19 +115,13 @@ One row per handover: who received it, who handed it over, when, expected/actual
 notes at each end, and a **reference only** to the handover slip (`handover_slip_ref`, e.g. an S3
 key or URL) — the file itself is not stored in Postgres, per the brief.
 
-**Flagged assumption, now confirmed permanent:** `assigned_to_id`/`assigned_by_id` are bare `UUID`
-columns with **no FK**. When this doc was first written, that was a forward reference pending
-Phase 2 (auth/OIDC + RBAC). Phase 2 turned out to build on this repo's *existing* IAM/RBAC system
-(`lahtha-click/src/domains/iam/`, see `docs/architecture/iam-rbac.md`), which is **MongoDB-resident**
-(`persons`/`users`/`user_roles` collections), not Postgres. A Postgres `FOREIGN KEY` cannot
-reference a row in a different database engine — so this is no longer "add the FK once the table
-exists," it's a permanent limitation of the polyglot-persistence split between this Postgres asset
-schema and the app's Mongo-backed identity store. Consistency of `assigned_to_id`/`assigned_by_id`
-against real users is therefore an **application-level** concern: whatever service writes a custody
-record must look the `userId` up via the IAM service first. The denormalized `*_label` columns
-(name/email captured at handover time) still carry their original purpose — the custody history
-stays readable even if that person is later removed from IAM — and matter more now that there's no
-DB-level guarantee backing the ID at all.
+**Flagged assumption:** `assigned_to_id`/`assigned_by_id` are bare `UUID` columns with **no FK**.
+This repo has no users/identity table yet — Phase 2 (auth/OIDC + RBAC) is what you said would
+define entity structure for that. Rather than block this schema on Phase 2, each ID is paired with
+a denormalized `*_label` (name/email captured at handover time) so the custody history stays
+readable even after Phase 2 lands and even if that person is later removed from the identity
+system. Add the FK once that table exists; the label columns should stay regardless, since audit
+history shouldn't silently reword itself when a person's profile changes.
 
 ### 6. Audit log — `asset_audit_log`
 
@@ -145,11 +139,10 @@ and `INSERT` succeed. Two caveats worth knowing:
 - **The table owner always bypasses grants.** Whatever role runs these migrations owns the table
   and can still write/delete freely. The guarantee only holds for whatever role your application
   connects as, and only if that role is *not* the owner.
-- **There's still no real "application role" to grant.** Phase 2's identity/RBAC turned out to be
-  Mongo-resident (see the custody-record note above), so it doesn't create a Postgres role either.
-  The actual `GRANT SELECT, INSERT ON asset_audit_log TO <role>` stays a commented template in
-  [`0007_audit_log.up.sql`](../../db/migrations/asset-inventory/0007_audit_log.up.sql) until
-  whatever Postgres connection pool this schema eventually gets wired to has a named runtime role.
+- **There's no real "application role" yet.** Phase 2 owns identity/RBAC, so the actual
+  `GRANT SELECT, INSERT ON asset_audit_log TO <role>` is left as a commented template in
+  [`0007_audit_log.up.sql`](../../db/migrations/asset-inventory/0007_audit_log.up.sql) rather than
+  guessing a role name now.
 
 ## Index rationale (all of them)
 
@@ -211,12 +204,9 @@ non-breaking, code-only change — the column stays `UUID`, only where the value
 5. **The lifecycle transition matrix is a guess.** The 8 states are exactly what you specified;
    which transitions between them are legal is not — I picked a reasonable set and flagged it
    loudly in the migration file itself.
-6. **`assigned_to_id`/`assigned_by_id`/`actor_id` have no FK to a users table, permanently** — not a
-   forward reference anymore. Phase 2 built on this repo's existing IAM/RBAC (Mongo-resident, see
-   `docs/architecture/iam-rbac.md`), so there is no Postgres `users` table for these columns to
-   reference; a cross-database FK isn't something Postgres can express. They're paired with
-   denormalized label/email snapshots so history stays readable regardless, and consistency has to
-   be enforced at the application layer instead of the database layer.
+6. **`assigned_to_id`/`assigned_by_id`/`actor_id` have no FK to a users table**, because that table
+   doesn't exist in this repo yet (Phase 2). They're forward references, paired with denormalized
+   label/email snapshots so history doesn't go blank once Phase 2 lands.
 7. **`asset_audit_log.entity_id` has no FK** — it's polymorphic by design (see §6 above).
 8. **Migration format is plain versioned SQL**, not a specific tool's dialect — see the Stack note
    at the top.

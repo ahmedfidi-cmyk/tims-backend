@@ -2,7 +2,6 @@
 // deps (the bridge: identity provisioning and the session principal both route
 // through RBAC), then mounts identity, RBAC and session-authz routes under /iam.
 
-import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 import { loadConfig, type Config } from '../../config/index.js';
 import { logger } from '../../lib/logger.js';
@@ -16,8 +15,6 @@ import {
   MongoVendorStatus,
 } from './mongo-adapters.js';
 import { EntraMfaVerifier } from './entra-mfa-verifier.js';
-import { attachOidcPrincipal } from './oidc-authz.js';
-import { GenericOidcVerifier, type OidcTokenVerifierPort } from './oidc-verifier.js';
 import { RbacVendorAccountProvisioner } from './account-provisioner.js';
 import { createIamRouter } from './iam.routes.js';
 import { createAuthz, type Authz } from './authz.js';
@@ -26,7 +23,6 @@ import type { MfaVerifierPort, VendorApprovalProvisioner } from './types.js';
 import { RbacService } from './rbac/rbac.service.js';
 import {
   MongoAccessAuditRepository,
-  MongoOidcIdentityLinkRepository,
   MongoPersonRepository,
   MongoRoleGrantRepository,
   MongoUserRepository,
@@ -44,16 +40,6 @@ function buildMfaVerifier(cfg: Config): MfaVerifierPort {
   return new DisabledMfaVerifier();
 }
 
-function buildOidcVerifier(cfg: Config): OidcTokenVerifierPort | null {
-  if (!cfg.OIDC_ISSUER || !cfg.OIDC_AUDIENCE) return null;
-  return new GenericOidcVerifier({
-    issuer: cfg.OIDC_ISSUER,
-    audience: cfg.OIDC_AUDIENCE,
-    ...(cfg.OIDC_JWKS_URI ? { jwksUri: cfg.OIDC_JWKS_URI } : {}),
-    ...(cfg.OIDC_ROLES_CLAIM ? { rolesClaim: cfg.OIDC_ROLES_CLAIM } : {}),
-  });
-}
-
 /** Build the production (Mongo-backed) RBAC service. Shared across domains. */
 export function createRbacService(): RbacService {
   const cfg = loadConfig();
@@ -62,27 +48,10 @@ export function createRbacService(): RbacService {
     users: new MongoUserRepository(),
     grants: new MongoRoleGrantRepository(),
     audit: new MongoAccessAuditRepository(),
-    oidcLinks: new MongoOidcIdentityLinkRepository(),
     clock: new SystemClock(),
     logger,
     piiPepper: cfg.IAM_OTP_PEPPER,
   });
-}
-
-/**
- * SSO bearer-authentication middleware, mounted globally (before every domain
- * router — see src/app.ts) so a valid OIDC access token authenticates a
- * request the same way a session cookie does, for any route already gated on
- * `iam.authz.requirePermission(...)`. A no-op passthrough when this
- * deployment has no OIDC IdP configured (OIDC_ISSUER/OIDC_AUDIENCE unset).
- */
-export function createOidcAuthzMiddleware(rbac: RbacService) {
-  const cfg = loadConfig();
-  const verifier = buildOidcVerifier(cfg);
-  if (!verifier) {
-    return (_req: Request, _res: Response, next: NextFunction): void => next();
-  }
-  return attachOidcPrincipal({ verifier, rbac });
 }
 
 export interface IamModule {

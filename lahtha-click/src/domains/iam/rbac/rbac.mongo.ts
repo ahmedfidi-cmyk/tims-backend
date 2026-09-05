@@ -5,8 +5,6 @@ import { PRINCIPAL_TYPES, USER_STATUSES, type PrincipalType, type UserStatus } f
 import type {
   AccessAuditEntry,
   AccessAuditRepository,
-  OidcIdentityLink,
-  OidcIdentityLinkRepository,
   Person,
   PersonRepository,
   RoleGrant,
@@ -71,24 +69,9 @@ const UserModel: Model<User> =
   (mongoose.models.User as Model<User>) ?? mongoose.model<User>('User', userSchema);
 const GrantModel: Model<RoleGrant> =
   (mongoose.models.UserRole as Model<RoleGrant>) ?? mongoose.model<RoleGrant>('UserRole', grantSchema);
-const oidcLinkSchema = new Schema<OidcIdentityLink>(
-  {
-    issuer: { type: String, required: true },
-    subject: { type: String, required: true },
-    userId: { type: String, required: true },
-    linkedAt: { type: Date, required: true },
-    linkedBy: { type: String, required: true },
-  },
-  { collection: 'oidc_identity_links', versionKey: false },
-);
-oidcLinkSchema.index({ issuer: 1, subject: 1 }, { unique: true });
-
 const AuditModel: Model<AccessAuditEntry> =
   (mongoose.models.AccessAudit as Model<AccessAuditEntry>) ??
   mongoose.model<AccessAuditEntry>('AccessAudit', auditSchema);
-const OidcIdentityLinkModel: Model<OidcIdentityLink> =
-  (mongoose.models.OidcIdentityLink as Model<OidcIdentityLink>) ??
-  mongoose.model<OidcIdentityLink>('OidcIdentityLink', oidcLinkSchema);
 
 export class MongoPersonRepository implements PersonRepository {
   async create(person: Person): Promise<Person> {
@@ -147,23 +130,6 @@ export class MongoRoleGrantRepository implements RoleGrantRepository {
   }
   async hasGrant(userId: string, roleId: string): Promise<boolean> {
     return (await GrantModel.countDocuments({ userId, roleId }).exec()) > 0;
-  }
-}
-
-export class MongoOidcIdentityLinkRepository implements OidcIdentityLinkRepository {
-  async link(link: OidcIdentityLink): Promise<void> {
-    await OidcIdentityLinkModel.updateOne(
-      { issuer: link.issuer, subject: link.subject },
-      { $setOnInsert: link },
-      { upsert: true },
-    ).exec();
-  }
-  async findByIssuerSubject(issuer: string, subject: string): Promise<OidcIdentityLink | null> {
-    return OidcIdentityLinkModel.findOne({ issuer, subject }).lean<OidcIdentityLink>().exec();
-  }
-  async unlink(issuer: string, subject: string): Promise<boolean> {
-    const res = await OidcIdentityLinkModel.deleteOne({ issuer, subject }).exec();
-    return res.deletedCount > 0;
   }
 }
 
