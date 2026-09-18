@@ -33,6 +33,15 @@ const ConfigSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   S3_ENDPOINT: z.string().url().optional(),
   S3_UPLOAD_EXPIRES_SECONDS: z.coerce.number().int().positive().max(3600).optional(),
+
+  // Trading domain — semi-automated daily Binance signal generator (signals
+  // only; it never places live orders, so no API key/secret is configured).
+  BINANCE_SPOT_BASE_URL: z.string().url().default('https://api.binance.com'),
+  BINANCE_FUTURES_BASE_URL: z.string().url().default('https://fapi.binance.com'),
+  BINANCE_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(8000),
+  TRADING_STARTING_EQUITY_USD_CENTS: z.coerce.number().int().positive().default(500_000), // $5,000
+  TRADING_TARGET_EQUITY_USD_CENTS: z.coerce.number().int().positive().default(5_000_000), // $50,000
+  TRADING_CANDIDATE_POOL_SIZE: z.coerce.number().int().positive().max(100).default(30),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

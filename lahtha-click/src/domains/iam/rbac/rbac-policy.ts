@@ -5,7 +5,7 @@
 // permission). Dynamic state — persons, users (principals), and role grants —
 // lives in the database; this module never touches I/O.
 
-export const DOMAINS = ['lahtha', 'click', 'platform'] as const;
+export const DOMAINS = ['lahtha', 'click', 'platform', 'trading'] as const;
 export type Domain = (typeof DOMAINS)[number];
 
 export const PRINCIPAL_TYPES = ['customer', 'vendor', 'dealer', 'admin', 'service'] as const;
@@ -41,6 +41,8 @@ export const PERMISSIONS = {
   'platform.vendor.review': 'Approve or reject vendors (admin)',
   'platform.iam.manage': 'Grant/revoke roles and change user status (admin)',
   'platform.analytics.view': 'View platform-wide sales analytics (admin dashboard)',
+  'trading.signal.view': 'View the daily Binance trading signal, portfolio, and trade journal',
+  'trading.portfolio.manage': 'Record a signal\'s real-world outcome and update the trading portfolio',
 } as const;
 
 export type PermissionId = keyof typeof PERMISSIONS;
@@ -132,6 +134,11 @@ export const ROLES = {
       'lahtha.device.audit',
       'platform.analytics.view',
     ],
+  },
+  'admin.trading': {
+    domain: 'trading',
+    description: 'Operate the daily Binance signal generator and manage the trading portfolio journal',
+    permissions: ['trading.signal.view', 'trading.portfolio.manage'],
   },
 } as const satisfies Record<string, RoleDefinition>;
 
