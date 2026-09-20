@@ -34,14 +34,43 @@ const ConfigSchema = z.object({
   S3_ENDPOINT: z.string().url().optional(),
   S3_UPLOAD_EXPIRES_SECONDS: z.coerce.number().int().positive().max(3600).optional(),
 
-  // Trading domain — semi-automated daily Binance signal generator (signals
-  // only; it never places live orders, so no API key/secret is configured).
+  // Trading domain — daily Binance signal generator (ADR-0011). These market-data
+  // endpoints are always mainnet (public, read-only) regardless of execution env.
   BINANCE_SPOT_BASE_URL: z.string().url().default('https://api.binance.com'),
   BINANCE_FUTURES_BASE_URL: z.string().url().default('https://fapi.binance.com'),
   BINANCE_REQUEST_TIMEOUT_MS: z.coerce.number().int().positive().default(8000),
   TRADING_STARTING_EQUITY_USD_CENTS: z.coerce.number().int().positive().default(500_000), // $5,000
   TRADING_TARGET_EQUITY_USD_CENTS: z.coerce.number().int().positive().default(5_000_000), // $50,000
   TRADING_CANDIDATE_POOL_SIZE: z.coerce.number().int().positive().max(100).default(30),
+
+  // Live execution (ADR-0012) — OFF by default (fails closed). Turning this on
+  // lets the trading domain place real orders with real money. BINANCE_API_KEY
+  // must be a trading-only key (withdrawals disabled on the Binance side).
+  BINANCE_EXECUTION_ENABLED: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
+  BINANCE_TRADING_ENV: z.enum(['testnet', 'mainnet']).default('testnet'),
+  BINANCE_API_KEY: z.string().optional(),
+  BINANCE_API_SECRET: z.string().optional(),
+  BINANCE_SPOT_TESTNET_BASE_URL: z.string().url().default('https://testnet.binance.vision'),
+  BINANCE_FUTURES_TESTNET_BASE_URL: z.string().url().default('https://testnet.binancefuture.com'),
+  // Extra guard against flipping to mainnet by accident: must be this exact
+  // string, set deliberately, for a mainnet execution config to be accepted.
+  BINANCE_MAINNET_CONFIRM: z.string().optional(),
+  // Hard per-trade cap in USD, independent of the Kelly-sized allocationPct —
+  // a second, simpler ceiling that doesn't depend on the risk math being right.
+  MAX_TRADE_NOTIONAL_USD: z.coerce.number().positive().default(250),
+}).superRefine((cfg, ctx) => {
+  if (cfg.BINANCE_EXECUTION_ENABLED) {
+    if (!cfg.BINANCE_API_KEY || !cfg.BINANCE_API_SECRET) {
+      ctx.addIssue({ code: 'custom', path: ['BINANCE_API_KEY'], message: 'BINANCE_API_KEY and BINANCE_API_SECRET are required when BINANCE_EXECUTION_ENABLED=true' });
+    }
+    if (cfg.BINANCE_TRADING_ENV === 'mainnet' && cfg.BINANCE_MAINNET_CONFIRM !== 'I_UNDERSTAND_THE_RISK') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['BINANCE_MAINNET_CONFIRM'],
+        message: 'set BINANCE_MAINNET_CONFIRM=I_UNDERSTAND_THE_RISK to enable live execution against mainnet (real money)',
+      });
+    }
+  }
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

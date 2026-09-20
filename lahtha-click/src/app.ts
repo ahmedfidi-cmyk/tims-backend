@@ -23,7 +23,7 @@ import {
   makeListingSoldPort,
 } from './domains/lahtha/listing/index.js';
 import { createIamModule, createRbacService } from './domains/iam/index.js';
-import { createTradingRouter, createTradingService } from './domains/trading/index.js';
+import { createExecutionService, createTradingRouter, createTradingService } from './domains/trading/index.js';
 import { logger } from './lib/logger.js';
 
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -74,9 +74,10 @@ export function createApp(): Express {
   // Payments (ADR-0007) — drives the checkout payment seam; stub auto-captures in dev.
   app.use('/lahtha', createLahthaPaymentRouter(createPaymentService(checkout), iam.authz));
   // app.use('/click',  clickRouter);  // future
-  // Trading — semi-automated daily Binance signal generator (isolated domain,
-  // no cross-dependency on LAHTHA/CLICK; shares only session authz).
-  app.use(createTradingRouter(createTradingService(), iam.authz));
+  // Trading — daily Binance signal generator (isolated domain, no cross-dependency
+  // on LAHTHA/CLICK; shares only session authz). The execution service is always
+  // built (ADR-0012) but stays a no-op until BINANCE_EXECUTION_ENABLED=true.
+  app.use(createTradingRouter(createTradingService(), iam.authz, createExecutionService()));
 
   app.use(errorHandler);
   return app;
