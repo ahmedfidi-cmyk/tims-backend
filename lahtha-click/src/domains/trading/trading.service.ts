@@ -1,16 +1,17 @@
 // Orchestrates the daily single-asset signal: screen → score → size → journal.
-// Never places a live order — output is a recommendation a human executes
-// (see the "semi-automated" mandate in docs/adr/0011-trading-signal-agent.md).
+// Never places a live order itself — see ExecutionService (execution.service.ts)
+// for the opt-in live-execution seam, gated by BINANCE_EXECUTION_ENABLED
+// (docs/adr/0012-live-binance-execution.md). Signal generation always works
+// standalone as a decision-support tool (docs/adr/0011-trading-signal-agent.md).
 
 import { randomUUID } from 'node:crypto';
 import { allocationPctFromKelly, isDrawdownHalted, leverageForDirection, rewardRiskRatio, stopLossPctFromVolatility, winProbabilityFromScore } from './risk.js';
 import { bollingerBands } from './indicators.js';
 import { screenCandidates, selectTopCandidate } from './screening.js';
+import { applyTradeOutcome, ensurePortfolio, type PortfolioLedgerDeps } from './portfolio-ledger.js';
 import {
   DrawdownHaltError,
   NoEligibleCandidatesError,
-  SignalNotFoundError,
-  TradeAlreadyRecordedError,
   type AuditLogger,
   type CandidateMetrics,
   type Clock,
@@ -41,8 +42,6 @@ export interface TradingDeps {
   config: TradingConfig;
 }
 
-const PORTFOLIO_ID = 'main';
-
 export interface PortfolioView extends PortfolioState {
   drawdownPct: number;
   progressPct: number;
@@ -55,8 +54,20 @@ export class TradingService {
     return date.toISOString().slice(0, 10);
   }
 
+  private ledgerDeps(): PortfolioLedgerDeps {
+    return {
+      signals: this.deps.signals,
+      portfolio: this.deps.portfolio,
+      trades: this.deps.trades,
+      clock: this.deps.clock,
+      logger: this.deps.logger,
+      startingEquityUsdCents: this.deps.config.startingEquityUsdCents,
+      targetEquityUsdCents: this.deps.config.targetEquityUsdCents,
+    };
+  }
+
   async getPortfolio(): Promise<PortfolioView> {
-    const state = await this.ensurePortfolio();
+    const state = await ensurePortfolio(this.ledgerDeps());
     return this.toView(state);
   }
 
@@ -65,24 +76,6 @@ export class TradingService {
     const span = state.targetEquityUsdCents - state.startingEquityUsdCents;
     const progressPct = span > 0 ? Math.min(1, Math.max(0, (state.equityUsdCents - state.startingEquityUsdCents) / span)) : 0;
     return { ...state, drawdownPct, progressPct };
-  }
-
-  private async ensurePortfolio(): Promise<PortfolioState> {
-    const existing = await this.deps.portfolio.get(PORTFOLIO_ID);
-    if (existing) return existing;
-    const now = this.deps.clock.now();
-    const fresh: PortfolioState = {
-      portfolioId: PORTFOLIO_ID,
-      equityUsdCents: this.deps.config.startingEquityUsdCents,
-      startingEquityUsdCents: this.deps.config.startingEquityUsdCents,
-      targetEquityUsdCents: this.deps.config.targetEquityUsdCents,
-      peakEquityUsdCents: this.deps.config.startingEquityUsdCents,
-      tradeCount: 0,
-      wins: 0,
-      losses: 0,
-      updatedAt: now,
-    };
-    return this.deps.portfolio.save(fresh);
   }
 
   async getSignal(tradeDate: string): Promise<Signal | null> {
@@ -105,7 +98,7 @@ export class TradingService {
     const existing = await this.deps.signals.findByDate(tradeDate);
     if (existing) return existing;
 
-    const portfolio = await this.ensurePortfolio();
+    const portfolio = await ensurePortfolio(this.ledgerDeps());
     if (isDrawdownHalted(portfolio.equityUsdCents, portfolio.peakEquityUsdCents)) {
       const drawdownPct = (portfolio.peakEquityUsdCents - portfolio.equityUsdCents) / portfolio.peakEquityUsdCents;
       this.deps.logger.warn({ event: 'TRADING_HALTED_DRAWDOWN', drawdownPct }, 'daily signal generation halted');
@@ -205,40 +198,8 @@ export class TradingService {
     realizedPnlUsdCents: number,
     byUserId: string,
   ): Promise<{ trade: TradeRecord; portfolio: PortfolioView }> {
-    const signal = await this.deps.signals.findById(signalId);
-    if (!signal) throw new SignalNotFoundError(signalId);
-
-    const already = await this.deps.trades.findBySignal(signalId);
-    if (already) throw new TradeAlreadyRecordedError(signalId);
-
-    const portfolio = await this.ensurePortfolio();
-    const equityAfter = portfolio.equityUsdCents + realizedPnlUsdCents;
-    const updated: PortfolioState = {
-      ...portfolio,
-      equityUsdCents: equityAfter,
-      peakEquityUsdCents: Math.max(portfolio.peakEquityUsdCents, equityAfter),
-      tradeCount: portfolio.tradeCount + 1,
-      wins: portfolio.wins + (outcome === 'win' ? 1 : 0),
-      losses: portfolio.losses + (outcome === 'loss' ? 1 : 0),
-      updatedAt: this.deps.clock.now(),
-    };
-    await this.deps.portfolio.save(updated);
-
-    const trade: TradeRecord = {
-      tradeId: randomUUID(),
-      signalId,
-      outcome,
-      realizedPnlUsdCents,
-      equityAfterUsdCents: equityAfter,
-      closedAt: this.deps.clock.now(),
-      closedByUserId: byUserId,
-    };
-    const savedTrade = await this.deps.trades.create(trade);
-    this.deps.logger.info(
-      { event: 'TRADING_OUTCOME_RECORDED', signalId, outcome, realizedPnlUsdCents, equityAfterUsdCents: equityAfter },
-      'trade outcome recorded',
-    );
-    return { trade: savedTrade, portfolio: this.toView(updated) };
+    const { trade, portfolio } = await applyTradeOutcome(this.ledgerDeps(), signalId, outcome, realizedPnlUsdCents, byUserId);
+    return { trade, portfolio: this.toView(portfolio) };
   }
 }
 

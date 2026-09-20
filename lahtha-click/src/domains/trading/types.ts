@@ -113,6 +113,8 @@ export interface PortfolioState {
   tradeCount: number;
   wins: number;
   losses: number;
+  /** Kill switch: when true, live execution is skipped even if BINANCE_EXECUTION_ENABLED is set. */
+  executionPaused: boolean;
   updatedAt: Date;
 }
 

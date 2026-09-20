@@ -52,6 +52,7 @@ const portfolioSchema = new Schema<PortfolioState>(
     tradeCount: { type: Number, required: true },
     wins: { type: Number, required: true },
     losses: { type: Number, required: true },
+    executionPaused: { type: Boolean, required: true, default: false },
     updatedAt: { type: Date, required: true },
   },
   { collection: 'trading_portfolio', versionKey: false },
