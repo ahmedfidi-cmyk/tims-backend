@@ -10,6 +10,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 |---|---|---|
 | [mvp-scope-decision-matrix.md](./mvp-scope-decision-matrix.md) | Closes MVP scope: scored decision matrix, P0/P1 cut line, Phase 2/3 with pull-forward triggers, cold-start plan, delivery-cost model, app-store and regulatory assumption registers, 2 Change Requests | Recommendation — awaiting owner sign-off |
 | [streaming-architecture-webrtc-vs-llhls.md](./streaming-architecture-webrtc-vs-llhls.md) | Closes the MVP streaming architecture: WebRTC vs. LL-HLS with a cost-crossover analysis, latency budget, low-connectivity ladder, ingest resilience and the transport definition of "no grace period". **Amends §13 of the scope matrix** | Recommendation — pending a 2-week measured PoC |
+| [package-structure-and-pricing.md](./package-structure-and-pricing.md) | Closes package design: what may and may not differentiate a tier, the two-dimensional entitlement model (broadcast-hours × viewer-hours), the tier ladder, price derivation from the cost floor, overage, unified-pricing mechanics and discount governance. **Amends §5 of the scope matrix** | Recommendation — price points pending PoC |
 
 ## Conventions
 
@@ -37,15 +38,18 @@ per-country validation**. None of it is legal advice.
 | 5 | AI boundaries during a live session | Phase-2 AI assistant (I5) |
 | 6 | Transport definition of "no grace period" (`T_reconnect`) | Session lifecycle implementation (B2) |
 | 7 | Media vendor selection | Blocked on the beachhead decision + the streaming PoC |
+| 8 | Tax treatment of a net-of-tax global sticker price | Package pricing (§14.1) |
+| 9 | Enterprise pricing as a published rate card, not negotiation | Phase-2 enterprise tiers (§14.2) |
 
 ## Candidate next deliverables
 
-1. **Package structure and pricing tiers** — now unblocked: the streaming document supplies the delivery-cost shape (`F_h + v_h × V`) that the price floor depends on. Tier variables must include *concurrency ceiling*, and short-session cost leakage must be closed.
-2. **Seller-journey PRD** covering the Go-Live flow and the session lifecycle, including the `T_reconnect` semantics.
-3. **Boost mechanics**: Qualified View definition and frequency caps.
-4. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+1. **Seller-journey PRD** covering the Go-Live flow and the session lifecycle, including the `T_reconnect` semantics and the six pricing-surface requirements in §13 of the pricing document.
+2. **Boost mechanics**: Qualified View definition and frequency caps.
+3. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+4. **Discovery UX spec** — the market grid, the honest empty state, and Scheduled Live guardrails.
 
 ## Done
 
 - MVP scope (matrix) — merged in [#49](https://github.com/ahmedfidi-cmyk/tims-backend/pull/49)
-- Streaming architecture: WebRTC vs. LL-HLS
+- Streaming architecture: WebRTC vs. LL-HLS — merged in [#50](https://github.com/ahmedfidi-cmyk/tims-backend/pull/50)
+- Package structure and pricing tiers
