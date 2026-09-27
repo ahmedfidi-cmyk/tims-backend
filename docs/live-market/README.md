@@ -12,6 +12,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | [streaming-architecture-webrtc-vs-llhls.md](./streaming-architecture-webrtc-vs-llhls.md) | Closes the MVP streaming architecture: WebRTC vs. LL-HLS with a cost-crossover analysis, latency budget, low-connectivity ladder, ingest resilience and the transport definition of "no grace period". **Amends §13 of the scope matrix** | Recommendation — pending a 2-week measured PoC |
 | [package-structure-and-pricing.md](./package-structure-and-pricing.md) | Closes package design: what may and may not differentiate a tier, the two-dimensional entitlement model (broadcast-hours × viewer-hours), the tier ladder, price derivation from the cost floor, overage, unified-pricing mechanics and discount governance. **Amends §5 of the scope matrix** | Recommendation — price points pending PoC |
 | [seller-journey-prd.md](./seller-journey-prd.md) | The seller side end to end: ten stages with acceptance criteria, the live-session state machine and its invariants, Contact Request lifecycle, 14 edge cases, notifications, and 11 CI-enforceable negative acceptance criteria | Recommendation — buildable once CR-01, CR-02 and `T_reconnect` are decided |
+| [moderation-operating-model.md](./moderation-operating-model.md) | Risk taxonomy, four-layer stack, automated-detection economics, 24/7 rota sizing and cost, triage SLA, tooling, appeals, QA and wellbeing. **Materially amends pricing §5 and §12** — moderation compute was missing from the serving-cost model | Recommendation — rota sizing and CR-01 both on the critical path |
 
 ## Conventions
 
@@ -43,17 +44,20 @@ per-country validation**. None of it is legal advice.
 | 9 | Enterprise pricing as a published rate card, not negotiation | Phase-2 enterprise tiers (§14.2) |
 | 10 | Whether `pending_review` blocks Go-Live for Business/Company/International | Seller onboarding (PRD §10.1) |
 | 11 | Exact viewer count vs. a coarse audience band for viewers | Live session UI (PRD §10.2) |
+| 12 | Pricing response to the moderation-compute correction — raise prices, hold and accept ~62% margin, or reduce coverage | Tier prices (moderation §13.3) |
+| 13 | In-house moderation rota vs. outsourced BPO | Launch staffing (moderation §14) |
 
 ## Candidate next deliverables
 
 1. **Discovery UX spec** — the market grid, the honest empty state, Scheduled Live guardrails, and the viewer/buyer side of the Contact Request.
 2. **Boost mechanics**: Qualified View definition and frequency caps.
 3. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
-4. **Moderation operating model** — the 24/7 rota, triage SLA and appeal path that the seller PRD's session endings depend on.
+4. **Consolidated financial model** — one place where `F_h`, `M_h`, `v_h`, the rota and the tier ladder are reconciled, so the cost model stops being amended document by document.
 
 ## Done
 
 - MVP scope (matrix) — merged in [#49](https://github.com/ahmedfidi-cmyk/tims-backend/pull/49)
 - Streaming architecture: WebRTC vs. LL-HLS — merged in [#50](https://github.com/ahmedfidi-cmyk/tims-backend/pull/50)
-- Package structure and pricing tiers
-- Seller journey PRD
+- Package structure and pricing tiers — merged in [#51](https://github.com/ahmedfidi-cmyk/tims-backend/pull/51)
+- Seller journey PRD — merged in [#51](https://github.com/ahmedfidi-cmyk/tims-backend/pull/51)
+- Moderation operating model
