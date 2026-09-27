@@ -9,6 +9,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | Document | Purpose | Status |
 |---|---|---|
 | [mvp-scope-decision-matrix.md](./mvp-scope-decision-matrix.md) | Closes MVP scope: scored decision matrix, P0/P1 cut line, Phase 2/3 with pull-forward triggers, cold-start plan, delivery-cost model, app-store and regulatory assumption registers, 2 Change Requests | Recommendation — awaiting owner sign-off |
+| [streaming-architecture-webrtc-vs-llhls.md](./streaming-architecture-webrtc-vs-llhls.md) | Closes the MVP streaming architecture: WebRTC vs. LL-HLS with a cost-crossover analysis, latency budget, low-connectivity ladder, ingest resilience and the transport definition of "no grace period". **Amends §13 of the scope matrix** | Recommendation — pending a 2-week measured PoC |
 
 ## Conventions
 
@@ -34,10 +35,17 @@ per-country validation**. None of it is legal advice.
 | 3 | CR-02 — app-store commission vs. globally unified pricing | Package purchase path (C1/C2) |
 | 4 | Transaction fee vs. platform legal role | Phase-2 commerce (F3b). The 10% figure is **not approved** |
 | 5 | AI boundaries during a live session | Phase-2 AI assistant (I5) |
+| 6 | Transport definition of "no grace period" (`T_reconnect`) | Session lifecycle implementation (B2) |
+| 7 | Media vendor selection | Blocked on the beachhead decision + the streaming PoC |
 
 ## Candidate next deliverables
 
-1. Package structure and pricing tiers — must use *concurrency ceiling* as a tier variable (see §6.3 of the matrix).
-2. WebRTC vs. LL-HLS comparison with latency and cost targets — the matrix carries only a directional assumption (§13).
-3. Seller-journey PRD covering the Go-Live flow and the no-grace-period session lifecycle.
-4. Boost mechanics: Qualified View definition and frequency caps.
+1. **Package structure and pricing tiers** — now unblocked: the streaming document supplies the delivery-cost shape (`F_h + v_h × V`) that the price floor depends on. Tier variables must include *concurrency ceiling*, and short-session cost leakage must be closed.
+2. **Seller-journey PRD** covering the Go-Live flow and the session lifecycle, including the `T_reconnect` semantics.
+3. **Boost mechanics**: Qualified View definition and frequency caps.
+4. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+
+## Done
+
+- MVP scope (matrix) — merged in [#49](https://github.com/ahmedfidi-cmyk/tims-backend/pull/49)
+- Streaming architecture: WebRTC vs. LL-HLS
