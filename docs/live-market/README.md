@@ -14,6 +14,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | [seller-journey-prd.md](./seller-journey-prd.md) | The seller side end to end: ten stages with acceptance criteria, the live-session state machine and its invariants, Contact Request lifecycle, 14 edge cases, notifications, and 11 CI-enforceable negative acceptance criteria | Recommendation — buildable once CR-01, CR-02 and `T_reconnect` are decided |
 | [moderation-operating-model.md](./moderation-operating-model.md) | Risk taxonomy, four-layer stack, automated-detection economics, 24/7 rota sizing and cost, triage SLA, tooling, appeals, QA and wellbeing. **Materially amends pricing §5 and §12** — moderation compute was missing from the serving-cost model | Recommendation — rota sizing and CR-01 both on the critical path |
 | **[financial-model.md](./financial-model.md)** | **Single source of truth for every unit cost.** Parameter register, cost equations, three scenarios, sensitivity ranking, break-even, and change control. **Supersedes the cost figures in every other document — see its §9.1** | Recommendation — every parameter assumed until measured |
+| [seller-retention-programme.md](./seller-retention-programme.md) | The binding constraint the financial model surfaced: metric definitions for a prepaid model, a five-mode causal model of non-repurchase, the repurchase loop, the retention tactics this baseline forbids, instrumentation, and a 90-day pilot. **Contains a scope amendment request** | Recommendation — §7 needs an accept/reject |
 
 > **Read the financial model first for any number.** The cost model was amended three times as the workstream
 > progressed, each amendment correct and documented. `financial-model.md` holds the authoritative values and lists
@@ -52,14 +53,18 @@ per-country validation**. None of it is legal advice.
 | 12 | Pricing response to the moderation-compute correction — raise prices, hold and accept ~62% margin, or reduce coverage | Tier prices (moderation §13.3) |
 | 13 | In-house moderation rota vs. outsourced BPO — the largest achievable lever on break-even | Launch staffing (moderation §14, financial §8) |
 | 14 | Accept Phase 2 (seats) as scheduled work rather than demand-contingent — the P&L does not close without it | Roadmap (financial §4, §9.2) |
-| 15 | Replace the ≥40% month-2 renewal target with ≥0.85 monthly repurchase | Growth targets (financial §7) |
+| 15 | Replace the ≥40% month-2 renewal target with ≥0.85 monthly repurchase and NRR ≥100% | Growth targets (financial §7, retention §10.1) |
+| 16 | **Scope amendment**: promote Contact Request, Lead Generation, seller statistics and Scheduled Live to P0, add hour rollover to MVP, and demote the Trial Pass to Phase 2 to fund it | MVP scope (retention §7) |
+| 17 | Who owns `r` — a named person, not a process | Accountability (retention §10.2) |
 
 ## Candidate next deliverables
 
 1. **Discovery UX spec** — the market grid, the honest empty state, Scheduled Live guardrails, and the viewer/buyer side of the Contact Request.
-2. **Retention / repurchase programme** — the financial model identifies monthly repurchase, not acquisition, as the binding constraint. Nothing in the pack yet addresses it directly.
-3. **Boost mechanics**: Qualified View definition and frequency caps.
-4. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+2. **Boost mechanics**: Qualified View definition and frequency caps.
+3. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+
+> Seven documents in, the pack is no longer short of analysis. The open decisions below are what the next phase needs,
+> and no further deliverable unblocks them.
 
 ## Done
 
@@ -69,3 +74,4 @@ per-country validation**. None of it is legal advice.
 - Seller journey PRD — merged in [#51](https://github.com/ahmedfidi-cmyk/tims-backend/pull/51)
 - Moderation operating model — merged in [#52](https://github.com/ahmedfidi-cmyk/tims-backend/pull/52)
 - Consolidated financial model
+- Seller retention & repurchase programme
