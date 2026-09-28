@@ -39,6 +39,9 @@ The authoritative values. Everything downstream is derived.
 | `Fix_plat` | Control plane, database, Redis, chat service, per month | **$500** | $500 | Infrastructure answer, this workstream | Assumed |
 | `Fix` | Total modelled fixed cost, per month | **$35,500** | $35,500 | Sum | — |
 | `r` | Monthly repurchase / renewal rate | **Unknown** | ≥0.85 (§7) | — | **The critical unknown** |
+| `p_qv` | Price per Qualified View (Boost, Phase 2) | **$0.010** | $0.010 | [Boost](./boost-mechanics.md) §5.2 | Assumed |
+| `w_b` | Average boosted watch minutes | **8** | 8 | Boost §5.2 | Assumed |
+| `c_qv` | Delivery cost per QV = `v_h × w_b/60` | **≈$0.002** | ≈$0.0013 | Derived | Derived |
 
 **Explicitly not in `Fix`:** engineering, product, design, founders, legal, marketing spend, office. `Fix` is the
 **operating floor the product itself creates** — the cost of keeping the market open and safe for one month with zero
@@ -177,7 +180,7 @@ one.
 | Package revenue | **Yes** | The only revenue in this model |
 | Viewer-hour overage | Partially | Accretive at +$35 per 1,000 vh (§2); not forecast, because it depends on unmeasured audience distribution |
 | Broadcast-hour overage | No | Small; $1.00 against $0.35 cost |
-| Boost (Phase 2) | **No** | Deliberate — mechanics and Qualified View are undefined. Upside not counted |
+| Boost (Phase 2) | **No** | Still excluded. The mechanics are now designed ([Boost](./boost-mechanics.md)) and its parameters are in §1, but Phase-2 demand is unmeasured and the density caps (Boost §6) deliberately bound the revenue. Upside not counted |
 | Transaction fee (Phase 2, F3b) | **No** | Deliberate — the platform's legal role is [Open] and the 10% example is **not approved**. Modelling revenue from an undecided legal structure would be the worst kind of optimism |
 | LM | **No** | [Deferred] workstream |
 
@@ -277,6 +280,7 @@ This document is the source of truth. A parameter changes **here first**, then p
 | `Fix_mod` | Moderation §6 · Pricing §12 |
 | `psp` | Pricing §12 |
 | Tier prices and allowances | Pricing §4 · Seller PRD S1, S4 |
+| `p_qv`, `w_b`, `c_qv` | Boost §5 — Phase 2, and **not** included in the revenue model (§6) |
 | `r` | Matrix §5, §15 · Pricing §12 |
 
 **Rule** [My Recommendation]: no document in this workstream restates a number from this register. It references it.

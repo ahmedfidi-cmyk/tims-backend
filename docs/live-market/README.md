@@ -15,11 +15,19 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | [moderation-operating-model.md](./moderation-operating-model.md) | Risk taxonomy, four-layer stack, automated-detection economics, 24/7 rota sizing and cost, triage SLA, tooling, appeals, QA and wellbeing. **Materially amends pricing §5 and §12** — moderation compute was missing from the serving-cost model | Recommendation — rota sizing and CR-01 both on the critical path |
 | **[financial-model.md](./financial-model.md)** | **Single source of truth for every unit cost.** Parameter register, cost equations, three scenarios, sensitivity ranking, break-even, and change control. **Supersedes the cost figures in every other document — see its §9.1** | Recommendation — every parameter assumed until measured |
 | [seller-retention-programme.md](./seller-retention-programme.md) | The binding constraint the financial model surfaced: metric definitions for a prepaid model, a five-mode causal model of non-repurchase, the repurchase loop, the retention tactics this baseline forbids, instrumentation, and a 90-day pilot. **Contains a scope amendment request** | Recommendation — §7 needs an accept/reject |
+| [policy-engine-rulebook.md](./policy-engine-rulebook.md) | The scaffold counsel populates: rule data model, verdict vocabulary (with no `REJECTED`, because Principle 11 forbids one), a 30-category taxonomy tiered to moderation intensity, the evaluation algorithm, the unknown-cell default policy, versioning, and a per-market delivery checklist. **Contains no legal determinations** | Recommendation — unusable until populated per market |
+| [boost-mechanics.md](./boost-mechanics.md) | Phase-2 amplification: impression provenance (the mechanism that keeps paid reach from buying organic reach), the Qualified View definition, a fixed global rate rather than an auction, frequency and density caps, inventory rationing, and the LM boundary. **Asks for one MVP data-model change** | Recommendation — §12 item 4 needs a decision |
 | [discovery-ux-spec.md](./discovery-ux-spec.md) | The viewer/buyer side: market grid as a grid rather than a feed, poster frames instead of live previews (and why), the empty state as a first-class surface, watch and chat, Contact Request, age gates, session-end states, 11 negative acceptance criteria, and the buyer-trust problem | Recommendation — one possible future CR flagged, not requested |
 
 > **Read the financial model first for any number.** The cost model was amended three times as the workstream
 > progressed, each amendment correct and documented. `financial-model.md` holds the authoritative values and lists
 > every superseded figure; the other documents explain *why* a number exists.
+
+## Related ADRs
+
+| ADR | Decision |
+|---|---|
+| [ADR-0013](../adr/0013-live-market-infrastructure-separation.md) | LIVE MARKET runs on a separate control plane and media plane, fully isolated from the LAHTHA & CLICK deployment; media is managed at MVP |
 
 ## Conventions
 
@@ -60,15 +68,21 @@ per-country validation**. None of it is legal advice.
 | 18 | Device-local saved sellers — accept or reject | Viewer UX (discovery §7.1) |
 | 19 | Whether anonymous watching is acceptable given that it weakens the Unique Viewers ranking signal | Viewer UX (discovery §7.1) |
 | 20 | Seller ratings/reviews — **not requested**, flagged as a future CR against Principles 12 and 6 if buyer hesitancy proves to be the conversion blocker | Buyer trust (discovery §9.3) |
+| 21 | **Accept the impression-provenance field into the MVP data model** — Boost is Phase 2 but this cannot be retrofitted without invalidating every prior ranking number | Ranking integrity (boost §3.2) |
+| 22 | Boost density cap at 20% — a values decision about how organic the market should feel | Boost §6 |
+| 23 | Accept the tier-based default for unreviewed Policy Engine cells — deny for high-risk categories, permit-with-notice or permit for lower tiers | Policy Engine ([rulebook §6](./policy-engine-rulebook.md)) |
+| 24 | Confirm the 30-category taxonomy before it becomes load-bearing in ranking, moderation and legality at once | Taxonomy ([rulebook §3](./policy-engine-rulebook.md)) |
 
 ## Candidate next deliverables
 
-1. **Boost mechanics**: Qualified View definition and frequency caps (Phase 2, but the definition wants settling early).
-2. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
-3. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
+The planned set is complete. What remains is not analysis:
 
-> Seven documents in, the pack is no longer short of analysis. The open decisions below are what the next phase needs,
-> and no further deliverable unblocks them.
+1. **Counsel engagement** to populate the Policy Engine matrix per launch market — external work, on the critical path ([rulebook §10](./policy-engine-rulebook.md)).
+2. **The streaming PoC** — two weeks, replaces the assumptions the whole cost model rests on ([streaming §10](./streaming-architecture-webrtc-vs-llhls.md)).
+3. **Moderation recruitment** — the longest lead time in the plan ([moderation §6](./moderation-operating-model.md)).
+
+> Ten deliverables in, the pack is not short of analysis. The open decisions below are what the next phase needs, and
+> no further document unblocks them.
 
 ## Done
 
@@ -80,3 +94,6 @@ per-country validation**. None of it is legal advice.
 - Consolidated financial model
 - Seller retention & repurchase programme
 - Discovery & viewer UX specification
+- Boost mechanics (Qualified View, pricing, caps)
+- Infrastructure separation — [ADR-0013](../adr/0013-live-market-infrastructure-separation.md)
+- Policy Engine rulebook scaffold
