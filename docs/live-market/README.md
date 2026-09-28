@@ -15,6 +15,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | [moderation-operating-model.md](./moderation-operating-model.md) | Risk taxonomy, four-layer stack, automated-detection economics, 24/7 rota sizing and cost, triage SLA, tooling, appeals, QA and wellbeing. **Materially amends pricing §5 and §12** — moderation compute was missing from the serving-cost model | Recommendation — rota sizing and CR-01 both on the critical path |
 | **[financial-model.md](./financial-model.md)** | **Single source of truth for every unit cost.** Parameter register, cost equations, three scenarios, sensitivity ranking, break-even, and change control. **Supersedes the cost figures in every other document — see its §9.1** | Recommendation — every parameter assumed until measured |
 | [seller-retention-programme.md](./seller-retention-programme.md) | The binding constraint the financial model surfaced: metric definitions for a prepaid model, a five-mode causal model of non-repurchase, the repurchase loop, the retention tactics this baseline forbids, instrumentation, and a 90-day pilot. **Contains a scope amendment request** | Recommendation — §7 needs an accept/reject |
+| [boost-mechanics.md](./boost-mechanics.md) | Phase-2 amplification: impression provenance (the mechanism that keeps paid reach from buying organic reach), the Qualified View definition, a fixed global rate rather than an auction, frequency and density caps, inventory rationing, and the LM boundary. **Asks for one MVP data-model change** | Recommendation — §12 item 4 needs a decision |
 | [discovery-ux-spec.md](./discovery-ux-spec.md) | The viewer/buyer side: market grid as a grid rather than a feed, poster frames instead of live previews (and why), the empty state as a first-class surface, watch and chat, Contact Request, age gates, session-end states, 11 negative acceptance criteria, and the buyer-trust problem | Recommendation — one possible future CR flagged, not requested |
 
 > **Read the financial model first for any number.** The cost model was amended three times as the workstream
@@ -60,12 +61,13 @@ per-country validation**. None of it is legal advice.
 | 18 | Device-local saved sellers — accept or reject | Viewer UX (discovery §7.1) |
 | 19 | Whether anonymous watching is acceptable given that it weakens the Unique Viewers ranking signal | Viewer UX (discovery §7.1) |
 | 20 | Seller ratings/reviews — **not requested**, flagged as a future CR against Principles 12 and 6 if buyer hesitancy proves to be the conversion blocker | Buyer trust (discovery §9.3) |
+| 21 | **Accept the impression-provenance field into the MVP data model** — Boost is Phase 2 but this cannot be retrofitted without invalidating every prior ranking number | Ranking integrity (boost §3.2) |
+| 22 | Boost density cap at 20% — a values decision about how organic the market should feel | Boost §6 |
 
 ## Candidate next deliverables
 
-1. **Boost mechanics**: Qualified View definition and frequency caps (Phase 2, but the definition wants settling early).
-2. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
-3. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
+1. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+2. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
 
 > Seven documents in, the pack is no longer short of analysis. The open decisions below are what the next phase needs,
 > and no further deliverable unblocks them.
@@ -80,3 +82,4 @@ per-country validation**. None of it is legal advice.
 - Consolidated financial model
 - Seller retention & repurchase programme
 - Discovery & viewer UX specification
+- Boost mechanics (Qualified View, pricing, caps)
