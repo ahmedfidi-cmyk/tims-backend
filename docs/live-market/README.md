@@ -23,6 +23,12 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 > progressed, each amendment correct and documented. `financial-model.md` holds the authoritative values and lists
 > every superseded figure; the other documents explain *why* a number exists.
 
+## Presentation
+
+[LIVE-MARKET-summary-ar.pptx](./LIVE-MARKET-summary-ar.pptx) — a 16-slide Arabic (RTL) executive summary of the whole
+pack and the ordered next steps. Generated from the merged documents; if a figure in it ever disagrees with
+[financial-model.md](./financial-model.md), the financial model wins.
+
 ## Related ADRs
 
 | ADR | Decision |
