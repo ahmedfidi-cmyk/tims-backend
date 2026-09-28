@@ -22,6 +22,12 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 > progressed, each amendment correct and documented. `financial-model.md` holds the authoritative values and lists
 > every superseded figure; the other documents explain *why* a number exists.
 
+## Related ADRs
+
+| ADR | Decision |
+|---|---|
+| [ADR-0013](../adr/0013-live-market-infrastructure-separation.md) | LIVE MARKET runs on a separate control plane and media plane, fully isolated from the LAHTHA & CLICK deployment; media is managed at MVP |
+
 ## Conventions
 
 Every element in these documents is tagged:
@@ -66,8 +72,7 @@ per-country validation**. None of it is legal advice.
 
 ## Candidate next deliverables
 
-1. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
-2. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
+1. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
 
 > Seven documents in, the pack is no longer short of analysis. The open decisions below are what the next phase needs,
 > and no further deliverable unblocks them.
@@ -83,3 +88,4 @@ per-country validation**. None of it is legal advice.
 - Seller retention & repurchase programme
 - Discovery & viewer UX specification
 - Boost mechanics (Qualified View, pricing, caps)
+- Infrastructure separation — [ADR-0013](../adr/0013-live-market-infrastructure-separation.md)
