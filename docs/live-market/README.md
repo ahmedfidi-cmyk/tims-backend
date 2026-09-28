@@ -15,6 +15,7 @@ streaming as the medium for advertising, showcasing, and commercial interaction.
 | [moderation-operating-model.md](./moderation-operating-model.md) | Risk taxonomy, four-layer stack, automated-detection economics, 24/7 rota sizing and cost, triage SLA, tooling, appeals, QA and wellbeing. **Materially amends pricing §5 and §12** — moderation compute was missing from the serving-cost model | Recommendation — rota sizing and CR-01 both on the critical path |
 | **[financial-model.md](./financial-model.md)** | **Single source of truth for every unit cost.** Parameter register, cost equations, three scenarios, sensitivity ranking, break-even, and change control. **Supersedes the cost figures in every other document — see its §9.1** | Recommendation — every parameter assumed until measured |
 | [seller-retention-programme.md](./seller-retention-programme.md) | The binding constraint the financial model surfaced: metric definitions for a prepaid model, a five-mode causal model of non-repurchase, the repurchase loop, the retention tactics this baseline forbids, instrumentation, and a 90-day pilot. **Contains a scope amendment request** | Recommendation — §7 needs an accept/reject |
+| [discovery-ux-spec.md](./discovery-ux-spec.md) | The viewer/buyer side: market grid as a grid rather than a feed, poster frames instead of live previews (and why), the empty state as a first-class surface, watch and chat, Contact Request, age gates, session-end states, 11 negative acceptance criteria, and the buyer-trust problem | Recommendation — one possible future CR flagged, not requested |
 
 > **Read the financial model first for any number.** The cost model was amended three times as the workstream
 > progressed, each amendment correct and documented. `financial-model.md` holds the authoritative values and lists
@@ -56,12 +57,15 @@ per-country validation**. None of it is legal advice.
 | 15 | Replace the ≥40% month-2 renewal target with ≥0.85 monthly repurchase and NRR ≥100% | Growth targets (financial §7, retention §10.1) |
 | 16 | **Scope amendment**: promote Contact Request, Lead Generation, seller statistics and Scheduled Live to P0, add hour rollover to MVP, and demote the Trial Pass to Phase 2 to fund it | MVP scope (retention §7) |
 | 17 | Who owns `r` — a named person, not a process | Accountability (retention §10.2) |
+| 18 | Device-local saved sellers — accept or reject | Viewer UX (discovery §7.1) |
+| 19 | Whether anonymous watching is acceptable given that it weakens the Unique Viewers ranking signal | Viewer UX (discovery §7.1) |
+| 20 | Seller ratings/reviews — **not requested**, flagged as a future CR against Principles 12 and 6 if buyer hesitancy proves to be the conversion blocker | Buyer trust (discovery §9.3) |
 
 ## Candidate next deliverables
 
-1. **Discovery UX spec** — the market grid, the honest empty state, Scheduled Live guardrails, and the viewer/buyer side of the Contact Request.
-2. **Boost mechanics**: Qualified View definition and frequency caps.
-3. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+1. **Boost mechanics**: Qualified View definition and frequency caps (Phase 2, but the definition wants settling early).
+2. **Infrastructure ADR** — separation of the LIVE MARKET control plane and media plane from the existing LAHTHA & CLICK deployment.
+3. **Policy Engine rulebook scaffold** — the category × country matrix structure, ready for counsel to populate per launch market.
 
 > Seven documents in, the pack is no longer short of analysis. The open decisions below are what the next phase needs,
 > and no further deliverable unblocks them.
@@ -75,3 +79,4 @@ per-country validation**. None of it is legal advice.
 - Moderation operating model — merged in [#52](https://github.com/ahmedfidi-cmyk/tims-backend/pull/52)
 - Consolidated financial model
 - Seller retention & repurchase programme
+- Discovery & viewer UX specification
