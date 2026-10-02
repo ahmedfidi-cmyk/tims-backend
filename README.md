@@ -1,2 +1,2 @@
-# tims-backend
-Threat Incident Management System - Production Backend
+# TIMS/AG
+Transport Incident Management System - Production Backend
