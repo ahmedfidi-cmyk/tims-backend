@@ -31,12 +31,6 @@
       "skillPath": "skills/analytics/SKILL.md",
       "computedHash": "f7f83a1c1c4ad904deba3164076b0407df00832463e93d998b36efe781f26867"
     },
-    "ask-supermatt": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/ask-supermatt/SKILL.md",
-      "computedHash": "05bd3cfc196ccafe045ab97d87f2e9c09d0455b1743f0ee13934845f91ef8abf"
-    },
     "aso": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
@@ -48,6 +42,12 @@
       "sourceType": "github",
       "skillPath": "skills/attribution/SKILL.md",
       "computedHash": "6bc4819e64d8d71f824be4ded75bb4991ea52d7483fb416b69bd6a0c6614f549"
+    },
+    "brainstorming": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/brainstorming/SKILL.md",
+      "computedHash": "b95dc657c5dd79caf7340ee6dead6faf2ce2d1cc613352a027fa8993966b41b7"
     },
     "churn-prevention": {
       "source": "coreyhaines31/marketingskills",
@@ -61,29 +61,11 @@
       "skillPath": "skills/co-marketing/SKILL.md",
       "computedHash": "675836e59bd48ab226a165e65873fe0f2ca7dfa8223ec040bb81e40bf9e1b4b8"
     },
-    "code-review": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/code-review/SKILL.md",
-      "computedHash": "2ca7220bc34fb8b4cf862619cbc82f18b6f788c178309d967fd0184baf6eaa9f"
-    },
-    "codebase-design": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/codebase-design/SKILL.md",
-      "computedHash": "6da7c9835c6d2d41f69995beeae5866206dfa7cbfbc344af44430d53715c4f62"
-    },
     "cold-email": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "skillPath": "skills/cold-email/SKILL.md",
       "computedHash": "be0b73511a6244b8b8aa9126225844cfe9e492f4c1ee6bffc57344ce5ee2a6e8"
-    },
-    "commit": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/commit/SKILL.md",
-      "computedHash": "08091121141efa06521feb04bef6a9d9dd9bfaafd1302a0d4c9de2846b5251d1"
     },
     "community-marketing": {
       "source": "coreyhaines31/marketingskills",
@@ -133,17 +115,11 @@
       "skillPath": "skills/customer-research/SKILL.md",
       "computedHash": "637f87fab0771b73cffc13e339584f106f1f439992812cd2e025cf3caab3855b"
     },
-    "dependency-vetting": {
-      "source": "svyatov/supermatt",
+    "diagnosing-superpowers": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/dependency-vetting/SKILL.md",
-      "computedHash": "af35e196dc31a02a09fe32ed8d690dc7074fe64f67426b8164dcc6ebeea570d2"
-    },
-    "diagnosing-bugs": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/diagnosing-bugs/SKILL.md",
-      "computedHash": "b7ecd9970891ee3190800eb68595218466be024382f871b3c8913ba50ef5f38d"
+      "skillPath": "skills/diagnosing-superpowers/SKILL.md",
+      "computedHash": "0f33f20feb5340f7be932581880325725b0d2894e15193bffeab53ad474c3267"
     },
     "directory-submissions": {
       "source": "coreyhaines31/marketingskills",
@@ -151,11 +127,11 @@
       "skillPath": "skills/directory-submissions/SKILL.md",
       "computedHash": "b737c3b9b9387bbeefd4fb5a003c1debaf273563f170665f6b9341c6818d121b"
     },
-    "domain-modeling": {
-      "source": "svyatov/supermatt",
+    "dispatching-parallel-agents": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/domain-modeling/SKILL.md",
-      "computedHash": "f7590a5e894122e4a69816df6e593403ce92deb6fcf958ca96ea34d69a42640b"
+      "skillPath": "skills/dispatching-parallel-agents/SKILL.md",
+      "computedHash": "b011107f17188e0b2898bb1856b5bac8b49537cc86e737c82126558a235bd62a"
     },
     "emails": {
       "source": "coreyhaines31/marketingskills",
@@ -169,11 +145,17 @@
       "skillPath": "skills/events/SKILL.md",
       "computedHash": "f92f21a38255f8e472ef10286036543b53f08501750f01b66236c31a6a357c70"
     },
-    "fix-findings": {
-      "source": "svyatov/supermatt",
+    "executing-plans": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/fix-findings/SKILL.md",
-      "computedHash": "50a67d8006a2c94f2572b41914a9cbad610deaf0e2460364c09d25f50adfc7de"
+      "skillPath": "skills/executing-plans/SKILL.md",
+      "computedHash": "5d587b5a8ed12c3d6808bce1561d9a72eab37a9b44d51d9dff99232decaae78e"
+    },
+    "finishing-a-development-branch": {
+      "source": "obra/superpowers",
+      "sourceType": "github",
+      "skillPath": "skills/finishing-a-development-branch/SKILL.md",
+      "computedHash": "4f571e7befb8b0946d9d7770232c818812412e9ab1dfb811f847edfba1fc6275"
     },
     "free-tools": {
       "source": "coreyhaines31/marketingskills",
@@ -181,71 +163,17 @@
       "skillPath": "skills/free-tools/SKILL.md",
       "computedHash": "ab40a39f8b10a0ee423f47005a49defcae4e9b82b4c6e5be1d6c67d7f963973e"
     },
-    "grill-me": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/grill-me/SKILL.md",
-      "computedHash": "8c2b75741e38e5eab2d7d5ee43b16d82db1e079d65133022e0d44d9d14756d41"
-    },
-    "grill-with-docs": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/grill-with-docs/SKILL.md",
-      "computedHash": "0fbc2fc91022e18a761c00a454a2b15bc9d62b2faa856d271639e3cbce39b18b"
-    },
-    "grilling": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/grilling/SKILL.md",
-      "computedHash": "1e05e2875daed7bc7e72c8dd353a0aabb5c0a5e180b45f88d13b1302ca5cc974"
-    },
-    "handoff": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/handoff/SKILL.md",
-      "computedHash": "921008879e4bc903e049db8d62f286ee88ce1fbe04a101d1a1985fd23c25d1bb"
-    },
-    "ideate": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/ideate/SKILL.md",
-      "computedHash": "1ca53be3847293c3bb9896eda9aa2721dfd4374e53600d9e6edbc7b4798629d3"
-    },
     "image": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "skillPath": "skills/image/SKILL.md",
       "computedHash": "e4b5511566d08a79f6f5fd26319eaaac0e18e1e238848c5a3fb2e9839e306ebe"
     },
-    "implement": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/implement/SKILL.md",
-      "computedHash": "5eb05b8f85074060372fd1dadd2f006ca1afd023b9e617662b8a270b2547fddc"
-    },
-    "improve-architecture": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/improve-architecture/SKILL.md",
-      "computedHash": "b7d84254f61cb0b83f4d3266d35f5f021b3148cd802681c37debc705828ab508"
-    },
-    "improve-tests": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/improve-tests/SKILL.md",
-      "computedHash": "c73fdd7b3c290e3f61b4cd866a15c6d53f73dc1492cf9b30655331a16cbec331"
-    },
     "influencer-marketing": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "skillPath": "skills/influencer-marketing/SKILL.md",
       "computedHash": "bb3376e9c671d3e8cd6ea26cdefcd5d860e8b65bfc71ed2aeda0282860571bea"
-    },
-    "jury": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/jury/SKILL.md",
-      "computedHash": "182a732ef608023cb85a0024f99d1bb8e6722e8faa219d734ae57dc7f3e5cb93"
     },
     "launch": {
       "source": "coreyhaines31/marketingskills",
@@ -301,12 +229,6 @@
       "skillPath": "skills/onboarding/SKILL.md",
       "computedHash": "e1afc992d94288dad5ead64cea7276dea14a58e539889bf0cc26f7503685fd11"
     },
-    "orchestrate": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/orchestrate/SKILL.md",
-      "computedHash": "71da93e13e97cd1bca5d9c0f989ba0e79e223502b2857123eef48696207ae822"
-    },
     "paywalls": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
@@ -318,12 +240,6 @@
       "sourceType": "github",
       "skillPath": "skills/popups/SKILL.md",
       "computedHash": "95c5cb45dcbb05362168255d97ee68d53a5916d8de779bd08f5f70c9b0cabd36"
-    },
-    "pr": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/pr/SKILL.md",
-      "computedHash": "488d0c3956479757529b058cf7d3d3ed1751dc13ee05146304413c23f0b17665"
     },
     "pricing": {
       "source": "coreyhaines31/marketingskills",
@@ -349,29 +265,17 @@
       "skillPath": "skills/prospecting/SKILL.md",
       "computedHash": "f7b35b4f30367988b2e71ec30a47c39b3c50a1aac3dfeb5c22e02ad8e86576a9"
     },
-    "prototype": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/prototype/SKILL.md",
-      "computedHash": "9a28d77960c926527e0443734be412b0a9904b034a074657b7d7da54ed570692"
-    },
     "public-relations": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "skillPath": "skills/public-relations/SKILL.md",
       "computedHash": "0c7c5c26c158ea752ab7112503931ba0bc0b4a747058b3027c6785dcb3a464fe"
     },
-    "qa": {
-      "source": "svyatov/supermatt",
+    "receiving-code-review": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/qa/SKILL.md",
-      "computedHash": "d4a851addc8c4317b85606121e8e62508204ee012cdc540699a2c3d691d1484c"
-    },
-    "refactor": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/refactor/SKILL.md",
-      "computedHash": "6a107743efa2168ddbe363bea25b221d0d2d7393c8e294dae64edd88911d6924"
+      "skillPath": "skills/receiving-code-review/SKILL.md",
+      "computedHash": "59361179fc9225173e0c145ffd9bafbf9fdbf8b43ce3dc308497a0b4f83a6063"
     },
     "referrals": {
       "source": "coreyhaines31/marketingskills",
@@ -379,23 +283,11 @@
       "skillPath": "skills/referrals/SKILL.md",
       "computedHash": "78c724569672e3590fed904ef969575478201dbe424d3bd854e35906a98838ef"
     },
-    "research": {
-      "source": "svyatov/supermatt",
+    "requesting-code-review": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/research/SKILL.md",
-      "computedHash": "692f4826d91df0aa6cf65aa94274b24c7e38794234438734a314572a30260fe3"
-    },
-    "resolving-merge-conflicts": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/resolving-merge-conflicts/SKILL.md",
-      "computedHash": "383b0d1c09cfef8e0732c67dcc9bed914202e6195998491998e312b33056dee9"
-    },
-    "retro": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/retro/SKILL.md",
-      "computedHash": "78735b7cbd784147f4fe7b469598829cbfa97dc9c859cacb7179503e4ac6d23c"
+      "skillPath": "skills/requesting-code-review/SKILL.md",
+      "computedHash": "2abaeac1de432c76abda0ca7ba618901d2e94f8817b3650f9c523acea2d224f5"
     },
     "revops": {
       "source": "coreyhaines31/marketingskills",
@@ -421,18 +313,6 @@
       "skillPath": "skills/seo-audit/SKILL.md",
       "computedHash": "01f9f8a3feb3ea69c6c212d61189c610f96ef2cc363adc27fd314d78254bf6ae"
     },
-    "setup-supermatt-skills": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/setup-supermatt-skills/SKILL.md",
-      "computedHash": "e6ce82b6b5fd6b94fbc4a799f77c043527d9dfa38db8cb2c32b031ce25c42420"
-    },
-    "ship-pr": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/ship-pr/SKILL.md",
-      "computedHash": "c178f0c0bc05aded1af5468e4f648507b1b4569ce21d65cc7feb0ceea7b51240"
-    },
     "signup": {
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
@@ -457,41 +337,41 @@
       "skillPath": "skills/social/SKILL.md",
       "computedHash": "906a0529e4ee506c3e2ae81d6dab72d98d2933ec3dac0f332d6b8a2e67acf6a0"
     },
-    "tdd": {
-      "source": "svyatov/supermatt",
+    "subagent-driven-development": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/tdd/SKILL.md",
-      "computedHash": "14407e6222cbcd2169177ab7fc7242b20cb7cacf6c7ad2f92f7d4760f64af494"
+      "skillPath": "skills/subagent-driven-development/SKILL.md",
+      "computedHash": "d5caecf77dad1d6b86be893ce3fdeb0222921c64bb955db8b12a5780eecb4ec6"
     },
-    "teach": {
-      "source": "svyatov/supermatt",
+    "systematic-debugging": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/teach/SKILL.md",
-      "computedHash": "dd817138bca6d1de1f4f2b409f7dfec821dff1efd77b0e210a3d9d10443fce45"
+      "skillPath": "skills/systematic-debugging/SKILL.md",
+      "computedHash": "3589907ee34dc8b1b7223a33fac98ab841a9e42f9960ab4433a832f0c6f00be0"
     },
-    "to-questionnaire": {
-      "source": "svyatov/supermatt",
+    "test-driven-development": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/to-questionnaire/SKILL.md",
-      "computedHash": "cfe46fd703851a3c14b8588c1790c085af6a9a910a054175e25c112bdf3d7ccb"
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "3cfe4ebb6fa7288f668d87880d279c8e48f7a92b63415e296857060f5ce22e05"
     },
-    "to-spec": {
-      "source": "svyatov/supermatt",
+    "using-git-worktrees": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/to-spec/SKILL.md",
-      "computedHash": "3a37a60a64fb5cbcf3c58d44b426d86278fa1efe8ee9483fb5bb6d9715d6884a"
+      "skillPath": "skills/using-git-worktrees/SKILL.md",
+      "computedHash": "48c8a1040e378e0cb7208107294e3afa9067b9370c3f33b49a443eb6b7528b0d"
     },
-    "to-tickets": {
-      "source": "svyatov/supermatt",
+    "using-superpowers": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/to-tickets/SKILL.md",
-      "computedHash": "23472605466b9d098beb076f12e803456b7baa66ac3c65d17e76dc860999d6ac"
+      "skillPath": "skills/using-superpowers/SKILL.md",
+      "computedHash": "ef8670c2a2d8e2f6ed52d6f3219759903300ca13afc5ec2e25826a735112562b"
     },
-    "triage": {
-      "source": "svyatov/supermatt",
+    "verification-before-completion": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/triage/SKILL.md",
-      "computedHash": "4c812b54dc52070e207014c5dcbc526b8bd634a0c74f15e5e2815971b31b982a"
+      "skillPath": "skills/verification-before-completion/SKILL.md",
+      "computedHash": "b529822bdac4b197b180fe12225cff86b930b65910435103c10622df7f041651"
     },
     "video": {
       "source": "coreyhaines31/marketingskills",
@@ -499,29 +379,17 @@
       "skillPath": "skills/video/SKILL.md",
       "computedHash": "53f7082208785054a33bba07d188a4d1c8054c22b269146f3d3edccbeca7db81"
     },
-    "wait-what": {
-      "source": "svyatov/supermatt",
+    "writing-plans": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/wait-what/SKILL.md",
-      "computedHash": "4939873f64fc0776f2df638b2cd877d4c7aacd2594aa8da15ba4226f4dd3797b"
+      "skillPath": "skills/writing-plans/SKILL.md",
+      "computedHash": "c2647b5bf067be353a893e5a39a632cbbeb7ad81e61fa5ae227ece5490029073"
     },
-    "wayfinder": {
-      "source": "svyatov/supermatt",
+    "writing-skills": {
+      "source": "obra/superpowers",
       "sourceType": "github",
-      "skillPath": "skills/wayfinder/SKILL.md",
-      "computedHash": "edf8c04b5dd00b16654ed7bb044414460f29f470647cdbda76e9b1f8fc4c5ec0"
-    },
-    "what-would-you-do": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/what-would-you-do/SKILL.md",
-      "computedHash": "38f6dfc05457fae9faa81977e085f01525fa4947c76df893c7d5bbde83159173"
-    },
-    "writing-for-agents": {
-      "source": "svyatov/supermatt",
-      "sourceType": "github",
-      "skillPath": "skills/writing-for-agents/SKILL.md",
-      "computedHash": "19911b66a70df90e2c1d92cf2dd9590e651045384deb18190f9f934040eafb23"
+      "skillPath": "skills/writing-skills/SKILL.md",
+      "computedHash": "f06bbb471439736c838e89a57a2a371bcc687931ba878901d97373194e212ea9"
     }
   }
 }
