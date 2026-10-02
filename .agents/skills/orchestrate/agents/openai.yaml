@@ -1,0 +1,5 @@
+interface:
+  display_name: "SuperMatt: Orchestrate"
+  short_description: "Work through a repo's issues with worker sessions"
+policy:
+  allow_implicit_invocation: false
