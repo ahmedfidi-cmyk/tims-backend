@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dual-Engine Enterprise</title>
+<meta name="description" content="A bilingual executive portfolio for a dual-engine enterprise automation platform: an Operational Engine and an Executive Command Room.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#14102A; --ground2:#1C1640; --panel:#211A4A; --panel2:#2B1F4D; --raise:#3E2C6E;
+  --action:#3E2C6E; --action2:#5A47A0;
+  --line:rgba(251,250,247,.14); --line2:rgba(251,250,247,.07);
+  --ink:#FBFAF7; --ink2:rgba(244,242,236,.76); --ink3:rgba(244,242,236,.52); --ink4:rgba(244,242,236,.34);
+  --gold:#E2B75A; --gold2:#F2D9A4; --goldsoft:rgba(226,183,90,.15);
+  --lav:#B7A9F0; --lavsoft:rgba(90,71,160,.30);
+  --amber:#EBA63F; --ambersoft:rgba(235,166,63,.15);
+  --red:#E4604F; --redsoft:rgba(228,96,79,.15);
+  --font:'IBM Plex Sans Arabic','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--ground); color:var(--ink); font-family:var(--font);
+  overflow:hidden; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+body.is-print{overflow:visible}
+
+/* ---------- stage ---------- */
+#stage{position:fixed;inset:0;overflow:hidden;background:
+  radial-gradient(1400px 900px at 78% -12%, #3E2C6E 0%, transparent 62%),
+  radial-gradient(1100px 800px at 8% 108%, #2B1F4D 0%, transparent 60%),
+  var(--ground);}
+#deck{width:1920px;height:1080px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;opacity:0;visibility:hidden;
+  transition:opacity .42s ease, transform .42s ease; transform:translateY(14px) scale(.995);
+  padding:104px 120px 120px; display:flex; flex-direction:column; overflow:hidden;}
+.slide.is-on{opacity:1;visibility:visible;transform:none}
+.slide::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.022) 0%,transparent 26%)}
+
+/* ---------- type ---------- */
+.eyebrow{display:flex;align-items:center;gap:18px;font-size:24px;font-weight:600;color:var(--gold);letter-spacing:.01em}
+.eyebrow i{display:block;width:56px;height:2px;background:var(--gold);flex:none}
+h1{font-size:122px;font-weight:600;line-height:1.02;letter-spacing:-.025em;color:#fff}
+h2{font-size:68px;font-weight:600;line-height:1.14;letter-spacing:-.018em;color:#fff}
+h3{font-size:34px;font-weight:600;line-height:1.3;color:#fff}
+.lede{font-size:38px;line-height:1.42;color:var(--ink2);font-weight:400}
+.sub{font-size:27px;line-height:1.56;color:var(--ink2)}
+.small{font-size:22px;line-height:1.55;color:var(--ink3)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.gold{color:var(--gold)} .lav{color:var(--lav)} .amber{color:var(--amber)} .red{color:var(--red)}
+.cap{font-size:19px;color:var(--ink4);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
+
+/* ---------- head block ---------- */
+.head{display:flex;flex-direction:column;gap:20px;flex:none}
+.head.wide{max-width:1300px}
+
+/* ---------- footer ---------- */
+.foot{position:absolute;inset-inline:120px;bottom:52px;display:flex;justify-content:space-between;align-items:center;
+  font-size:20px;color:var(--ink4);border-top:1px solid var(--line2);padding-top:22px}
+.foot .mark{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.04em}
+.foot .mark b{color:var(--gold);font-weight:700}
+
+/* ---------- primitives ---------- */
+.grid{display:grid;gap:26px}
+.card{background:linear-gradient(165deg,var(--panel) 0%,var(--ground2) 100%);border:1px solid var(--line);
+  border-radius:20px;padding:34px 36px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.card.flat{background:rgba(251,250,247,.035)}
+.card .num{font-size:19px;font-weight:700;color:var(--gold);font-family:var(--mono)}
+.card h3{font-size:30px}
+.card p{font-size:22px;line-height:1.5;color:var(--ink2)}
+.rule{height:1px;background:var(--line);border:0}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;
+  border:1px solid var(--line);font-size:20px;font-weight:600;color:var(--ink2);background:rgba(251,250,247,.04)}
+.pill.g{color:var(--lav);border-color:rgba(183,169,240,.45);background:var(--lavsoft)}
+.pill.a{color:var(--amber);border-color:rgba(235,166,63,.4);background:var(--ambersoft)}
+.pill.r{color:var(--red);border-color:rgba(228,96,79,.4);background:var(--redsoft)}
+.pill.d{color:var(--gold);border-color:rgba(226,183,90,.42);background:var(--goldsoft)}
+.dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
+.dot.live{box-shadow:0 0 0 0 currentColor;animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(183,169,240,.5)}70%{box-shadow:0 0 0 12px rgba(183,169,240,0)}100%{box-shadow:0 0 0 0 rgba(183,169,240,0)}}
+
+/* ---------- mock chrome ---------- */
+.mock{background:linear-gradient(180deg,#1E1745 0%,#171134 100%);border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;position:relative;box-shadow:0 44px 90px -40px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.02) inset}
+.mock .bar{display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--line2);background:rgba(255,255,255,.028)}
+.mock .bar .tl{display:flex;gap:8px}
+.mock .bar .tl i{width:11px;height:11px;border-radius:50%;background:rgba(251,250,247,.16);display:block}
+.mock .bar .ttl{font-size:19px;color:var(--ink2);font-weight:600}
+.mock .bar .rt{margin-inline-start:auto;display:flex;gap:12px;align-items:center;font-size:17px;color:var(--ink4)}
+.mocklabel{position:absolute;inset-inline-end:16px;bottom:14px;font-size:16px;color:var(--ink4);
+  background:rgba(20,16,42,.82);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px);z-index:3}
+.mockcap{font-size:19px;color:var(--ink4);display:flex;align-items:center;gap:10px}
+
+/* app shell inside mock */
+.app{display:grid;grid-template-columns:72px 1fr;min-height:0}
+.rail{border-inline-end:1px solid var(--line2);padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:16px;background:rgba(255,255,255,.015)}
+.rail .ic{width:38px;height:38px;border-radius:11px;background:rgba(251,250,247,.07);display:grid;place-items:center;color:var(--ink3);font-size:17px}
+.rail .ic.on{background:var(--goldsoft);color:var(--gold);box-shadow:inset 0 0 0 1px rgba(226,183,90,.35)}
+.appmain{padding:22px 26px;display:flex;flex-direction:column;gap:18px;min-width:0}
+
+/* data table */
+.tbl{width:100%;border-collapse:collapse;font-size:18px}
+.tbl th{font-size:15px;color:var(--ink4);font-weight:600;text-align:start;padding:0 14px 11px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .id{font-family:var(--mono);color:var(--ink);font-size:17px}
+
+/* sla bar */
+.sla{height:7px;border-radius:999px;background:rgba(251,250,247,.1);overflow:hidden;min-width:96px}
+.sla i{display:block;height:100%;border-radius:999px;background:var(--lav)}
+.sla.a i{background:var(--amber)} .sla.r i{background:var(--red)}
+
+/* kpi */
+.kpi{background:rgba(251,250,247,.04);border:1px solid var(--line2);border-radius:15px;padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+.kpi .k{font-size:15px;color:var(--ink4);font-weight:600}
+.kpi .v{font-size:46px;font-weight:600;line-height:1;font-family:var(--mono);letter-spacing:-.02em}
+.kpi .n{font-size:15px;color:var(--ink3)}
+.kpi.hot{border-color:rgba(228,96,79,.4);background:var(--redsoft)}
+.kpi.act{border-color:rgba(226,183,90,.42);background:var(--goldsoft)}
+
+/* stepper */
+.steps{display:flex;align-items:flex-start;gap:0;width:100%}
+.step{flex:1;display:flex;flex-direction:column;gap:9px;position:relative;padding-top:22px}
+.step::before{content:"";position:absolute;top:7px;inset-inline-start:0;width:100%;height:2px;background:rgba(251,250,247,.12)}
+.step:first-child::before{inset-inline-start:50%;width:50%}
+.step:last-child::before{width:50%}
+.step i{position:absolute;top:0;inset-inline-start:calc(50% - 8px);width:16px;height:16px;border-radius:50%;
+  background:var(--ground2);box-shadow:inset 0 0 0 2px rgba(251,250,247,.22)}
+.step.done::before{background:var(--lav)} .step.done i{background:var(--lav);box-shadow:none}
+.step.now i{background:var(--gold);box-shadow:0 0 0 6px rgba(226,183,90,.18)}
+.step.late i{background:var(--red);box-shadow:0 0 0 6px rgba(228,96,79,.18)}
+.step b{font-size:16px;font-weight:600;color:var(--ink2);text-align:center;line-height:1.3}
+.step span{font-size:14px;color:var(--ink4);text-align:center;font-family:var(--mono)}
+.step.now b{color:var(--gold)} .step.late b{color:var(--red)} .step.done b{color:var(--ink3)}
+
+/* sector pulse */
+.pulse{display:flex;flex-direction:column;gap:13px}
+.prow{display:grid;grid-template-columns:118px 1fr 56px;align-items:center;gap:14px;font-size:18px}
+.prow .pn{color:var(--ink2);font-weight:600}
+.prow .pb{height:9px;border-radius:999px;background:rgba(251,250,247,.08);overflow:hidden}
+.prow .pb i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.prow .pv{font-family:var(--mono);color:var(--ink);text-align:end;font-size:19px}
+
+/* lists */
+.ticks{display:flex;flex-direction:column;gap:16px}
+.ticks li{list-style:none;display:flex;gap:16px;align-items:flex-start;font-size:24px;line-height:1.46;color:var(--ink2)}
+.ticks li::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold);flex:none;margin-top:11px}
+.ticks.g li::before{background:var(--lav)}
+.ticks.r li::before{background:var(--red)}
+.ticks li b{color:var(--ink);font-weight:600}
+
+/* ---------- chrome ---------- */
+#chrome{position:fixed;inset-inline:0;bottom:0;display:flex;align-items:center;gap:14px;padding:16px 26px;z-index:40;
+  pointer-events:none}
+#chrome>*{pointer-events:auto}
+#chrome{transition:opacity .35s ease}
+body.idle #chrome{opacity:0}
+body.idle #chrome>*{pointer-events:none}
+body.idle{cursor:none}
+.btn{appearance:none;border:1px solid var(--line);background:rgba(28,22,64,.86);color:var(--ink2);
+  border-radius:11px;height:42px;min-width:42px;padding:0 15px;font-family:var(--font);font-size:17px;font-weight:600;
+  cursor:pointer;backdrop-filter:blur(10px);transition:.16s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{border-color:rgba(226,183,90,.55);color:var(--gold)}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#counter{font-family:var(--mono);font-size:17px;color:var(--ink4);padding:0 6px;min-width:76px;text-align:center}
+#bar{position:fixed;inset-inline:0;top:0;height:3px;background:rgba(251,250,247,.07);z-index:41}
+#bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width .42s ease}
+.spacer{flex:1}
+html[dir=rtl] .flipx{transform:scaleX(-1)}
+
+/* overview */
+#ov{position:fixed;inset:0;z-index:60;background:rgba(14,10,30,.96);backdrop-filter:blur(10px);display:none;
+  padding:52px;overflow:auto}
+#ov.on{display:block}
+#ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:20px;max-width:1500px;margin:0 auto}
+.ovc{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px;cursor:pointer;
+  display:flex;flex-direction:column;gap:9px;transition:.16s;text-align:start}
+.ovc:hover{border-color:var(--gold);transform:translateY(-3px)}
+.ovc .n{font-family:var(--mono);font-size:15px;color:var(--gold)}
+.ovc .t{font-size:20px;font-weight:600;color:var(--ink);line-height:1.3}
+.ovc .d{font-size:16px;color:var(--ink4);line-height:1.4}
+.ovc[aria-current=true]{border-color:var(--gold);background:var(--raise)}
+#ovh{max-width:1500px;margin:0 auto 30px;display:flex;align-items:center;justify-content:space-between}
+
+@media print{
+  body,#stage{overflow:visible;background:#14102A}
+  #chrome,#bar,#ov{display:none!important}
+  #stage{position:static;display:block}
+  #deck{position:static;width:auto;height:auto;transform:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;transform:none!important;
+    page-break-after:always;break-after:page;margin:0 auto}
+}
+</style>
+</head>
+<body>
+<div id="bar"><i></i></div>
+<div id="stage"><div id="deck"></div></div>
+
+<nav id="chrome" aria-label="deck controls">
+  <button class="btn" id="bOv" title="Overview (O)">▦</button>
+  <button class="btn" id="bLang" title="العربية / English">EN</button>
+  <div class="spacer"></div>
+  <button class="btn" id="bPrev" title="Previous">‹</button>
+  <span id="counter" class="mono" dir="ltr">01 / 10</span>
+  <button class="btn" id="bNext" title="Next">›</button>
+  <div class="spacer"></div>
+  <button class="btn" id="bPrint" title="Print / PDF">⎙</button>
+  <button class="btn" id="bFull" title="Fullscreen (F)">⤢</button>
+</nav>
+
+<div id="ov" role="dialog" aria-modal="true" aria-label="Slide overview">
+  <div id="ovh"><h3 id="ovt">Slides</h3><button class="btn" id="bOvX">Esc</button></div>
+  <div id="ovg"></div>
+</div>
+<script>
+(function(){
+"use strict";
+var L = "ar";
+function x(ar,en){ return L==="ar" ? ar : en; }
+function foot(n,total){
+  return '<div class="foot"><div class="mark"><b>◎</b> '+x("محرّكان · مؤسسة واحدة","Two Engines · One Enterprise")+'</div>'+
+         '<div class="mono" dir="ltr">'+String(n).padStart(2,"0")+' / '+String(total).padStart(2,"0")+'</div></div>';
+}
+function emblem(size){
+  var s = size||300;
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 300 300" fill="none" aria-hidden="true">'+
+  '<defs><radialGradient id="eg" cx="50%" cy="50%" r="50%">'+
+  '<stop offset="0%" stop-color="#F2D9A4" stop-opacity=".95"/>'+
+  '<stop offset="55%" stop-color="#E2B75A" stop-opacity=".30"/>'+
+  '<stop offset="100%" stop-color="#E2B75A" stop-opacity="0"/></radialGradient>'+
+  '<linearGradient id="eb" x1="0" y1="0" x2="1" y2="1">'+
+  '<stop offset="0%" stop-color="#B7A9F0"/><stop offset="100%" stop-color="#5A47A0"/></linearGradient></defs>'+
+  '<circle cx="150" cy="150" r="140" stroke="rgba(251,250,247,.10)" stroke-width="1"/>'+
+  '<circle cx="150" cy="150" r="112" stroke="rgba(251,250,247,.07)" stroke-width="1" stroke-dasharray="3 9"/>'+
+  '<circle cx="150" cy="150" r="96" fill="url(#eg)"/>'+
+  '<circle cx="150" cy="150" r="78" stroke="url(#eb)" stroke-width="7" opacity=".85"/>'+
+  '<circle cx="150" cy="150" r="52" stroke="#E2B75A" stroke-width="12"/>'+
+  '<circle cx="150" cy="150" r="22" fill="#F2D9A4"/>'+
+  '<g stroke="#E9E4FF" stroke-width="9" stroke-linecap="round" opacity=".92">'+
+  '<path d="M150 22v44"/><path d="M150 234v44"/><path d="M22 150h44"/><path d="M234 150h44"/></g>'+
+  '</svg>';
+}
+
+var SLIDES = [];
+
+/* ============ 01 · HERO ============ */
+SLIDES.push({
+  key:"hero",
+  t:{ar:"الافتتاحية",en:"Hero"},
+  d:{ar:"الوعد في سطر واحد",en:"The promise in one line"},
+  html:function(){
+    var chips=[
+      [x("عربي وإنجليزي بالكامل","Fully bilingual AR / EN"), x("كل شاشة وكل سير عمل","Every screen, every workflow")],
+      [x("تصعيد آلي عند المهلة","Automatic SLA escalation"), x("قبل أن يتأخّر العمل، لا بعده","Before work slips, not after")],
+      [x("سجلّ تدقيق متسلسل","Hash-chained audit log"), x("لا يُعدَّل ولا يُحذف","Append-only, tamper-evident")],
+      [x("اعتمادات مختومة","Sealed approvals"), x("التوقيع مربوط بنسخة المستند","Signature bound to the exact version")]
+    ];
+    return ''+
+    '<div style="position:absolute;inset-inline-end:-40px;top:90px;opacity:.9">'+emblem(560)+'</div>'+
+    '<div style="position:absolute;inset:0;background:radial-gradient(900px 620px at 80% 34%, rgba(226,183,90,.10), transparent 70%)"></div>'+
+    '<div class="head" style="position:relative;max-width:1180px;margin-top:10px">'+
+      '<div class="eyebrow"><i></i>'+x("منصّة أتمتة مؤسسية · جاهزة للتشغيل","Turnkey enterprise automation platform")+'</div>'+
+      '<h1 style="margin-top:26px">'+x("محرّكان.<br>مؤسسة واحدة.<br><span class=\"gold\">رؤية كاملة.</span>","Two Engines.<br>One Enterprise.<br><span class=\"gold\">Total Visibility.</span>")+'</h1>'+
+      '<p class="lede" style="margin-top:34px;max-width:980px">'+
+        x("محرّك تشغيلي يقود دورة حياة كل طلب في الميدان، وغرفة قيادة تضع المؤسسة كلها أمام الرئيس التنفيذي في شاشة واحدة — على منصّة واحدة، وسجلّ واحد، ومساءلة واحدة.",
+          "An Operational Engine that drives every request's lifecycle in the field, and an Executive Command Room that puts the whole enterprise on one screen — one platform, one record, one line of accountability.")+
+      '</p>'+
+    '</div>'+
+    '<div style="margin-top:auto;margin-bottom:40px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:22px">'+
+      chips.map(function(c){
+        return '<div style="border-top:1px solid var(--line);padding-top:20px">'+
+          '<div style="font-size:23px;font-weight:600;color:var(--ink)">'+c[0]+'</div>'+
+          '<div style="font-size:19px;color:var(--ink4);margin-top:7px;line-height:1.4">'+c[1]+'</div></div>';
+      }).join("")+
+    '</div>';
+  }
+});
+
+/* ============ 02 · PROBLEM ============ */
+SLIDES.push({
+  key:"problem",
+  t:{ar:"المشكلة",en:"The problem"},
+  d:{ar:"التجزئة التشغيلية وبطء القرار",en:"Operational fragmentation, slow decisions"},
+  html:function(){
+    var cards=[
+      ["01", x("العمل يعيش خارج النظام","Work lives outside the system"),
+             x("الطلب يتنقّل بين البريد ومجموعات المحادثة وجداول البيانات. لا توجد نسخة واحدة من الحقيقة، ولا مالك واحد.",
+               "A request moves between inboxes, chat groups and spreadsheets. There is no single version of the truth, and no single owner.")],
+      ["02", x("التأخير يُكتشف متأخّراً","Delay surfaces too late"),
+             x("لا أحد يعرف أن الطلب تجاوز مهلته إلا حين يسأل أحدهم. المتابعة يدوية، والتذكير شخصي.",
+               "Nobody knows a request has blown its deadline until someone asks. Follow-up is manual; the reminder is personal.")],
+      ["03", x("المساءلة شفهية","Accountability is verbal"),
+             x("من استلم؟ متى؟ ولماذا تأخّر؟ الإجابة في ذاكرة الأشخاص لا في سجلّ يمكن الرجوع إليه.",
+               "Who received it? When? Why did it stall? The answer sits in people's memory, not in a record anyone can return to.")],
+      ["04", x("القيادة ترى الماضي","Leadership sees the past"),
+             x("تقرير شهري يصف واقعاً تغيّر قبل أسابيع. القرار يأتي بعد أن يفقد أثره.",
+               "A monthly report describes a reality that changed weeks ago. The decision lands after it stops mattering.")]
+    ];
+    return ''+
+    '<div class="head wide">'+
+      '<div class="eyebrow"><i></i>'+x("المشكلة","The problem")+'</div>'+
+      '<h2>'+x("المؤسسة لا تعاني نقص الجهد.<br>تعاني <span class=\"gold\">تجزئة العمل</span> وتأخّر القرار.",
+               "Enterprises do not lack effort.<br>They lack <span class=\"gold\">a connected record</span> — and time.")+'</h2>'+
+    '</div>'+
+    '<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:60px">'+
+      cards.map(function(c){
+        return '<div class="card"><div class="num">'+c[0]+'</div><h3>'+c[1]+'</h3><p>'+c[2]+'</p></div>';
+      }).join("")+
+    '</div>'+
+    '<div style="margin-top:auto;margin-bottom:44px;display:flex;align-items:center;gap:28px;'+
+      'border-inline-start:3px solid var(--gold);padding:22px 30px;background:rgba(226,183,90,.06);border-radius:0 16px 16px 0">'+
+      '<p style="font-size:28px;line-height:1.5;color:var(--ink);max-width:1480px">'+
+        x("النتيجة واحدة في كل قطاع: دورات أطول، تنسيق يدوي أكثر، ومخاطر لا تظهر على أي شاشة إلا بعد أن تتحوّل إلى حدث.",
+          "The result is the same in every sector: longer cycles, more manual coordination, and risks that appear on no screen until they become incidents.")+
+      '</p></div>';
+  }
+});
+
+/* ============ 03 · ARCHITECTURE ============ */
+SLIDES.push({
+  key:"arch",
+  t:{ar:"العمارة",en:"Architecture"},
+  d:{ar:"محرّكان على عمود فقري واحد",en:"Two engines, one spine"},
+  html:function(){
+    function engine(tag,title,lines,accent){
+      return '<div class="card" style="padding:32px 34px;border-color:'+accent+'45;background:linear-gradient(165deg,var(--panel2) 0%,var(--ground2) 100%)">'+
+        '<div style="display:flex;align-items:center;gap:13px">'+
+          '<span class="dot" style="color:'+accent+'"></span>'+
+          '<span style="font-size:19px;font-weight:700;color:'+accent+'">'+tag+'</span></div>'+
+        '<h3 style="font-size:33px;margin-top:4px">'+title+'</h3>'+
+        '<ul class="ticks" style="gap:12px;margin-top:10px">'+
+          lines.map(function(l){return '<li style="font-size:21px">'+l+'</li>';}).join("")+
+        '</ul></div>';
+    }
+    var spine=[
+      [x("الهوية وحقّ الاطّلاع","Identity & need-to-know"), x("الدور + النطاق + درجة السرّية","Role + scope + classification")],
+      [x("سجلّ التدقيق","The audit chain"), x("كل إجراء مقيَّد باسم صاحبه","Every action, named and timed")],
+      [x("المهل والإشعارات","Deadlines & notifications"), x("تحذير ثم تصعيد تلقائي","Warn, then escalate on its own")],
+      [x("بوابة التكامل","Integration gateway"), x("مفتاح لكل جهة، بصلاحيات محدّدة","A scoped key per external body")]
+    ];
+    return ''+
+    '<div class="head wide">'+
+      '<div class="eyebrow"><i></i>'+x("العمارة ثنائية المحرّك","The Dual-Engine architecture")+'</div>'+
+      '<h2>'+x("منصّة واحدة تربط <span class=\"gold\">الميدان</span> بـ<span class=\"gold\">القيادة</span>.",
+               "One platform connecting the <span class=\"gold\">field</span> to <span class=\"gold\">the chief executive</span>.")+'</h2>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 150px 1fr;gap:0;align-items:center;margin-top:54px">'+
+      engine(x("المحرّك الأول","Engine 01"), x("المحرّك التشغيلي","The Operational Engine"),[
+        x("تسجيل الطلب وتصنيفه آلياً","Intake and automatic classification"),
+        x("دورة حياة بمراحل وشروط انتقال","A staged lifecycle with guarded transitions"),
+        x("تعيين الفريق وصلاحيات الدور","Team assignment and role-bound permissions"),
+        x("مهل زمنية وتصعيد عند التجاوز","Deadlines, with escalation when they pass")
+      ],"#B7A9F0")+
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 18px">'+
+        '<svg class="flipx" width="110" height="150" viewBox="0 0 110 150" fill="none" aria-hidden="true">'+
+          '<path d="M14 44h82" stroke="#E2B75A" stroke-width="3" stroke-linecap="round"/>'+
+          '<path d="M84 34l14 10-14 10" stroke="#E2B75A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+          '<path d="M96 106H14" stroke="#B7A9F0" stroke-width="3" stroke-linecap="round"/>'+
+          '<path d="M26 96L12 106l14 10" stroke="#B7A9F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+        '</svg>'+
+        '<div style="text-align:center;font-size:17px;line-height:1.5;color:var(--ink4)">'+
+          x("البيانات تصعد<br>الأوامر تنزل","Data rises<br>Directives descend")+'</div>'+
+      '</div>'+
+      engine(x("المحرّك الثاني","Engine 02"), x("غرفة القيادة التنفيذية","The Executive Command Room"),[
+        x("صورة واحدة للمؤسسة كلها","One picture of the entire enterprise"),
+        x("القرارات التي تنتظر توقيع القيادة","The decisions awaiting the chief's sign-off"),
+        x("أوامر تنفيذية تصل إلى من يجب أن يعمل","Directives that reach whoever must act"),
+        x("أداء المؤسسة مقابل الفترة السابقة","Performance against the preceding period")
+      ],"#E2B75A")+
+    '</div>'+
+    '<div style="margin-top:46px">'+
+      '<div class="cap" style="margin-bottom:18px">'+x("عمود فقري واحد تحت المحرّكين","One shared spine beneath both engines")+'</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">'+
+        spine.map(function(s){
+          return '<div class="card flat" style="padding:24px 26px;gap:7px">'+
+            '<div style="font-size:23px;font-weight:600;color:var(--ink)">'+s[0]+'</div>'+
+            '<div style="font-size:19px;color:var(--ink3);line-height:1.45">'+s[1]+'</div></div>';
+        }).join("")+
+      '</div>'+
+    '</div>';
+  }
+});
+
+/* ============ 04 · OPERATIONAL ENGINE ============ */
+SLIDES.push({
+  key:"ops",
+  t:{ar:"المحرّك التشغيلي",en:"Operational Engine"},
+  d:{ar:"سير عمل حيّ وتصعيد ذكي",en:"Live workflow and intelligent escalation"},
+  html:function(){
+    var steps=[
+      [x("مُسجَّل","Registered"),"done","08:14"],
+      [x("مُصنَّف آلياً","Classified"),"done","08:14"],
+      [x("قرار الإحالة","Routing decision"),"done","09:02"],
+      [x("تعيين المسؤول","Owner assigned"),"done","09:40"],
+      [x("التنفيذ الميداني","Field execution"),"done","11:26"],
+      [x("بانتظار طرف خارجي","Awaiting third party"),"late","—"],
+      [x("المراجعة","Under review"),"","—"],
+      [x("الاعتماد والإغلاق","Approval & closure"),"","—"]
+    ];
+    var rows=[
+      ["REQ-260924-0188", x("التنفيذ الميداني","Field execution"), x("فريق المرافق","Facilities team"), 46,"", x("في موعدها","On time"),"g"],
+      ["REQ-260924-0191", x("بانتظار طرف خارجي","Awaiting third party"), x("المورّد الخارجي","External supplier"), 92,"r", x("مُصعَّدة","Escalated"),"r"],
+      ["REQ-260924-0193", x("المراجعة","Under review"), x("مدير الإدارة","Department Manager"), 78,"a", x("تحذير 75٪","75% warning"),"a"],
+      ["REQ-260924-0195", x("تعيين المسؤول","Owner assigned"), x("غير مُسند","Unassigned"), 31,"", x("في موعدها","On time"),"g"],
+      ["REQ-260924-0196", x("مُصنَّف آلياً","Classified"), x("مركز العمليات","Operations centre"), 12,"", x("في موعدها","On time"),"g"]
+    ];
+    function ring(pct){
+      var r=52, c=2*Math.PI*r, off=c*(1-pct/100);
+      return '<svg width="112" height="112" viewBox="0 0 138 138" aria-hidden="true">'+
+        '<circle cx="69" cy="69" r="'+r+'" fill="none" stroke="rgba(251,250,247,.1)" stroke-width="11"/>'+
+        '<circle cx="69" cy="69" r="'+r+'" fill="none" stroke="#E4604F" stroke-width="11" stroke-linecap="round"'+
+        ' stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 69 69)"/>'+
+        '<text x="69" y="64" text-anchor="middle" fill="#FBFAF7" font-size="30" font-family="IBM Plex Mono, monospace" font-weight="500">'+pct+'%</text>'+
+        '<text x="69" y="88" text-anchor="middle" fill="rgba(251,250,247,.46)" font-size="14" font-family="IBM Plex Sans Arabic, sans-serif">'+x("من المهلة","of SLA")+'</text>'+
+        '</svg>';
+    }
+    var trail=[
+      [x("تحذير عند 75٪","Warning at 75%"), x("أُبلغ المسؤول · 11:58","Owner notified · 11:58")],
+      [x("تجاوز المهلة 100٪","Deadline passed"), x("صعّد النظام إلى مدير الإدارة · 14:12","Escalated to the Department Manager · 14:12")],
+      [x("أُسندت المتابعة","Follow-up taken"), x("مدير الإدارة · 14:19","Department Manager · 14:19")]
+    ];
+    return ''+
+    '<div class="head" style="max-width:1680px">'+
+      '<div class="eyebrow"><i></i>'+x("المحرّك الأول · التشغيل","Engine 01 · Operations")+'</div>'+
+      '<h2 style="font-size:62px">'+x("كل طلب له مالك، ومرحلة، ومهلة — <span class=gold>والنظام يلاحق التأخير بنفسه.</span>",
+                                      "Every request has an owner, a stage and a deadline — <span class=gold>and the system chases the delay itself.</span>")+'</h2>'+
+    '</div>'+
+    '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:24px;flex:none">'+
+      '<span class="pill d">'+x("تصنيف آلي قابل للتدقيق","Auditable automatic classification")+'</span>'+
+      '<span class="pill d">'+x("انتقالات محروسة بالشروط","Precondition-guarded transitions")+'</span>'+
+      '<span class="pill d">'+x("صلاحيات بالدور والنطاق","Role- and scope-bound permissions")+'</span>'+
+      '<span class="pill d">'+x("تصعيد تلقائي للمستوى الأعلى","Automatic escalation one level up")+'</span>'+
+    '</div>'+
+    '<div class="mock" style="flex:1;margin-top:24px;display:flex;flex-direction:column;min-height:0">'+
+      '<div class="bar"><div class="tl"><i></i><i></i><i></i></div>'+
+        '<div class="ttl">'+x("مساحة العمل التشغيلية","Operational workspace")+'</div>'+
+        '<div class="rt"><span class="lav" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--lav)"></i>'+x("مباشر","Live")+'</span>'+
+        '<span class="mono">14:22</span></div></div>'+
+      '<div class="app" style="flex:1;min-height:0">'+
+        '<div class="rail">'+
+          '<div class="ic on">▦</div><div class="ic">≡</div><div class="ic">◷</div><div class="ic">◎</div><div class="ic">⚑</div>'+
+        '</div>'+
+        '<div class="appmain" style="gap:14px">'+
+          '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">'+
+            '<span class="mono" style="font-size:21px;color:var(--ink);font-weight:500">REQ-260924-0191</span>'+
+            '<span class="pill" style="font-size:16px;padding:5px 13px">'+x("المرافق","Facilities")+'</span>'+
+            '<span class="pill r" style="font-size:16px;padding:5px 13px"><i class="dot"></i>'+x("تجاوزت المهلة","Past deadline")+'</span>'+
+            '<span style="margin-inline-start:auto;font-size:16px;color:var(--ink4)">'+x("فُتح 24 سبتمبر · 08:14","Opened 24 Sep · 08:14")+'</span>'+
+          '</div>'+
+          '<div class="steps">'+steps.map(function(s){
+            return '<div class="step '+s[1]+'"><i></i><b>'+s[0]+'</b><span>'+s[2]+'</span></div>';
+          }).join("")+'</div>'+
+          '<div style="display:grid;grid-template-columns:1.85fr 1fr;gap:20px;flex:1;min-height:0">'+
+            '<div style="border:1px solid var(--line2);border-radius:13px;padding:14px 16px;background:rgba(255,255,255,.015);overflow:hidden">'+
+              '<div class="cap" style="font-size:15px;margin-bottom:10px">'+x("الطلبات المفتوحة","Open requests")+'</div>'+
+              '<table class="tbl"><thead><tr>'+
+                '<th>'+x("الرقم","Reference")+'</th><th>'+x("المرحلة","Stage")+'</th><th>'+x("المسؤول","Owner")+'</th>'+
+                '<th style="width:140px">'+x("المهلة","SLA")+'</th><th>'+x("الحالة","Status")+'</th></tr></thead><tbody>'+
+                rows.map(function(r){
+                  return '<tr><td class="id">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td>'+
+                  '<td><div class="sla '+r[4]+'"><i style="width:'+r[3]+'%"></i></div></td>'+
+                  '<td><span class="pill '+r[6]+'" style="font-size:15px;padding:4px 11px"><i class="dot"></i>'+r[5]+'</span></td></tr>';
+                }).join("")+
+              '</tbody></table>'+
+            '</div>'+
+            '<div style="border:1px solid rgba(228,96,79,.32);border-radius:13px;padding:16px 18px;background:var(--redsoft);display:flex;flex-direction:column;gap:12px;overflow:hidden">'+
+              '<div style="display:flex;align-items:center;gap:9px"><i class="dot" style="color:var(--red)"></i>'+
+                '<span style="font-size:17px;font-weight:700;color:var(--red)">'+x("اختناق مكتشَف","Bottleneck detected")+'</span></div>'+
+              '<div style="display:flex;align-items:center;gap:16px">'+ring(118>100?100:118)+
+                '<div style="font-size:16px;line-height:1.5;color:var(--ink2)">'+
+                x("<b style=color:#FBFAF7>بانتظار طرف خارجي</b><br>المهلة 48 ساعة · مضى 56 ساعة","<b style=color:#FBFAF7>Awaiting third party</b><br>48h SLA · 56h elapsed")+'</div>'+
+              '</div>'+
+              '<hr class="rule" style="opacity:.5">'+
+              '<div style="display:flex;flex-direction:column;gap:7px">'+
+                trail.map(function(t){
+                  return '<div><div style="font-size:16px;font-weight:600;color:var(--ink)">'+t[0]+'</div>'+
+                  '<div style="font-size:14px;color:var(--ink4);margin-top:2px">'+t[1]+'</div></div>';
+                }).join("")+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '</div>'+
+    '<div class=\"mockcap\" style=\"margin-top:12px;flex:none\"><i class=\"dot\" style=\"color:var(--lav)\"></i>'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>';
+  }
+});
+
+/* ============ 05 · COMMAND ROOM ============ */
+SLIDES.push({
+  key:"command",
+  t:{ar:"غرفة القيادة",en:"Command Room"},
+  d:{ar:"رؤية المؤسسة وسيطرتها",en:"Enterprise visibility and control"},
+  html:function(){
+    var kpis=[
+      [x("بانتظار قرارك","Awaiting your decision"),"4",x("الأقدم منذ 3 أيام","Oldest for 3 days"),"act"],
+      [x("الطلبات المفتوحة","Open requests"),"137",x("19 جديدة في 7 أيام","19 new in 7 days"),""],
+      [x("متجاوزة المهلة","Past deadline"),"6",x("الأطول تجاوزاً بـ 2 يوم","Longest 2 days over"),"hot"],
+      [x("لدى نوّاب الرؤساء","With the vice presidents"),"11",x("مراجعة أو قرار","Review or decision"),""],
+      [x("أُغلقت هذا الربع","Closed this quarter"),"284",x("الربع 3 من 2026","Q3 2026"),""]
+    ];
+    var dirs=[
+      ["⚑",x("استدعاء إجراء","Call for action"),x("يتجاوز المسار الآلي","Overrides the automatic route")],
+      ["◷",x("طلب إيجاز","Request a briefing"),x("عن وحدة أو قطاع، بوقت تحدّده","On a unit or sector, by a time you set")],
+      ["▲",x("جعل الطلب أولوية","Make it a priority"),x("يُبلَّغ الفريق ومديره فوراً","Team and manager told at once")],
+      ["◎",x("تعميم تنبيه","Broadcast an alert"),x("إلى قطاع كامل أو شخص بعينه","To a whole sector or one person")]
+    ];
+    var pulse=[
+      [x("المرافق","Facilities"),72,"41"],[x("اللوجستيات","Logistics"),54,"31"],
+      [x("التشغيل","Operations"),88,"48"],[x("الصيانة","Maintenance"),33,"17"]
+    ];
+    var queue=[
+      [x("اعتماد تقرير نهائي","Final report approval"),"REQ-260918-0142",x("منذ 3 أيام","3 days"),"r"],
+      [x("قرار إحالة للتحقيق","Routing decision"),"REQ-260923-0177",x("منذ 19 ساعة","19 hours"),"a"],
+      [x("اعتماد إجراء تصحيحي","Corrective action sign-off"),"REQ-260920-0158",x("منذ 11 ساعة","11 hours"),"a"],
+      [x("تجاوز تصنيف آلي","Classification override"),"REQ-260924-0191",x("منذ ساعتين","2 hours"),""]
+    ];
+    return ''+
+    '<div class="head" style="max-width:1680px">'+
+      '<div class="eyebrow"><i></i>'+x("المحرّك الثاني · القيادة","Engine 02 · Command")+'</div>'+
+      '<h2 style="font-size:62px">'+x("المؤسسة كلها في شاشة واحدة — <span class=gold>وأوامر تخرج منها، لا ملاحظات.</span>",
+                                      "The whole enterprise on one screen — <span class=gold>and directives leave it, not comments.</span>")+'</h2>'+
+    '</div>'+
+    '<div class="mock" style="flex:1;margin-top:26px;display:flex;flex-direction:column;min-height:0">'+
+      '<div class="bar">'+
+        '<span style="font-size:19px;font-weight:700;color:var(--gold)">'+x("غرفة القيادة","Command Room")+'</span>'+
+        '<span class="ttl" style="color:var(--ink4)">'+x("أربعة قطاعات. قيادة واحدة. لا نقاط عمياء.","Four sectors. One command. Zero blind spots.")+'</span>'+
+        '<div class="rt"><span class="lav" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--lav)"></i>'+x("مباشر","Live")+'</span>'+
+        '<span class="mono">14:22</span><span>'+x("وضع الجدار","Wall mode")+'</span></div></div>'+
+      '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0">'+
+        '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:none">'+
+          kpis.map(function(k){
+            return '<div class="kpi '+k[3]+'"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div><div class="n">'+k[2]+'</div></div>';
+          }).join("")+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:none">'+
+          dirs.map(function(d){
+            return '<div style="border:1px solid var(--action2);background:var(--action);border-radius:12px;padding:13px 16px;display:flex;gap:12px;align-items:flex-start">'+
+              '<span style="color:var(--gold);font-size:20px;line-height:1.1">'+d[0]+'</span>'+
+              '<div><div style="font-size:18px;font-weight:600;color:var(--ink)">'+d[1]+'</div>'+
+              '<div style="font-size:14px;color:var(--ink4);margin-top:3px;line-height:1.35">'+d[2]+'</div></div></div>';
+          }).join("")+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;flex:1;min-height:0">'+
+          '<div style="border:1px solid var(--line2);border-radius:13px;padding:14px 18px;background:rgba(255,255,255,.015);display:flex;flex-direction:column;gap:10px;overflow:hidden">'+
+            '<div class="cap" style="font-size:15px">'+x("قرارات تنتظر توقيعك","Decisions awaiting your sign-off")+'</div>'+
+            queue.map(function(q){
+              return '<div style="display:flex;align-items:center;gap:14px;padding:6px 0;border-bottom:1px solid var(--line2)">'+
+                '<i class="dot" style="color:'+(q[3]==="r"?"var(--red)":q[3]==="a"?"var(--amber)":"var(--ink4)")+'"></i>'+
+                '<span style="font-size:18px;color:var(--ink);font-weight:500">'+q[0]+'</span>'+
+                '<span class="mono" style="font-size:16px;color:var(--ink4)">'+q[1]+'</span>'+
+                '<span style="margin-inline-start:auto;font-size:16px;color:'+(q[3]==="r"?"var(--red)":"var(--ink3)")+'">'+q[2]+'</span></div>';
+            }).join("")+
+          '</div>'+
+          '<div style="border:1px solid var(--line2);border-radius:13px;padding:14px 18px;background:rgba(255,255,255,.015);display:flex;flex-direction:column;gap:13px;overflow:hidden">'+
+            '<div class="cap" style="font-size:15px">'+x("نبض القطاعات · 30 يوماً","Sector pulse · 30 days")+'</div>'+
+            '<div class="pulse">'+pulse.map(function(p){
+              return '<div class="prow"><span class="pn">'+p[0]+'</span><span class="pb"><i style="width:'+p[1]+'%"></i></span><span class="pv">'+p[2]+'</span></div>';
+            }).join("")+'</div>'+
+            '<hr class="rule">'+
+            '<div style="font-size:15px;color:var(--ink4);line-height:1.5">'+
+              x("كل أمر يصل إلى من يجب أن يعمل، ويُقيَّد في سجلّ التدقيق باسم مُصدِره ووقته.",
+                "Each directive reaches whoever must act, and is written to the audit log with its issuer and time.")+'</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+      '</div>'+
+    '<div class=\"mockcap\" style=\"margin-top:12px;flex:none\"><i class=\"dot\" style=\"color:var(--lav)\"></i>'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>';
+  }
+});
+
+/* ============ 06 · BUSINESS VALUE ============ */
+SLIDES.push({
+  key:"value",
+  t:{ar:"القيمة والعائد",en:"Value & ROI"},
+  d:{ar:"أربعة محرّكات تُقاس بأرقامك أنت",en:"Four levers, measured on your baseline"},
+  html:function(){
+    var levers=[
+      ["01", x("زمن الدورة","Cycle time"),
+             x("الطلب ينتقل بمجرّد اكتمال شرطه، لا حين يتذكّر أحدهم.","A request moves the moment its precondition is met, not when someone remembers."),
+             x("(متوسط الزمن قبل − بعد) × عدد الطلبات سنوياً","(mean duration before − after) × annual request volume")],
+      ["02", x("كلفة التنسيق","Coordination cost"),
+             x("المتابعة والتذكير والتجميع اليدوي تنتقل إلى النظام.","Chasing, reminding and manual consolidation move into the system."),
+             x("ساعات المتابعة اليدوية × الأجر المحمَّل × عدد المتابعين","manual follow-up hours × loaded rate × people doing it")],
+      ["03", x("الإنتاجية","Throughput"),
+             x("الطاقة نفسها تُغلق طلبات أكثر لأن الوقت الضائع ليس في العمل.","The same capacity closes more work, because the lost time was never the work."),
+             x("الطلبات المُغلقة لكل موظف في الفترة","requests closed per person per period")],
+      ["04", x("ظهور المخاطر","Risk visibility"),
+             x("الاختناق يظهر على الشاشة قبل أن يصبح حدثاً يُحقَّق فيه.","A bottleneck appears on screen before it becomes an event to investigate."),
+             x("الاختناقات المكتشَفة قبل التصعيد ÷ إجماليها","bottlenecks caught before escalation ÷ all of them")]
+    ];
+    return ''+
+    '<div class="head wide">'+
+      '<div class="eyebrow"><i></i>'+x("القيمة التجارية والعائد","Business value and return")+'</div>'+
+      '<h2 style="font-size:62px">'+x("لا نعدك برقم. <span class=gold>نعطيك طريقة قياسه على بياناتك.</span>",
+                                      "We will not hand you a number. <span class=gold>We hand you the way to measure it on your own data.</span>")+'</h2>'+
+    '</div>'+
+    '<div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:46px">'+
+      levers.map(function(l){
+        return '<div class="card" style="gap:12px"><div class="num">'+l[0]+'</div>'+
+          '<h3 style="font-size:29px">'+l[1]+'</h3>'+
+          '<p style="font-size:21px">'+l[2]+'</p>'+
+          '<div style="margin-top:auto;padding-top:14px;border-top:1px solid var(--line2)">'+
+            '<div class="cap" style="font-size:14px;margin-bottom:6px">'+x("كيف يُقاس","How it is measured")+'</div>'+
+            '<div class="mono" style="font-size:16px;color:var(--gold);line-height:1.5">'+l[3]+'</div></div></div>';
+      }).join("")+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:26px;margin-top:34px;flex:none">'+
+      '<div style="border:1px dashed rgba(226,183,90,.45);border-radius:16px;padding:24px 28px;background:rgba(226,183,90,.05)">'+
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'+
+          '<span class="pill d" style="font-size:16px;padding:4px 12px">'+x("سيناريو توضيحي","Illustrative scenario")+'</span>'+
+          '<span style="font-size:17px;color:var(--ink4)">'+x("مدخلات افتراضية — ليست نتيجة عميل ولا وعداً بأداء","placeholder inputs — not a customer result, not a performance promise")+'</span>'+
+        '</div>'+
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">'+
+          [[x("المدخل الذي تعطيه","Your input"),x("2,400 طلب سنوياً","2,400 requests a year")],
+           [x("الفارق الذي يُقاس","The measured delta"),x("ساعتان أقل لكل طلب","2 fewer hours per request")],
+           [x("الناتج المحسوب","The computed output"),x("4,800 ساعة تُعاد إلى العمل","4,800 hours returned to the work")]].map(function(c){
+            return '<div><div class="cap" style="font-size:14px">'+c[0]+'</div>'+
+              '<div style="font-size:24px;font-weight:600;color:var(--ink);margin-top:7px;line-height:1.35">'+c[1]+'</div></div>';
+          }).join("")+
+        '</div>'+
+      '</div>'+
+      '<div class="card flat" style="justify-content:center">'+
+        '<h3 style="font-size:26px">'+x("التجربة المقيسة","The measured pilot")+'</h3>'+
+        '<p style="font-size:20px">'+x("نأخذ خط أساسك قبل التشغيل، ثلاثين يوماً، ثم نعيد القياس بالطريقة نفسها. الرقم الذي يخرج رقمك، لا رقمنا.",
+                                       "We take your baseline before go-live, run thirty days, then measure again the same way. The number that comes out is yours, not ours.")+'</p>'+
+      '</div>'+
+    '</div>';
+  }
+});
+
+/* ============ 07 · BEFORE / AFTER ============ */
+SLIDES.push({
+  key:"shift",
+  t:{ar:"قبل وبعد",en:"Before & after"},
+  d:{ar:"التحوّل في الأداء التشغيلي",en:"The operational shift"},
+  html:function(){
+    var rows=[
+      [x("أين يعيش الطلب","Where the request lives"),
+       x("بريد ومحادثات وجدول بيانات","Inboxes, chats and a spreadsheet"),
+       x("سجلّ واحد بمالك ومرحلة ومهلة","One record with an owner, a stage and a deadline")],
+      [x("كيف يُكتشف التأخير","How delay is found"),
+       x("حين يسأل أحدهم","When somebody asks"),
+       x("تحذير عند 75٪ وتصعيد عند 100٪","A warning at 75%, an escalation at 100%")],
+      [x("من يلاحق العمل","Who chases the work"),
+       x("شخص، بالتذكير الشخصي","A person, reminding people"),
+       x("النظام، بقاعدة مكتوبة مسبقاً","The system, by a rule written in advance")],
+      [x("ما تراه القيادة","What leadership sees"),
+       x("تقرير شهري عن واقع مضى","A monthly report on a past reality")],
+      [x("ما يثبت الاعتماد","What proves the approval"),
+       x("رسالة بريد وذاكرة اجتماع","An e-mail and a memory of a meeting"),
+       x("ختم مربوط بنسخة المستند وتجزئتها","A seal bound to the document version and its hash")],
+      [x("ماذا يبقى بعد سنة","What is left after a year"),
+       x("ملفات متفرّقة وروايات متضاربة","Scattered files and competing accounts"),
+       x("سلسلة لا تُعدَّل ولا تُحذف","A chain that cannot be edited or deleted")]
+    ];
+    rows[3][2] = x("الوضع الآن، وقرارات تخرج من الشاشة نفسها","The position now — and directives issued from the same screen");
+    return ''+
+    '<div class="head wide">'+
+      '<div class="eyebrow"><i></i>'+x("التحوّل","The transformation")+'</div>'+
+      '<h2>'+x("لا يتغيّر عدد الناس. <span class=gold>يتغيّر ما يلاحق العمل.</span>",
+               "The headcount does not change. <span class=gold>What chases the work does.</span>")+'</h2>'+
+    '</div>'+
+    '<div style="margin-top:46px;border:1px solid var(--line);border-radius:20px;overflow:hidden">'+
+      '<div style="display:grid;grid-template-columns:1fr 1.25fr 1.25fr;background:rgba(255,255,255,.035);border-bottom:1px solid var(--line)">'+
+        '<div style="padding:18px 28px"></div>'+
+        '<div style="padding:18px 28px;display:flex;align-items:center;gap:12px;border-inline-start:1px solid var(--line)">'+
+          '<i class="dot" style="color:var(--red)"></i><span style="font-size:24px;font-weight:700;color:var(--red)">'+x("اليوم","Today")+'</span></div>'+
+        '<div style="padding:18px 28px;display:flex;align-items:center;gap:12px;border-inline-start:1px solid var(--line)">'+
+          '<i class="dot" style="color:var(--lav)"></i><span style="font-size:24px;font-weight:700;color:var(--lav)">'+x("مع المنصّة","With the platform")+'</span></div>'+
+      '</div>'+
+      rows.map(function(r,i){
+        return '<div style="display:grid;grid-template-columns:1fr 1.25fr 1.25fr;'+(i<rows.length-1?'border-bottom:1px solid var(--line2);':'')+'">'+
+          '<div style="padding:19px 28px;font-size:21px;color:var(--ink4);font-weight:600">'+r[0]+'</div>'+
+          '<div style="padding:19px 28px;font-size:22px;color:var(--ink2);border-inline-start:1px solid var(--line2);background:rgba(228,96,79,.045)">'+r[1]+'</div>'+
+          '<div style="padding:19px 28px;font-size:22px;color:var(--ink);border-inline-start:1px solid var(--line2);background:rgba(90,71,160,.16)">'+r[2]+'</div>'+
+        '</div>';
+      }).join("")+
+    '</div>';
+  }
+});
+
+/* ============ 08 · ENTERPRISE READINESS ============ */
+SLIDES.push({
+  key:"ready",
+  t:{ar:"الجاهزية المؤسسية",en:"Enterprise readiness"},
+  d:{ar:"المُثبَت مقابل المُخطَّط",en:"Verified against planned"},
+  html:function(){
+    var built=[
+      x("سجلّ تدقيق متسلسل التجزئة — قاعدة البيانات ترفض التعديل والحذف","Hash-chained audit log — the database itself refuses edits and deletes"),
+      x("اعتمادات مختومة على نسخة المستند وتجزئتها، يُعاد التحقق منها عند كل فتح","Approvals sealed over the document version and its hash, re-verified on every open"),
+      x("حقّ الاطّلاع: الدور والنطاق ودرجة السرّية وعضوية الفريق معاً","Need-to-know: role, scope, classification and team membership, together"),
+      x("مهل لكل مرحلة: تحذير عند 75٪، وتصعيد آلي إلى المستوى الأعلى عند 100٪","A deadline per stage: a warning at 75%, an automatic escalation one level up at 100%"),
+      x("تصنيف آلي بقواعد مُصدَّرة قابلة لإعادة الإنتاج، لا تُعتمد إلا بشخصين","Automatic classification by versioned, reproducible rules that take two people to approve"),
+      x("سلسلة عهدة للأصول — قاعدة البيانات ترفض الحجز المزدوج بنفسها","A chain of custody for assets — the database refuses double-booking on its own"),
+      x("مرفقات برفع مستأنف حتى 5 غيغابايت، بتجزئة وفحص برمجيات خبيثة","Resumable attachments to 5 GB, hashed and malware-scanned"),
+      x("تصدير مرقَّم بعلامة مائية لكل نسخة، وسجلّ تصدير غير قابل للتعديل","Numbered, per-copy watermarked exports with an append-only export log"),
+      x("واجهة عربية وإنجليزية كاملة، من اليمين لليسار أولاً، بمعيار WCAG 2.1 AA","A full Arabic and English interface, RTL-first, built to WCAG 2.1 AA"),
+      x("كلمة مرور Argon2id وعامل ثانٍ TOTP برموز استرداد وحدود محاولات","Argon2id passwords and TOTP second factor with recovery codes and attempt limits"),
+      x("تقارير تنفيذية دورية تصدر نفسها وتُختم على أرقام مجمّدة","Periodic executive reports that issue themselves, sealed over frozen figures"),
+      x("بوابة تكامل بمفتاح لكل جهة: صلاحيات وحدود ومدّة وإلغاء — تُشحن مُطفأة","An integration gateway with a scoped, rate-limited, expiring, revocable key per body — shipped switched off"),
+      x("نشر بحاوية واحدة مع TLS 1.3 ونسخ احتياطي ليلي، وإمكانية العزل التام عن الشبكة","Single-host container deployment with TLS 1.3, nightly backups, and full network isolation when required")
+    ];
+    var planned=[
+      x("الدخول الموحّد للمؤسسة (OIDC مع MFA) — الخادم يرفض الإقلاع بدل أن يتظاهر","Enterprise SSO (OIDC with MFA) — the server refuses to start rather than pretend"),
+      x("توقيع رقمي معتمد (PKCS#7 مع ختم زمني RFC 3161)","Accredited digital signature (PKCS#7 with RFC 3161 time-stamps)"),
+      x("تفويض مؤقت لصلاحية المراجعة أثناء الغياب","Temporary delegation of review authority during absence"),
+      x("تفضيلات إشعار لكل مستخدم","Per-user notification preferences"),
+      x("بوابة للأطراف الخارجية ترفع ردودها بنفسها","A portal where external parties file their own responses"),
+      x("تطبيقات أصلية — اليوم تطبيق ويب تقدّمي قابل للتثبيت","Native applications — today an installable progressive web app"),
+      x("صيغ تبادل خاصة بكل جهة تنظيمية، تُبنى عند وجود مستهلك مُسمّى","Exchange formats per regulator, built when a named consumer exists")
+    ];
+    function col(title,items,accent,note){
+      return '<div style="display:flex;flex-direction:column;gap:14px;min-height:0">'+
+        '<div style="display:flex;align-items:center;gap:12px">'+
+          '<i class="dot" style="color:'+accent+'"></i>'+
+          '<span style="font-size:27px;font-weight:700;color:'+accent+'">'+title+'</span>'+
+          '<span style="margin-inline-start:auto;font-size:17px;color:var(--ink4)">'+note+'</span></div>'+
+        '<ul style="display:flex;flex-direction:column;gap:9px;list-style:none">'+
+          items.map(function(t){
+            return '<li style="display:flex;gap:12px;align-items:flex-start;font-size:19px;line-height:1.42;color:var(--ink2)">'+
+              '<span style="color:'+accent+';flex:none;font-size:15px;margin-top:4px">'+(accent==="#B7A9F0"?"✓":"○")+'</span>'+t+'</li>';
+          }).join("")+
+        '</ul></div>';
+    }
+    return ''+
+    '<div class="head wide">'+
+      '<div class="eyebrow"><i></i>'+x("الجاهزية المؤسسية","Enterprise readiness")+'</div>'+
+      '<h2 style="font-size:60px">'+x("نفصل <span class=gold>ما هو مبنيّ اليوم</span> عمّا هو مُخطَّط — بالاسم.",
+                                      "We separate <span class=gold>what is built today</span> from what is planned — by name.")+'</h2>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1.32fr 1fr;gap:46px;margin-top:38px;flex:1;min-height:0">'+
+      col(x("مبنيّ وقائم في النظام","Built and in the system today"),built,"#B7A9F0",x("مُثبَت في الشيفرة","verified in the codebase"))+
+      '<div style="display:flex;flex-direction:column;gap:26px;min-height:0">'+
+        col(x("مُخطَّط، ولم يُبنَ بعد","Planned, not yet built"),planned,"#EBA63F",x("يُذكر صراحة","stated plainly"))+
+        '<div style="margin-top:auto;border-inline-start:3px solid var(--gold);padding:18px 24px;background:rgba(226,183,90,.06);border-radius:0 14px 14px 0">'+
+          '<div style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:7px">'+x("وما لا نقوله","And what we do not say")+'</div>'+
+          '<div style="font-size:18px;line-height:1.5;color:var(--ink3)">'+
+            x("لا شهادات امتثال مُدّعاة، ولا نتائج عملاء، ولا أرقام أداء لم تُقَس عندك. الادّعاء المخفَّف ادّعاء.",
+              "No claimed certifications, no customer results, no performance figures not measured at your site. A softened claim is still a claim.")+'</div></div>'+
+      '</div>'+
+    '</div>';
+  }
+});
+
+/* ============ 09 · INDUSTRIES ============ */
+SLIDES.push({
+  key:"industries",
+  t:{ar:"التطبيقات القطاعية",en:"Industry applications"},
+  d:{ar:"أين يعمل النموذج نفسه",en:"Where the same model fits"},
+  html:function(){
+    var ind=[
+      ["◎", x("سلامة النقل والجهات الرقابية","Transport safety & regulators"),
+            x("بلاغ من الميدان ← تصنيف بقاعدة ← فريق تحقيق ← عهدة أدلّة ← تقرير معتمد بسلسلة توقيع.",
+              "A field report → rule-based classification → an investigation team → evidence custody → a report approved along a signed chain."),
+            x("مُطبَّق — بُني وشُغِّل في هذا المجال","Built — implemented and running in this domain"), true],
+      ["⌁", x("المرافق والطاقة","Utilities & energy"),
+            x("بلاغ انقطاع أو خلل ← أولوية بالأثر ← فرقة ميدانية ← مهلة استعادة ← تقرير سبب جذري.",
+              "An outage or fault → priority by impact → a field crew → a restoration deadline → a root-cause report."),
+            x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false],
+      ["▣", x("التصنيع والسلامة المهنية","Manufacturing & EHS"),
+            x("ملاحظة سلامة ← تصنيف خطورة ← إجراء تصحيحي بمسؤول وتاريخ ← إغلاق بدليل.",
+              "A safety observation → severity classification → a corrective action with an owner and a date → closure on evidence."),
+            x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false],
+      ["⇄", x("اللوجستيات والأساطيل","Logistics & fleets"),
+            x("حادث أو تأخّر ← مسار حسب النوع ← عهدة المركبة والمعدّة ← مطالبة موثّقة.",
+              "An incident or delay → a route by type → custody of the vehicle and kit → a documented claim."),
+            x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false],
+      ["✚", x("الرعاية الصحية — الجودة والحوادث","Healthcare — quality & incidents"),
+            x("بلاغ حدث ← سرّية محكومة بالحاجة للمعرفة ← مراجعة متعدّدة المستويات ← إجراء وقائي متتبَّع.",
+              "An event report → confidentiality governed by need-to-know → multi-level review → a tracked preventive action."),
+            x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false],
+      ["₪", x("الخدمات المالية — المخاطر التشغيلية","Financial services — operational risk"),
+            x("حدث تشغيلي ← تصنيف وأثر ← مالك ومهلة ← اعتماد مختوم يصمد أمام المدقّق.",
+              "An operational event → classification and impact → an owner and a deadline → a sealed approval that survives the auditor."),
+            x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false]
+    ];
+    return ''+
+    '<div class="head" style="max-width:1680px">'+
+      '<div class="eyebrow"><i></i>'+x("التطبيقات القطاعية","Industry applications")+'</div>'+
+      '<h2 style="font-size:62px">'+x("النموذج واحد: <span class=gold>استقبال ← مسار ← مساءلة ← قرار.</span>",
+               "One model: <span class=gold>intake → routing → accountability → decision.</span>")+'</h2>'+
+    '</div>'+
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px">'+
+      ind.map(function(i){
+        return '<div class="card" style="gap:13px;'+(i[4]?'border-color:rgba(183,169,240,.45);':'')+'">'+
+          '<div style="display:flex;align-items:center;gap:14px">'+
+            '<span style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;'+
+              'background:'+(i[4]?'var(--lavsoft);color:var(--lav)':'var(--goldsoft);color:var(--gold)')+'">'+i[0]+'</span>'+
+            '<h3 style="font-size:26px;line-height:1.25">'+i[1]+'</h3></div>'+
+          '<p style="font-size:20px">'+i[2]+'</p>'+
+          '<div style="margin-top:auto;padding-top:14px">'+
+            '<span class="pill '+(i[4]?'g':'')+'" style="font-size:16px;padding:5px 13px">'+i[3]+'</span></div>'+
+        '</div>';
+      }).join("")+
+    '</div>'+
+    '<div style="margin-top:auto;margin-bottom:40px;font-size:19px;color:var(--ink4);line-height:1.5;max-width:1500px">'+
+      x("النماذج والقواعد والمراحل والمهل والأدوار كلها بيانات مُصدَّرة، تُعدَّل بالتهيئة لا بإعادة البناء. ما لم يُبنَ في قطاع بعينه يُقال إنه لم يُبنَ.",
+        "Forms, rules, stages, deadlines and roles are all versioned data, changed by configuration rather than a rebuild. Where a sector has not been built, we say it has not been built.")+
+    '</div>';
+  }
+});
+
+/* ============ 10 · CTA ============ */
+SLIDES.push({
+  key:"cta",
+  t:{ar:"الدعوة",en:"The invitation"},
+  d:{ar:"احجز عرضاً تنفيذياً خاصاً",en:"Book a private executive demonstration"},
+  html:function(){
+    var cols=[
+      [x("ما ستراه","What you will see"),[
+        x("طلب حقيقي يمرّ بدورته كاملة أمامك","A real request moving through its full lifecycle in front of you"),
+        x("اختناق يُكتشف ويُصعَّد دون تدخّل بشري","A bottleneck caught and escalated with nobody intervening"),
+        x("غرفة القيادة وهي تُصدر أمراً يصل إلى من يجب أن يعمل","The Command Room issuing a directive that reaches whoever must act")
+      ]],
+      [x("ما تحضره معك","What you bring"),[
+        x("نوع طلب واحد تعرف دورته جيداً","One request type whose cycle you know well"),
+        x("خط أساسك الحالي: الزمن والحجم والمتابعين","Your current baseline: duration, volume, and who chases it"),
+        x("القيد الذي يمنعك من تغييره اليوم","The constraint that stops you changing it today")
+      ]],
+      [x("ما تخرج به","What you leave with"),[
+        x("خطة قياس مكتوبة على أرقامك أنت","A written measurement plan built on your own figures"),
+        x("فصل صريح بين المبنيّ والمُخطَّط لحالتك","An explicit split of built against planned for your case"),
+        x("تقدير نطاق التهيئة والتشغيل، لا فاتورة مبهمة","A scoped configuration and rollout estimate, not an opaque quote")
+      ]]
+    ];
+    return ''+
+    '<div style="position:absolute;inset-inline-end:-190px;top:-190px;opacity:.42">'+emblem(540)+'</div>'+
+    '<div style="position:absolute;inset:0;background:radial-gradient(880px 600px at 92% 4%, rgba(226,183,90,.10), transparent 70%)"></div>'+
+    '<div class="head wide" style="position:relative">'+
+      '<div class="eyebrow"><i></i>'+x("الخطوة التالية","The next step")+'</div>'+
+      '<h2 style="font-size:78px;max-width:1420px">'+
+        x("خمس وأربعون دقيقة، على طلب واحد من طلباتكم — <span class=gold>وتقرّرون بأنفسكم.</span>",
+          "Forty-five minutes, on one of your own request types — <span class=gold>and you decide for yourselves.</span>")+'</h2>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:54px;position:relative">'+
+      cols.map(function(c,i){
+        return '<div style="display:flex;flex-direction:column;gap:18px;'+(i?'border-inline-start:1px solid var(--line);padding-inline-start:34px':'')+'">'+
+          '<div class="cap">'+c[0]+'</div>'+
+          '<ul class="ticks" style="gap:14px">'+c[1].map(function(t){return '<li style="font-size:22px">'+t+'</li>';}).join("")+'</ul></div>';
+      }).join("")+
+    '</div>'+
+    '<div style="margin-top:auto;margin-bottom:34px;position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:40px">'+
+      '<div style="display:flex;flex-direction:column;gap:14px">'+
+        '<div style="font-size:40px;font-weight:600;color:#fff;line-height:1.25">'+
+          x("احجزوا عرضاً تنفيذياً خاصاً.","Book a private executive demonstration.")+'</div>'+
+        '<div style="display:flex;gap:14px;flex-wrap:wrap">'+
+          '<span class="pill d" style="font-size:21px;padding:11px 22px">'+x("٤٥ دقيقة · حضورياً أو عن بُعد","45 minutes · in person or remote")+'</span>'+
+          '<span class="pill" style="font-size:21px;padding:11px 22px">'+x("باللغة العربية أو الإنجليزية","In Arabic or English")+'</span>'+
+          '<span class="pill" style="font-size:21px;padding:11px 22px">'+x("بلا التزام ولا تهيئة مسبقة","No commitment, no prior setup")+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div style="text-align:end;font-size:19px;color:var(--ink4);line-height:1.7">'+
+        x("للتواصل وحجز الموعد","To arrange the session")+'<br>'+
+        '<span style="font-size:22px;font-weight:600;color:var(--gold)">[ '+x("البريد وجهة الاتصال","contact e-mail")+' ]</span></div>'+
+    '</div>';
+  }
+});
+
+/* ===================== runtime ===================== */
+var deck = document.getElementById("deck"),
+    stage = document.getElementById("stage"),
+    bar = document.querySelector("#bar i"),
+    counter = document.getElementById("counter"),
+    ov = document.getElementById("ov"),
+    ovg = document.getElementById("ovg"),
+    ovt = document.getElementById("ovt"),
+    bLang = document.getElementById("bLang"),
+    i = 0, N = SLIDES.length;
+
+function store(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function recall(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+
+function build(){
+  document.documentElement.lang = L;
+  document.documentElement.dir = (L === "ar") ? "rtl" : "ltr";
+  bLang.textContent = (L === "ar") ? "EN" : "ع";
+  bLang.setAttribute("aria-label", L === "ar" ? "Switch to English" : "التحويل إلى العربية");
+  ovt.textContent = x("الشرائح","Slides");
+  deck.innerHTML = SLIDES.map(function(s,n){
+    return '<section class="slide" id="s'+(n+1)+'" aria-label="'+s.t[L]+'" aria-hidden="true">'+
+           s.html() + foot(n+1,N) + '</section>';
+  }).join("");
+  ovg.innerHTML = SLIDES.map(function(s,n){
+    return '<button class="ovc" data-go="'+n+'"><span class="n">'+String(n+1).padStart(2,"0")+'</span>'+
+           '<span class="t">'+s.t[L]+'</span><span class="d">'+s.d[L]+'</span></button>';
+  }).join("");
+  Array.prototype.forEach.call(ovg.querySelectorAll("[data-go]"), function(b){
+    b.addEventListener("click", function(){ go(+b.dataset.go); closeOv(); });
+  });
+  show(i, true);
+}
+
+function show(n, silent){
+  i = Math.max(0, Math.min(N-1, n));
+  Array.prototype.forEach.call(deck.children, function(el, k){
+    var on = (k === i);
+    el.classList.toggle("is-on", on);
+    el.setAttribute("aria-hidden", on ? "false" : "true");
+  });
+  counter.textContent = String(i+1).padStart(2,"0") + " / " + String(N).padStart(2,"0");
+  bar.style.width = ((i+1)/N*100) + "%";
+  Array.prototype.forEach.call(ovg.children, function(el,k){ el.setAttribute("aria-current", k===i ? "true":"false"); });
+  if (!silent) { try { history.replaceState(null,"","#"+(i+1)); } catch(e){} }
+}
+function go(n){ show(n); try{ history.replaceState(null,"","#"+(i+1)); }catch(e){} }
+function next(){ if (i < N-1) go(i+1); }
+function prev(){ if (i > 0) go(i-1); }
+
+function fit(){
+  var w = window.innerWidth, h = window.innerHeight;
+  var s = Math.min(w/1920, h/1080);
+  deck.style.setProperty("--s", s);
+}
+window.addEventListener("resize", fit);
+
+function openOv(){ ov.classList.add("on"); }
+function closeOv(){ ov.classList.remove("on"); }
+
+document.getElementById("bNext").addEventListener("click", next);
+document.getElementById("bPrev").addEventListener("click", prev);
+document.getElementById("bOv").addEventListener("click", function(){ ov.classList.contains("on") ? closeOv() : openOv(); });
+document.getElementById("bOvX").addEventListener("click", closeOv);
+document.getElementById("bPrint").addEventListener("click", function(){ window.print(); });
+document.getElementById("bFull").addEventListener("click", function(){
+  if (document.fullscreenElement) { document.exitFullscreen(); }
+  else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+});
+bLang.addEventListener("click", function(){
+  L = (L === "ar") ? "en" : "ar";
+  store("de.lang", L);
+  build();
+});
+
+document.addEventListener("keydown", function(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.key;
+  if (k === "Escape") { ov.classList.contains("on") ? closeOv() : openOv(); e.preventDefault(); return; }
+  if (k === "o" || k === "O") { ov.classList.contains("on") ? closeOv() : openOv(); return; }
+  if (k === "l" || k === "L") { bLang.click(); return; }
+  if (k === "f" || k === "F") { document.getElementById("bFull").click(); return; }
+  var fwd = (document.documentElement.dir === "rtl") ? "ArrowLeft" : "ArrowRight";
+  var back = (document.documentElement.dir === "rtl") ? "ArrowRight" : "ArrowLeft";
+  if (k === fwd || k === "ArrowDown" || k === "PageDown" || k === " ") { next(); e.preventDefault(); return; }
+  if (k === back || k === "ArrowUp" || k === "PageUp") { prev(); e.preventDefault(); return; }
+  if (k === "Home") { go(0); e.preventDefault(); return; }
+  if (k === "End") { go(N-1); e.preventDefault(); return; }
+  if (/^[1-9]$/.test(k)) { go(+k - 1); return; }
+  if (k === "0") { go(9); return; }
+});
+
+/* touch */
+var tx = null, ty = null;
+stage.addEventListener("touchstart", function(e){ tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
+stage.addEventListener("touchend", function(e){
+  if (tx === null) return;
+  var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 58 && Math.abs(dx) > Math.abs(dy)) {
+    var rtl = document.documentElement.dir === "rtl";
+    (dx < 0) ? (rtl ? prev() : next()) : (rtl ? next() : prev());
+  }
+  tx = ty = null;
+}, {passive:true});
+
+/* controls hide after a quiet moment */
+var idleT=null;
+function wake(){ document.body.classList.remove("idle"); clearTimeout(idleT);
+  idleT=setTimeout(function(){ if(!ov.classList.contains("on")) document.body.classList.add("idle"); }, 2400); }
+["mousemove","mousedown","touchstart","keydown"].forEach(function(ev){ document.addEventListener(ev, wake, {passive:true}); });
+
+/* deep links: #1 … #10 */
+window.addEventListener("hashchange", function(){
+  var h=parseInt((location.hash||"").replace("#",""),10);
+  if (h>=1 && h<=N && h-1!==i) show(h-1, true);
+});
+
+/* boot */
+var saved = recall("de.lang"); if (saved === "ar" || saved === "en") L = saved;
+var h0 = parseInt((location.hash||"").replace("#",""), 10);
+if (h0 >= 1 && h0 <= SLIDES.length) i = h0 - 1;
+build();
+fit();
+wake();
+})();
+</script>
+<style>@page{size:1920px 1080px;margin:0}</style>
+</body>
+</html>
