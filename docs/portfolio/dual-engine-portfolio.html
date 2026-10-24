@@ -10,11 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ground:#070B16; --ground2:#0D1424; --panel:#121A2E; --panel2:#17223B; --raise:#1C2847;
-  --line:rgba(236,241,255,.13); --line2:rgba(236,241,255,.07);
-  --ink:#F4F7FF; --ink2:rgba(244,247,255,.74); --ink3:rgba(244,247,255,.46); --ink4:rgba(244,247,255,.28);
-  --gold:#D9B169; --gold2:#F2D9A4; --goldsoft:rgba(217,177,105,.16);
-  --green:#2FD39A; --greensoft:rgba(47,211,154,.14);
+  --ground:#14102A; --ground2:#1C1640; --panel:#211A4A; --panel2:#2B1F4D; --raise:#3E2C6E;
+  --action:#3E2C6E; --action2:#5A47A0;
+  --line:rgba(251,250,247,.14); --line2:rgba(251,250,247,.07);
+  --ink:#FBFAF7; --ink2:rgba(244,242,236,.76); --ink3:rgba(244,242,236,.52); --ink4:rgba(244,242,236,.34);
+  --gold:#E2B75A; --gold2:#F2D9A4; --goldsoft:rgba(226,183,90,.15);
+  --lav:#B7A9F0; --lavsoft:rgba(90,71,160,.30);
   --amber:#EBA63F; --ambersoft:rgba(235,166,63,.15);
   --red:#E4604F; --redsoft:rgba(228,96,79,.15);
   --font:'IBM Plex Sans Arabic','IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -30,8 +31,8 @@ body.is-print{overflow:visible}
 
 /* ---------- stage ---------- */
 #stage{position:fixed;inset:0;overflow:hidden;background:
-  radial-gradient(1400px 900px at 78% -12%, #16233F 0%, transparent 62%),
-  radial-gradient(1100px 800px at 8% 108%, #10192C 0%, transparent 60%),
+  radial-gradient(1400px 900px at 78% -12%, #3E2C6E 0%, transparent 62%),
+  radial-gradient(1100px 800px at 8% 108%, #2B1F4D 0%, transparent 60%),
   var(--ground);}
 #deck{width:1920px;height:1080px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(var(--s,1));transform-origin:center center}
 .slide{position:absolute;inset:0;width:1920px;height:1080px;opacity:0;visibility:hidden;
@@ -51,7 +52,7 @@ h3{font-size:34px;font-weight:600;line-height:1.3;color:#fff}
 .sub{font-size:27px;line-height:1.56;color:var(--ink2)}
 .small{font-size:22px;line-height:1.55;color:var(--ink3)}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.gold{color:var(--gold)} .green{color:var(--green)} .amber{color:var(--amber)} .red{color:var(--red)}
+.gold{color:var(--gold)} .lav{color:var(--lav)} .amber{color:var(--amber)} .red{color:var(--red)}
 .cap{font-size:19px;color:var(--ink4);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 
@@ -69,70 +70,70 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 .grid{display:grid;gap:26px}
 .card{background:linear-gradient(165deg,var(--panel) 0%,var(--ground2) 100%);border:1px solid var(--line);
   border-radius:20px;padding:34px 36px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
-.card.flat{background:rgba(244,247,255,.035)}
+.card.flat{background:rgba(251,250,247,.035)}
 .card .num{font-size:19px;font-weight:700;color:var(--gold);font-family:var(--mono)}
 .card h3{font-size:30px}
 .card p{font-size:22px;line-height:1.5;color:var(--ink2)}
 .rule{height:1px;background:var(--line);border:0}
 .pill{display:inline-flex;align-items:center;gap:10px;padding:9px 18px;border-radius:999px;
-  border:1px solid var(--line);font-size:20px;font-weight:600;color:var(--ink2);background:rgba(244,247,255,.04)}
-.pill.g{color:var(--green);border-color:rgba(47,211,154,.4);background:var(--greensoft)}
+  border:1px solid var(--line);font-size:20px;font-weight:600;color:var(--ink2);background:rgba(251,250,247,.04)}
+.pill.g{color:var(--lav);border-color:rgba(183,169,240,.45);background:var(--lavsoft)}
 .pill.a{color:var(--amber);border-color:rgba(235,166,63,.4);background:var(--ambersoft)}
 .pill.r{color:var(--red);border-color:rgba(228,96,79,.4);background:var(--redsoft)}
-.pill.d{color:var(--gold);border-color:rgba(217,177,105,.42);background:var(--goldsoft)}
+.pill.d{color:var(--gold);border-color:rgba(226,183,90,.42);background:var(--goldsoft)}
 .dot{width:9px;height:9px;border-radius:50%;background:currentColor;flex:none}
 .dot.live{box-shadow:0 0 0 0 currentColor;animation:pulse 2.4s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,211,154,.5)}70%{box-shadow:0 0 0 12px rgba(47,211,154,0)}100%{box-shadow:0 0 0 0 rgba(47,211,154,0)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(183,169,240,.5)}70%{box-shadow:0 0 0 12px rgba(183,169,240,0)}100%{box-shadow:0 0 0 0 rgba(183,169,240,0)}}
 
 /* ---------- mock chrome ---------- */
-.mock{background:linear-gradient(180deg,#0E1526 0%,#0A101E 100%);border:1px solid var(--line);
+.mock{background:linear-gradient(180deg,#1E1745 0%,#171134 100%);border:1px solid var(--line);
   border-radius:18px;overflow:hidden;position:relative;box-shadow:0 44px 90px -40px rgba(0,0,0,.85), 0 0 0 1px rgba(255,255,255,.02) inset}
 .mock .bar{display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--line2);background:rgba(255,255,255,.028)}
 .mock .bar .tl{display:flex;gap:8px}
-.mock .bar .tl i{width:11px;height:11px;border-radius:50%;background:rgba(244,247,255,.16);display:block}
+.mock .bar .tl i{width:11px;height:11px;border-radius:50%;background:rgba(251,250,247,.16);display:block}
 .mock .bar .ttl{font-size:19px;color:var(--ink2);font-weight:600}
 .mock .bar .rt{margin-inline-start:auto;display:flex;gap:12px;align-items:center;font-size:17px;color:var(--ink4)}
 .mocklabel{position:absolute;inset-inline-end:16px;bottom:14px;font-size:16px;color:var(--ink4);
-  background:rgba(7,11,22,.78);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px);z-index:3}
+  background:rgba(20,16,42,.82);border:1px solid var(--line2);border-radius:999px;padding:6px 14px;backdrop-filter:blur(6px);z-index:3}
 .mockcap{font-size:19px;color:var(--ink4);display:flex;align-items:center;gap:10px}
 
 /* app shell inside mock */
 .app{display:grid;grid-template-columns:72px 1fr;min-height:0}
 .rail{border-inline-end:1px solid var(--line2);padding:18px 0;display:flex;flex-direction:column;align-items:center;gap:16px;background:rgba(255,255,255,.015)}
-.rail .ic{width:38px;height:38px;border-radius:11px;background:rgba(244,247,255,.07);display:grid;place-items:center;color:var(--ink3);font-size:17px}
-.rail .ic.on{background:var(--goldsoft);color:var(--gold);box-shadow:inset 0 0 0 1px rgba(217,177,105,.35)}
+.rail .ic{width:38px;height:38px;border-radius:11px;background:rgba(251,250,247,.07);display:grid;place-items:center;color:var(--ink3);font-size:17px}
+.rail .ic.on{background:var(--goldsoft);color:var(--gold);box-shadow:inset 0 0 0 1px rgba(226,183,90,.35)}
 .appmain{padding:22px 26px;display:flex;flex-direction:column;gap:18px;min-width:0}
 
 /* data table */
 .tbl{width:100%;border-collapse:collapse;font-size:18px}
 .tbl th{font-size:15px;color:var(--ink4);font-weight:600;text-align:start;padding:0 14px 11px;border-bottom:1px solid var(--line2);white-space:nowrap}
-.tbl td{padding:14px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:middle}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line2);color:var(--ink2);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:0}
 .tbl .id{font-family:var(--mono);color:var(--ink);font-size:17px}
 
 /* sla bar */
-.sla{height:7px;border-radius:999px;background:rgba(244,247,255,.1);overflow:hidden;min-width:96px}
-.sla i{display:block;height:100%;border-radius:999px;background:var(--green)}
+.sla{height:7px;border-radius:999px;background:rgba(251,250,247,.1);overflow:hidden;min-width:96px}
+.sla i{display:block;height:100%;border-radius:999px;background:var(--lav)}
 .sla.a i{background:var(--amber)} .sla.r i{background:var(--red)}
 
 /* kpi */
-.kpi{background:rgba(244,247,255,.04);border:1px solid var(--line2);border-radius:15px;padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+.kpi{background:rgba(251,250,247,.04);border:1px solid var(--line2);border-radius:15px;padding:18px 20px;display:flex;flex-direction:column;gap:7px}
 .kpi .k{font-size:15px;color:var(--ink4);font-weight:600}
 .kpi .v{font-size:46px;font-weight:600;line-height:1;font-family:var(--mono);letter-spacing:-.02em}
 .kpi .n{font-size:15px;color:var(--ink3)}
 .kpi.hot{border-color:rgba(228,96,79,.4);background:var(--redsoft)}
-.kpi.act{border-color:rgba(217,177,105,.42);background:var(--goldsoft)}
+.kpi.act{border-color:rgba(226,183,90,.42);background:var(--goldsoft)}
 
 /* stepper */
 .steps{display:flex;align-items:flex-start;gap:0;width:100%}
 .step{flex:1;display:flex;flex-direction:column;gap:9px;position:relative;padding-top:22px}
-.step::before{content:"";position:absolute;top:7px;inset-inline-start:0;width:100%;height:2px;background:rgba(244,247,255,.12)}
+.step::before{content:"";position:absolute;top:7px;inset-inline-start:0;width:100%;height:2px;background:rgba(251,250,247,.12)}
 .step:first-child::before{inset-inline-start:50%;width:50%}
 .step:last-child::before{width:50%}
 .step i{position:absolute;top:0;inset-inline-start:calc(50% - 8px);width:16px;height:16px;border-radius:50%;
-  background:var(--ground2);box-shadow:inset 0 0 0 2px rgba(244,247,255,.22)}
-.step.done::before{background:var(--green)} .step.done i{background:var(--green);box-shadow:none}
-.step.now i{background:var(--gold);box-shadow:0 0 0 6px rgba(217,177,105,.18)}
+  background:var(--ground2);box-shadow:inset 0 0 0 2px rgba(251,250,247,.22)}
+.step.done::before{background:var(--lav)} .step.done i{background:var(--lav);box-shadow:none}
+.step.now i{background:var(--gold);box-shadow:0 0 0 6px rgba(226,183,90,.18)}
 .step.late i{background:var(--red);box-shadow:0 0 0 6px rgba(228,96,79,.18)}
 .step b{font-size:16px;font-weight:600;color:var(--ink2);text-align:center;line-height:1.3}
 .step span{font-size:14px;color:var(--ink4);text-align:center;font-family:var(--mono)}
@@ -142,7 +143,7 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 .pulse{display:flex;flex-direction:column;gap:13px}
 .prow{display:grid;grid-template-columns:118px 1fr 56px;align-items:center;gap:14px;font-size:18px}
 .prow .pn{color:var(--ink2);font-weight:600}
-.prow .pb{height:9px;border-radius:999px;background:rgba(244,247,255,.08);overflow:hidden}
+.prow .pb{height:9px;border-radius:999px;background:rgba(251,250,247,.08);overflow:hidden}
 .prow .pb i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
 .prow .pv{font-family:var(--mono);color:var(--ink);text-align:end;font-size:19px}
 
@@ -150,7 +151,7 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 .ticks{display:flex;flex-direction:column;gap:16px}
 .ticks li{list-style:none;display:flex;gap:16px;align-items:flex-start;font-size:24px;line-height:1.46;color:var(--ink2)}
 .ticks li::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold);flex:none;margin-top:11px}
-.ticks.g li::before{background:var(--green)}
+.ticks.g li::before{background:var(--lav)}
 .ticks.r li::before{background:var(--red)}
 .ticks li b{color:var(--ink);font-weight:600}
 
@@ -158,18 +159,23 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 #chrome{position:fixed;inset-inline:0;bottom:0;display:flex;align-items:center;gap:14px;padding:16px 26px;z-index:40;
   pointer-events:none}
 #chrome>*{pointer-events:auto}
-.btn{appearance:none;border:1px solid var(--line);background:rgba(13,20,36,.84);color:var(--ink2);
+#chrome{transition:opacity .35s ease}
+body.idle #chrome{opacity:0}
+body.idle #chrome>*{pointer-events:none}
+body.idle{cursor:none}
+.btn{appearance:none;border:1px solid var(--line);background:rgba(28,22,64,.86);color:var(--ink2);
   border-radius:11px;height:42px;min-width:42px;padding:0 15px;font-family:var(--font);font-size:17px;font-weight:600;
   cursor:pointer;backdrop-filter:blur(10px);transition:.16s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn:hover{border-color:rgba(217,177,105,.55);color:var(--gold)}
+.btn:hover{border-color:rgba(226,183,90,.55);color:var(--gold)}
 .btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 #counter{font-family:var(--mono);font-size:17px;color:var(--ink4);padding:0 6px;min-width:76px;text-align:center}
-#bar{position:fixed;inset-inline:0;top:0;height:3px;background:rgba(244,247,255,.07);z-index:41}
+#bar{position:fixed;inset-inline:0;top:0;height:3px;background:rgba(251,250,247,.07);z-index:41}
 #bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width .42s ease}
 .spacer{flex:1}
+html[dir=rtl] .flipx{transform:scaleX(-1)}
 
 /* overview */
-#ov{position:fixed;inset:0;z-index:60;background:rgba(5,8,16,.96);backdrop-filter:blur(10px);display:none;
+#ov{position:fixed;inset:0;z-index:60;background:rgba(14,10,30,.96);backdrop-filter:blur(10px);display:none;
   padding:52px;overflow:auto}
 #ov.on{display:block}
 #ovg{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:20px;max-width:1500px;margin:0 auto}
@@ -183,7 +189,7 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
 #ovh{max-width:1500px;margin:0 auto 30px;display:flex;align-items:center;justify-content:space-between}
 
 @media print{
-  body,#stage{overflow:visible;background:#070B16}
+  body,#stage{overflow:visible;background:#14102A}
   #chrome,#bar,#ov{display:none!important}
   #stage{position:static;display:block}
   #deck{position:static;width:auto;height:auto;transform:none}
@@ -201,7 +207,7 @@ html[dir=rtl] .cap{letter-spacing:0;text-transform:none}
   <button class="btn" id="bLang" title="العربية / English">EN</button>
   <div class="spacer"></div>
   <button class="btn" id="bPrev" title="Previous">‹</button>
-  <span id="counter" class="mono">01 / 10</span>
+  <span id="counter" class="mono" dir="ltr">01 / 10</span>
   <button class="btn" id="bNext" title="Next">›</button>
   <div class="spacer"></div>
   <button class="btn" id="bPrint" title="Print / PDF">⎙</button>
@@ -219,24 +225,24 @@ var L = "ar";
 function x(ar,en){ return L==="ar" ? ar : en; }
 function foot(n,total){
   return '<div class="foot"><div class="mark"><b>◎</b> '+x("محرّكان · مؤسسة واحدة","Two Engines · One Enterprise")+'</div>'+
-         '<div class="mono">'+String(n).padStart(2,"0")+' / '+String(total).padStart(2,"0")+'</div></div>';
+         '<div class="mono" dir="ltr">'+String(n).padStart(2,"0")+' / '+String(total).padStart(2,"0")+'</div></div>';
 }
 function emblem(size){
   var s = size||300;
   return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 300 300" fill="none" aria-hidden="true">'+
   '<defs><radialGradient id="eg" cx="50%" cy="50%" r="50%">'+
   '<stop offset="0%" stop-color="#F2D9A4" stop-opacity=".95"/>'+
-  '<stop offset="55%" stop-color="#D9B169" stop-opacity=".30"/>'+
-  '<stop offset="100%" stop-color="#D9B169" stop-opacity="0"/></radialGradient>'+
+  '<stop offset="55%" stop-color="#E2B75A" stop-opacity=".30"/>'+
+  '<stop offset="100%" stop-color="#E2B75A" stop-opacity="0"/></radialGradient>'+
   '<linearGradient id="eb" x1="0" y1="0" x2="1" y2="1">'+
-  '<stop offset="0%" stop-color="#2FD39A"/><stop offset="100%" stop-color="#1E9C86"/></linearGradient></defs>'+
-  '<circle cx="150" cy="150" r="140" stroke="rgba(244,247,255,.10)" stroke-width="1"/>'+
-  '<circle cx="150" cy="150" r="112" stroke="rgba(244,247,255,.07)" stroke-width="1" stroke-dasharray="3 9"/>'+
+  '<stop offset="0%" stop-color="#B7A9F0"/><stop offset="100%" stop-color="#5A47A0"/></linearGradient></defs>'+
+  '<circle cx="150" cy="150" r="140" stroke="rgba(251,250,247,.10)" stroke-width="1"/>'+
+  '<circle cx="150" cy="150" r="112" stroke="rgba(251,250,247,.07)" stroke-width="1" stroke-dasharray="3 9"/>'+
   '<circle cx="150" cy="150" r="96" fill="url(#eg)"/>'+
   '<circle cx="150" cy="150" r="78" stroke="url(#eb)" stroke-width="7" opacity=".85"/>'+
-  '<circle cx="150" cy="150" r="52" stroke="#D9B169" stroke-width="12"/>'+
+  '<circle cx="150" cy="150" r="52" stroke="#E2B75A" stroke-width="12"/>'+
   '<circle cx="150" cy="150" r="22" fill="#F2D9A4"/>'+
-  '<g stroke="#EDF1FF" stroke-width="9" stroke-linecap="round" opacity=".92">'+
+  '<g stroke="#E9E4FF" stroke-width="9" stroke-linecap="round" opacity=".92">'+
   '<path d="M150 22v44"/><path d="M150 234v44"/><path d="M22 150h44"/><path d="M234 150h44"/></g>'+
   '</svg>';
 }
@@ -257,8 +263,8 @@ SLIDES.push({
     ];
     return ''+
     '<div style="position:absolute;inset-inline-end:-40px;top:90px;opacity:.9">'+emblem(560)+'</div>'+
-    '<div style="position:absolute;inset:0;background:radial-gradient(900px 620px at 80% 34%, rgba(217,177,105,.10), transparent 70%)"></div>'+
-    '<div class="head" style="position:relative;max-width:1180px;margin-top:40px">'+
+    '<div style="position:absolute;inset:0;background:radial-gradient(900px 620px at 80% 34%, rgba(226,183,90,.10), transparent 70%)"></div>'+
+    '<div class="head" style="position:relative;max-width:1180px;margin-top:10px">'+
       '<div class="eyebrow"><i></i>'+x("منصّة أتمتة مؤسسية · جاهزة للتشغيل","Turnkey enterprise automation platform")+'</div>'+
       '<h1 style="margin-top:26px">'+x("محرّكان.<br>مؤسسة واحدة.<br><span class=\"gold\">رؤية كاملة.</span>","Two Engines.<br>One Enterprise.<br><span class=\"gold\">Total Visibility.</span>")+'</h1>'+
       '<p class="lede" style="margin-top:34px;max-width:980px">'+
@@ -266,7 +272,7 @@ SLIDES.push({
           "An Operational Engine that drives every request's lifecycle in the field, and an Executive Command Room that puts the whole enterprise on one screen — one platform, one record, one line of accountability.")+
       '</p>'+
     '</div>'+
-    '<div style="position:absolute;inset-inline:120px;bottom:152px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px">'+
+    '<div style="margin-top:auto;margin-bottom:40px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:22px">'+
       chips.map(function(c){
         return '<div style="border-top:1px solid var(--line);padding-top:20px">'+
           '<div style="font-size:23px;font-weight:600;color:var(--ink)">'+c[0]+'</div>'+
@@ -308,7 +314,7 @@ SLIDES.push({
       }).join("")+
     '</div>'+
     '<div style="margin-top:auto;margin-bottom:44px;display:flex;align-items:center;gap:28px;'+
-      'border-inline-start:3px solid var(--gold);padding:22px 30px;background:rgba(217,177,105,.06);border-radius:0 16px 16px 0">'+
+      'border-inline-start:3px solid var(--gold);padding:22px 30px;background:rgba(226,183,90,.06);border-radius:0 16px 16px 0">'+
       '<p style="font-size:28px;line-height:1.5;color:var(--ink);max-width:1480px">'+
         x("النتيجة واحدة في كل قطاع: دورات أطول، تنسيق يدوي أكثر، ومخاطر لا تظهر على أي شاشة إلا بعد أن تتحوّل إلى حدث.",
           "The result is the same in every sector: longer cycles, more manual coordination, and risks that appear on no screen until they become incidents.")+
@@ -350,13 +356,13 @@ SLIDES.push({
         x("دورة حياة بمراحل وشروط انتقال","A staged lifecycle with guarded transitions"),
         x("تعيين الفريق وصلاحيات الدور","Team assignment and role-bound permissions"),
         x("مهل زمنية وتصعيد عند التجاوز","Deadlines, with escalation when they pass")
-      ],"#2FD39A")+
+      ],"#B7A9F0")+
       '<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:0 18px">'+
-        '<svg width="110" height="150" viewBox="0 0 110 150" fill="none" aria-hidden="true">'+
-          '<path d="M14 44h82" stroke="#D9B169" stroke-width="3" stroke-linecap="round"/>'+
-          '<path d="M84 34l14 10-14 10" stroke="#D9B169" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
-          '<path d="M96 106H14" stroke="#2FD39A" stroke-width="3" stroke-linecap="round"/>'+
-          '<path d="M26 96L12 106l14 10" stroke="#2FD39A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+        '<svg class="flipx" width="110" height="150" viewBox="0 0 110 150" fill="none" aria-hidden="true">'+
+          '<path d="M14 44h82" stroke="#E2B75A" stroke-width="3" stroke-linecap="round"/>'+
+          '<path d="M84 34l14 10-14 10" stroke="#E2B75A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+          '<path d="M96 106H14" stroke="#B7A9F0" stroke-width="3" stroke-linecap="round"/>'+
+          '<path d="M26 96L12 106l14 10" stroke="#B7A9F0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
         '</svg>'+
         '<div style="text-align:center;font-size:17px;line-height:1.5;color:var(--ink4)">'+
           x("البيانات تصعد<br>الأوامر تنزل","Data rises<br>Directives descend")+'</div>'+
@@ -366,7 +372,7 @@ SLIDES.push({
         x("القرارات التي تنتظر توقيع القيادة","The decisions awaiting the chief's sign-off"),
         x("أوامر تنفيذية تصل إلى من يجب أن يعمل","Directives that reach whoever must act"),
         x("أداء المؤسسة مقابل الفترة السابقة","Performance against the preceding period")
-      ],"#D9B169")+
+      ],"#E2B75A")+
     '</div>'+
     '<div style="margin-top:46px">'+
       '<div class="cap" style="margin-bottom:18px">'+x("عمود فقري واحد تحت المحرّكين","One shared spine beneath both engines")+'</div>'+
@@ -406,12 +412,12 @@ SLIDES.push({
     ];
     function ring(pct){
       var r=52, c=2*Math.PI*r, off=c*(1-pct/100);
-      return '<svg width="138" height="138" viewBox="0 0 138 138" aria-hidden="true">'+
-        '<circle cx="69" cy="69" r="'+r+'" fill="none" stroke="rgba(244,247,255,.1)" stroke-width="11"/>'+
+      return '<svg width="112" height="112" viewBox="0 0 138 138" aria-hidden="true">'+
+        '<circle cx="69" cy="69" r="'+r+'" fill="none" stroke="rgba(251,250,247,.1)" stroke-width="11"/>'+
         '<circle cx="69" cy="69" r="'+r+'" fill="none" stroke="#E4604F" stroke-width="11" stroke-linecap="round"'+
         ' stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 69 69)"/>'+
-        '<text x="69" y="64" text-anchor="middle" fill="#F4F7FF" font-size="30" font-family="IBM Plex Mono, monospace" font-weight="500">'+pct+'%</text>'+
-        '<text x="69" y="88" text-anchor="middle" fill="rgba(244,247,255,.46)" font-size="14" font-family="IBM Plex Sans Arabic, sans-serif">'+x("من المهلة","of SLA")+'</text>'+
+        '<text x="69" y="64" text-anchor="middle" fill="#FBFAF7" font-size="30" font-family="IBM Plex Mono, monospace" font-weight="500">'+pct+'%</text>'+
+        '<text x="69" y="88" text-anchor="middle" fill="rgba(251,250,247,.46)" font-size="14" font-family="IBM Plex Sans Arabic, sans-serif">'+x("من المهلة","of SLA")+'</text>'+
         '</svg>';
     }
     var trail=[
@@ -420,7 +426,7 @@ SLIDES.push({
       [x("أُسندت المتابعة","Follow-up taken"), x("مدير الإدارة · 14:19","Department Manager · 14:19")]
     ];
     return ''+
-    '<div class="head wide">'+
+    '<div class="head" style="max-width:1680px">'+
       '<div class="eyebrow"><i></i>'+x("المحرّك الأول · التشغيل","Engine 01 · Operations")+'</div>'+
       '<h2 style="font-size:62px">'+x("كل طلب له مالك، ومرحلة، ومهلة — <span class=gold>والنظام يلاحق التأخير بنفسه.</span>",
                                       "Every request has an owner, a stage and a deadline — <span class=gold>and the system chases the delay itself.</span>")+'</h2>'+
@@ -434,7 +440,7 @@ SLIDES.push({
     '<div class="mock" style="flex:1;margin-top:24px;display:flex;flex-direction:column;min-height:0">'+
       '<div class="bar"><div class="tl"><i></i><i></i><i></i></div>'+
         '<div class="ttl">'+x("مساحة العمل التشغيلية","Operational workspace")+'</div>'+
-        '<div class="rt"><span class="green" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--green)"></i>'+x("مباشر","Live")+'</span>'+
+        '<div class="rt"><span class="lav" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--lav)"></i>'+x("مباشر","Live")+'</span>'+
         '<span class="mono">14:22</span></div></div>'+
       '<div class="app" style="flex:1;min-height:0">'+
         '<div class="rail">'+
@@ -468,10 +474,10 @@ SLIDES.push({
                 '<span style="font-size:17px;font-weight:700;color:var(--red)">'+x("اختناق مكتشَف","Bottleneck detected")+'</span></div>'+
               '<div style="display:flex;align-items:center;gap:16px">'+ring(118>100?100:118)+
                 '<div style="font-size:16px;line-height:1.5;color:var(--ink2)">'+
-                x("<b style=color:#F4F7FF>بانتظار طرف خارجي</b><br>المهلة 48 ساعة · مضى 56 ساعة","<b style=color:#F4F7FF>Awaiting third party</b><br>48h SLA · 56h elapsed")+'</div>'+
+                x("<b style=color:#FBFAF7>بانتظار طرف خارجي</b><br>المهلة 48 ساعة · مضى 56 ساعة","<b style=color:#FBFAF7>Awaiting third party</b><br>48h SLA · 56h elapsed")+'</div>'+
               '</div>'+
               '<hr class="rule" style="opacity:.5">'+
-              '<div style="display:flex;flex-direction:column;gap:10px">'+
+              '<div style="display:flex;flex-direction:column;gap:7px">'+
                 trail.map(function(t){
                   return '<div><div style="font-size:16px;font-weight:600;color:var(--ink)">'+t[0]+'</div>'+
                   '<div style="font-size:14px;color:var(--ink4);margin-top:2px">'+t[1]+'</div></div>';
@@ -481,8 +487,8 @@ SLIDES.push({
           '</div>'+
         '</div>'+
       '</div>'+
-      '<div class="mocklabel">'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>'+
-    '</div>';
+      '</div>'+
+    '<div class=\"mockcap\" style=\"margin-top:12px;flex:none\"><i class=\"dot\" style=\"color:var(--lav)\"></i>'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>';
   }
 });
 
@@ -516,7 +522,7 @@ SLIDES.push({
       [x("تجاوز تصنيف آلي","Classification override"),"REQ-260924-0191",x("منذ ساعتين","2 hours"),""]
     ];
     return ''+
-    '<div class="head wide">'+
+    '<div class="head" style="max-width:1680px">'+
       '<div class="eyebrow"><i></i>'+x("المحرّك الثاني · القيادة","Engine 02 · Command")+'</div>'+
       '<h2 style="font-size:62px">'+x("المؤسسة كلها في شاشة واحدة — <span class=gold>وأوامر تخرج منها، لا ملاحظات.</span>",
                                       "The whole enterprise on one screen — <span class=gold>and directives leave it, not comments.</span>")+'</h2>'+
@@ -525,7 +531,7 @@ SLIDES.push({
       '<div class="bar">'+
         '<span style="font-size:19px;font-weight:700;color:var(--gold)">'+x("غرفة القيادة","Command Room")+'</span>'+
         '<span class="ttl" style="color:var(--ink4)">'+x("أربعة قطاعات. قيادة واحدة. لا نقاط عمياء.","Four sectors. One command. Zero blind spots.")+'</span>'+
-        '<div class="rt"><span class="green" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--green)"></i>'+x("مباشر","Live")+'</span>'+
+        '<div class="rt"><span class="lav" style="display:inline-flex;align-items:center;gap:7px"><i class="dot live" style="color:var(--lav)"></i>'+x("مباشر","Live")+'</span>'+
         '<span class="mono">14:22</span><span>'+x("وضع الجدار","Wall mode")+'</span></div></div>'+
       '<div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;flex:1;min-height:0">'+
         '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;flex:none">'+
@@ -535,7 +541,7 @@ SLIDES.push({
         '</div>'+
         '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:none">'+
           dirs.map(function(d){
-            return '<div style="border:1px solid rgba(217,177,105,.3);background:var(--goldsoft);border-radius:12px;padding:13px 16px;display:flex;gap:12px;align-items:flex-start">'+
+            return '<div style="border:1px solid var(--action2);background:var(--action);border-radius:12px;padding:13px 16px;display:flex;gap:12px;align-items:flex-start">'+
               '<span style="color:var(--gold);font-size:20px;line-height:1.1">'+d[0]+'</span>'+
               '<div><div style="font-size:18px;font-weight:600;color:var(--ink)">'+d[1]+'</div>'+
               '<div style="font-size:14px;color:var(--ink4);margin-top:3px;line-height:1.35">'+d[2]+'</div></div></div>';
@@ -545,7 +551,7 @@ SLIDES.push({
           '<div style="border:1px solid var(--line2);border-radius:13px;padding:14px 18px;background:rgba(255,255,255,.015);display:flex;flex-direction:column;gap:10px;overflow:hidden">'+
             '<div class="cap" style="font-size:15px">'+x("قرارات تنتظر توقيعك","Decisions awaiting your sign-off")+'</div>'+
             queue.map(function(q){
-              return '<div style="display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--line2)">'+
+              return '<div style="display:flex;align-items:center;gap:14px;padding:6px 0;border-bottom:1px solid var(--line2)">'+
                 '<i class="dot" style="color:'+(q[3]==="r"?"var(--red)":q[3]==="a"?"var(--amber)":"var(--ink4)")+'"></i>'+
                 '<span style="font-size:18px;color:var(--ink);font-weight:500">'+q[0]+'</span>'+
                 '<span class="mono" style="font-size:16px;color:var(--ink4)">'+q[1]+'</span>'+
@@ -564,8 +570,8 @@ SLIDES.push({
           '</div>'+
         '</div>'+
       '</div>'+
-      '<div class="mocklabel">'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>'+
-    '</div>';
+      '</div>'+
+    '<div class=\"mockcap\" style=\"margin-top:12px;flex:none\"><i class=\"dot\" style=\"color:var(--lav)\"></i>'+x("محاكاة مفاهيمية للواجهة · بيانات توضيحية","Conceptual interface mockup · illustrative data")+'</div>';
   }
 });
 
@@ -606,7 +612,7 @@ SLIDES.push({
       }).join("")+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:26px;margin-top:34px;flex:none">'+
-      '<div style="border:1px dashed rgba(217,177,105,.45);border-radius:16px;padding:24px 28px;background:rgba(217,177,105,.05)">'+
+      '<div style="border:1px dashed rgba(226,183,90,.45);border-radius:16px;padding:24px 28px;background:rgba(226,183,90,.05)">'+
         '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">'+
           '<span class="pill d" style="font-size:16px;padding:4px 12px">'+x("سيناريو توضيحي","Illustrative scenario")+'</span>'+
           '<span style="font-size:17px;color:var(--ink4)">'+x("مدخلات افتراضية — ليست نتيجة عميل ولا وعداً بأداء","placeholder inputs — not a customer result, not a performance promise")+'</span>'+
@@ -667,13 +673,13 @@ SLIDES.push({
         '<div style="padding:18px 28px;display:flex;align-items:center;gap:12px;border-inline-start:1px solid var(--line)">'+
           '<i class="dot" style="color:var(--red)"></i><span style="font-size:24px;font-weight:700;color:var(--red)">'+x("اليوم","Today")+'</span></div>'+
         '<div style="padding:18px 28px;display:flex;align-items:center;gap:12px;border-inline-start:1px solid var(--line)">'+
-          '<i class="dot" style="color:var(--green)"></i><span style="font-size:24px;font-weight:700;color:var(--green)">'+x("مع المنصّة","With the platform")+'</span></div>'+
+          '<i class="dot" style="color:var(--lav)"></i><span style="font-size:24px;font-weight:700;color:var(--lav)">'+x("مع المنصّة","With the platform")+'</span></div>'+
       '</div>'+
       rows.map(function(r,i){
         return '<div style="display:grid;grid-template-columns:1fr 1.25fr 1.25fr;'+(i<rows.length-1?'border-bottom:1px solid var(--line2);':'')+'">'+
           '<div style="padding:19px 28px;font-size:21px;color:var(--ink4);font-weight:600">'+r[0]+'</div>'+
           '<div style="padding:19px 28px;font-size:22px;color:var(--ink2);border-inline-start:1px solid var(--line2);background:rgba(228,96,79,.045)">'+r[1]+'</div>'+
-          '<div style="padding:19px 28px;font-size:22px;color:var(--ink);border-inline-start:1px solid var(--line2);background:rgba(47,211,154,.05)">'+r[2]+'</div>'+
+          '<div style="padding:19px 28px;font-size:22px;color:var(--ink);border-inline-start:1px solid var(--line2);background:rgba(90,71,160,.16)">'+r[2]+'</div>'+
         '</div>';
       }).join("")+
     '</div>';
@@ -719,7 +725,7 @@ SLIDES.push({
         '<ul style="display:flex;flex-direction:column;gap:9px;list-style:none">'+
           items.map(function(t){
             return '<li style="display:flex;gap:12px;align-items:flex-start;font-size:19px;line-height:1.42;color:var(--ink2)">'+
-              '<span style="color:'+accent+';flex:none;font-size:15px;margin-top:4px">'+(accent==="#2FD39A"?"✓":"○")+'</span>'+t+'</li>';
+              '<span style="color:'+accent+';flex:none;font-size:15px;margin-top:4px">'+(accent==="#B7A9F0"?"✓":"○")+'</span>'+t+'</li>';
           }).join("")+
         '</ul></div>';
     }
@@ -730,10 +736,10 @@ SLIDES.push({
                                       "We separate <span class=gold>what is built today</span> from what is planned — by name.")+'</h2>'+
     '</div>'+
     '<div style="display:grid;grid-template-columns:1.32fr 1fr;gap:46px;margin-top:38px;flex:1;min-height:0">'+
-      col(x("مبنيّ وقائم في النظام","Built and in the system today"),built,"#2FD39A",x("مُثبَت في الشيفرة","verified in the codebase"))+
+      col(x("مبنيّ وقائم في النظام","Built and in the system today"),built,"#B7A9F0",x("مُثبَت في الشيفرة","verified in the codebase"))+
       '<div style="display:flex;flex-direction:column;gap:26px;min-height:0">'+
         col(x("مُخطَّط، ولم يُبنَ بعد","Planned, not yet built"),planned,"#EBA63F",x("يُذكر صراحة","stated plainly"))+
-        '<div style="margin-top:auto;border-inline-start:3px solid var(--gold);padding:18px 24px;background:rgba(217,177,105,.06);border-radius:0 14px 14px 0">'+
+        '<div style="margin-top:auto;border-inline-start:3px solid var(--gold);padding:18px 24px;background:rgba(226,183,90,.06);border-radius:0 14px 14px 0">'+
           '<div style="font-size:20px;font-weight:600;color:var(--ink);margin-bottom:7px">'+x("وما لا نقوله","And what we do not say")+'</div>'+
           '<div style="font-size:18px;line-height:1.5;color:var(--ink3)">'+
             x("لا شهادات امتثال مُدّعاة، ولا نتائج عملاء، ولا أرقام أداء لم تُقَس عندك. الادّعاء المخفَّف ادّعاء.",
@@ -776,17 +782,17 @@ SLIDES.push({
             x("قابل للتهيئة بالنماذج والقواعد","Configurable through forms and rules"), false]
     ];
     return ''+
-    '<div class="head wide">'+
+    '<div class="head" style="max-width:1680px">'+
       '<div class="eyebrow"><i></i>'+x("التطبيقات القطاعية","Industry applications")+'</div>'+
-      '<h2>'+x("النموذج واحد: <span class=gold>استقبال ← مسار ← مساءلة ← قرار.</span>",
+      '<h2 style="font-size:62px">'+x("النموذج واحد: <span class=gold>استقبال ← مسار ← مساءلة ← قرار.</span>",
                "One model: <span class=gold>intake → routing → accountability → decision.</span>")+'</h2>'+
     '</div>'+
-    '<div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:48px">'+
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px">'+
       ind.map(function(i){
-        return '<div class="card" style="gap:13px;'+(i[4]?'border-color:rgba(47,211,154,.4);':'')+'">'+
+        return '<div class="card" style="gap:13px;'+(i[4]?'border-color:rgba(183,169,240,.45);':'')+'">'+
           '<div style="display:flex;align-items:center;gap:14px">'+
             '<span style="width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:22px;'+
-              'background:'+(i[4]?'var(--greensoft);color:var(--green)':'var(--goldsoft);color:var(--gold)')+'">'+i[0]+'</span>'+
+              'background:'+(i[4]?'var(--lavsoft);color:var(--lav)':'var(--goldsoft);color:var(--gold)')+'">'+i[0]+'</span>'+
             '<h3 style="font-size:26px;line-height:1.25">'+i[1]+'</h3></div>'+
           '<p style="font-size:20px">'+i[2]+'</p>'+
           '<div style="margin-top:auto;padding-top:14px">'+
@@ -794,7 +800,7 @@ SLIDES.push({
         '</div>';
       }).join("")+
     '</div>'+
-    '<div style="margin-top:30px;font-size:20px;color:var(--ink4);line-height:1.5;max-width:1500px">'+
+    '<div style="margin-top:auto;margin-bottom:40px;font-size:19px;color:var(--ink4);line-height:1.5;max-width:1500px">'+
       x("النماذج والقواعد والمراحل والمهل والأدوار كلها بيانات مُصدَّرة، تُعدَّل بالتهيئة لا بإعادة البناء. ما لم يُبنَ في قطاع بعينه يُقال إنه لم يُبنَ.",
         "Forms, rules, stages, deadlines and roles are all versioned data, changed by configuration rather than a rebuild. Where a sector has not been built, we say it has not been built.")+
     '</div>';
@@ -825,8 +831,8 @@ SLIDES.push({
       ]]
     ];
     return ''+
-    '<div style="position:absolute;inset-inline-end:-120px;bottom:-120px;opacity:.55">'+emblem(620)+'</div>'+
-    '<div style="position:absolute;inset:0;background:radial-gradient(880px 600px at 86% 78%, rgba(217,177,105,.11), transparent 70%)"></div>'+
+    '<div style="position:absolute;inset-inline-end:-190px;top:-190px;opacity:.42">'+emblem(540)+'</div>'+
+    '<div style="position:absolute;inset:0;background:radial-gradient(880px 600px at 92% 4%, rgba(226,183,90,.10), transparent 70%)"></div>'+
     '<div class="head wide" style="position:relative">'+
       '<div class="eyebrow"><i></i>'+x("الخطوة التالية","The next step")+'</div>'+
       '<h2 style="font-size:78px;max-width:1420px">'+
@@ -852,7 +858,7 @@ SLIDES.push({
       '</div>'+
       '<div style="text-align:end;font-size:19px;color:var(--ink4);line-height:1.7">'+
         x("للتواصل وحجز الموعد","To arrange the session")+'<br>'+
-        '<span class="mono" style="font-size:22px;color:var(--gold)">[ '+x("البريد وجهة الاتصال","contact e-mail")+' ]</span></div>'+
+        '<span style="font-size:22px;font-weight:600;color:var(--gold)">[ '+x("البريد وجهة الاتصال","contact e-mail")+' ]</span></div>'+
     '</div>';
   }
 });
@@ -962,12 +968,25 @@ stage.addEventListener("touchend", function(e){
   tx = ty = null;
 }, {passive:true});
 
+/* controls hide after a quiet moment */
+var idleT=null;
+function wake(){ document.body.classList.remove("idle"); clearTimeout(idleT);
+  idleT=setTimeout(function(){ if(!ov.classList.contains("on")) document.body.classList.add("idle"); }, 2400); }
+["mousemove","mousedown","touchstart","keydown"].forEach(function(ev){ document.addEventListener(ev, wake, {passive:true}); });
+
+/* deep links: #1 … #10 */
+window.addEventListener("hashchange", function(){
+  var h=parseInt((location.hash||"").replace("#",""),10);
+  if (h>=1 && h<=N && h-1!==i) show(h-1, true);
+});
+
 /* boot */
 var saved = recall("de.lang"); if (saved === "ar" || saved === "en") L = saved;
 var h0 = parseInt((location.hash||"").replace("#",""), 10);
 if (h0 >= 1 && h0 <= SLIDES.length) i = h0 - 1;
 build();
 fit();
+wake();
 })();
 </script>
 <style>@page{size:1920px 1080px;margin:0}</style>
